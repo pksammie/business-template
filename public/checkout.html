@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Vanguard</title>
+    <link rel="stylesheet" href="/css/index.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+    <header class="luxury-nav checkout-nav">
+        <div class="nav-left-menu"><a href="/cart">Back to Bag</a></div>
+        <div class="main-signature-logo">CHECKOUT<span>SYSTEM</span></div>
+        <div class="nav-right-actions"></div>
+    </header>
+
+    <main class="store-mainframe">
+        <div class="checkout-split-wrapper" style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 50px;">
+            
+            <!-- Left Panel Side: Client Logistics Submission Data Form -->
+            <div class="checkout-form-pane">
+                <h2 style="font-size: 20px; font-weight: 400; letter-spacing: 1px; margin-bottom: 20px; text-transform: uppercase;">Delivery Address Profile</h2>
+                
+                <form id="shipping-address-capture-form" class="admin-form" style="display: flex; flex-direction: column; gap: 15px;">
+                    <input type="text" name="country" placeholder="Country / Region" required style="width: 100%;">
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <input type="text" name="first_name" placeholder="First Name" required>
+                        <input type="text" name="last_name" placeholder="Last Name" required>
+                    </div>
+
+                    <input type="text" name="address" placeholder="Residential Address / Street Name" required style="width: 100%;">
+                    <input type="text" name="city" placeholder="City" required style="width: 100%;">
+                    <input type="text" name="state" placeholder="State" required style="width: 100%;">
+                    <input type="tel" name="phone" placeholder="Active WhatsApp Phone Number" required style="width: 100%;">
+                    
+                    <!-- Persistent Profiles State Management Box -->
+                    <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
+                        <input type="checkbox" id="save_info" name="save_info" style="width: auto; cursor: pointer;">
+                        <label for="save_info" style="font-size: 14px; color: rgba(255,255,255,0.7); cursor: pointer;">Save this information for next time</label>
+                    </div>
+
+                    <button type="submit" class="checkout-btn" style="width: 100%; margin-top: 15px; background: var(--primary-color); color: #000; font-weight: bold; border: none; padding: 15px; cursor: pointer; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px;">Pay Now / Compile to WhatsApp</button>
+                </form>
+            </div>
+
+            <!-- Right Panel Side: Isolated Static Overview Metrics Recap Container -->
+            <div class="checkout-summary-pane" style="background: var(--card-bg); padding: 30px; border-radius: 8px; height: fit-content;">
+                <h2 style="font-size: 18px; font-weight: 500; margin-bottom: 20px; letter-spacing: 1px;">Bag Overview Recap</h2>
+                
+                <!-- Targets target location element where lines compile from checkout.js -->
+                <div id="checkout-summary-target"></div>
+                
+                <!-- Notice Disclaimer Statement -->
+                <div style="margin-top: 25px; padding: 15px; background: #0b0c10; border-left: 2px solid var(--primary-color); border-radius: 4px;">
+                    <p style="margin: 0; font-size: 13px; color: rgba(255,255,255,0.6); line-height: 1.5;">💡 <strong>Notice:</strong> This is an initial base catalog price structure compilation summary. Logistics distribution and final delivery shipping fee parameters will be finalized over WhatsApp discussion.</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script type="module" src="./js/checkout.js"></script>
+    <script type="module" src="/js/route-guard.js"></script>
+    <script type="module" src="/js/guard.js"></script>
+    
+</body>
+</html>

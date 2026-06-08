@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel</title>
+
+<link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="/css/admin.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body>
+
+<div class="top-bar">
+    <span>Terminal Console Workspace</span>
+    <a href="/" class="view-store-btn">
+View Store
+</a>
+</div>
+
+<header class="luxury-nav">
+    <div class="nav-left-menu"><a href="/">Control Hub</a></div>
+    <div class="main-signature-logo">ADMIN<span>PANEL</span></div>
+</header>
+
+<main class="store-mainframe">
+
+<section class="admin-section">
+
+<h3>Product Configurator</h3>
+<br>
+<form id="admin-product-form" class="admin-form">
+
+    <input type="text" id="prod-title" placeholder="Product Title" required>
+
+    <input type="number" id="prod-price" placeholder="Price" required>
+
+    <input type="number" id="prod-quantity" placeholder="Stock Quantity" required>
+
+    <div id="upload-image-box" class="upload-box">
+    <i class="fa-solid fa-cloud-arrow-up"></i>
+    <p>Upload Product Image</p>
+</div>
+
+<input
+type="hidden"
+id="uploaded-image-url">
+
+    <!-- SIZE -->
+<div class="admin-option-box">
+
+<h4>Available Sizes</h4>
+
+<div class="checkbox-grid" aria-required="true">
+
+<label><input type="checkbox" name="prod_sizes" value="S"> S</label>
+
+<label><input type="checkbox" name="prod_sizes" value="M"> M</label>
+
+<label><input type="checkbox" name="prod_sizes" value="L"> L</label>
+
+<label><input type="checkbox" name="prod_sizes" value="XL"> XL</label>
+
+<label><input type="checkbox" name="prod_sizes" value="None"> None</label>
+
+</div>
+
+</div>
+
+    <!-- COLORS -->
+<div class="admin-option-box">
+
+<h4>Available Colors</h4>
+
+<div class="checkbox-grid" aria-required="true">
+
+<label><input type="checkbox" name="prod_colors" value="None"> None</label>
+
+<label><input type="checkbox" name="prod_colors" value="Black"> Black</label>
+
+<label><input type="checkbox" name="prod_colors" value="White"> White</label>
+
+<label><input type="checkbox" name="prod_colors" value="Red"> Red</label>
+
+<label><input type="checkbox" name="prod_colors" value="Blue"> Blue</label>
+
+<label><input type="checkbox" name="prod_colors" value="Green"> Green</label>
+
+<label><input type="checkbox" name="prod_colors" value="Orange"> Orange</label>
+
+<label><input type="checkbox" name="prod_colors" value="Yellow"> Yellow</label>
+
+<label><input type="checkbox" name="prod_colors" value="Gold"> Gold</label>
+
+</div>
+
+</div>
+
+    <textarea id="prod-desc" placeholder="Description" required></textarea>
+
+    <button type="submit">Publish Product</button>
+
+</form>
+
+</section>
+
+<section style="margin-top:50px;">
+
+<h3>Live Products</h3>
+
+<p class="scroll-hint">👉 Swipe table sideways on mobile</p>
+
+<div class="table-scroll">
+
+<table>
+<thead>
+<tr>
+<th>Product</th>
+<th>Price</th>
+<th>Stock</th>
+<th>Actions</th>
+</tr>
+</thead>
+
+<tbody id="admin-inventory-table-body"></tbody>
+
+</table>
+
+</div>
+
+</section>
+
+<h2 style="margin-top:50px;">
+Customer Orders
+</h2>
+
+<table style="width:100%;">
+
+<thead>
+
+<tr>
+
+<th>Paid</th>
+
+<th>Customer</th>
+
+<th>Phone</th>
+
+<th>Product</th>
+
+<th>Qty</th>
+
+<th>Action</th>
+</tr>
+
+</thead>
+
+<tbody id="orders-body">
+
+</tbody>
+
+</table>
+
+</main>
+
+<script src="https://upload-widget.cloudinary.com/global/all.js"></script>
+<script type="module" src="/js/admin-panel.js"></script>
+
+</body>
+</html>

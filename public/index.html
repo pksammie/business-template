@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vanguard Storefront</title>
+    <link rel="stylesheet" href="/css/index.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+    <div class="top-bar">
+        <span>Call/WhatsApp: 07066035424</span>
+        <div>
+            <a href="/admin" id="adminLinkContainer" class="admin-link-badge" style="margin-right: 15px;"><i class="fa-solid fa-gear"></i></a>
+            <a href="/developer" class="dev-link-badge"><i class="fa-solid fa-code"></i> About Developer</a>
+        </div>
+    </div>
+
+    <header class="luxury-nav">
+        <div class="menu-toggle">
+    <i class="fa fa-bars"></i>
+</div>
+        <ul class="nav-left-menu">
+            <li><a href="/">Catalog</a></li>
+            <li><a href="/about">About Us</a></li>
+            <li><a href="/contact-us">Contact</a></li>
+        </ul>
+        <div class="main-signature-logo">
+            <a href="/" style="text-decoration: none; color: inherit;">JERKY<span>DELIGHT FOODS</span></a>
+        </div>
+        <div class="nav-right-actions">
+            <div class="account-auth-links">
+                <a href="/login" class="auth-btn">Log In</a>
+                <span class="auth-divider">/</span>
+                <a href="/register" class="auth-btn highlight">Sign Up</a>
+            </div>
+            <a href="/cart" class="custom-cart-anchor">
+                <span class="cart-label-word">Cart</span>
+                <div class="cart-icon-wrapper">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span id="cart-count">0</span>
+                </div>
+            </a>
+        </div>
+    </header>
+
+    <main class="store-mainframe">
+        <div class="collection-intro-title">
+            <h2>Current Collection</h2>
+            <div class="thin-accent-line"></div>
+        </div>
+        <div class="products-grid" id="products-grid"></div>
+    </main>
+
+    <!-- FIXED: Added an explicit version timestamp query parameter to bypass hidden terminal script bindings -->
+    <script type="module" src="/js/index.js?v=2"></script>
+    <script type="module" src="/js/auth-state.js"></script>
+
+    <script type="module" src="/js/route-guard.js"></script>
+    <script type="module" src="/js/guard.js"></script>
+</body>
+</html>

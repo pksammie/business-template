@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Bag - Vanguard</title>
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+    <header class="luxury-nav">
+        <div class="nav-left-menu"><a href="/">Catalog</a></div>
+        <div class="main-signature-logo"><a href="/" style="text-decoration:none; color:inherit;">VAN<span>GUARD</span></a></div>
+        <div class="nav-right-actions"></div>
+    </header>
+
+    <p class="scroll-hint">
+👉 Swipe left/right to view your order
+</p>
+
+    <main class="store-mainframe">
+        <h1 style="font-size: 26px; font-weight: 400; letter-spacing: 2px; margin-bottom: 30px; text-transform: uppercase;">Your Shopping Cart</h1>
+        
+        <!-- Tabular Grid System Matching Reference Image Layout -->
+        <div class="table-scroll">
+         <table style="width: 100%; border-collapse: collapse; margin-bottom: 40px; text-align: left;">
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.15); text-transform: uppercase; font-size: 12px; letter-spacing: 2px; color: var(--text-muted);">
+                    <th style="padding-bottom: 15px; font-weight: 500;">Product</th>
+                    <th style="padding-bottom: 15px; font-weight: 500;">Price</th>
+                    <th style="padding-bottom: 15px; font-weight: 500; text-align: center;">Quantity</th>
+                    <th style="padding-bottom: 15px; font-weight: 500; text-align: right;">Total</th>
+                </tr>
+            </thead>
+            <!-- Managed dynamically by cart.js -->
+            <tbody id="cart-items-container"></tbody>
+         </table>
+        </div>
+
+        <!-- Summary Subtotal Block Footer -->
+        <div style="display: flex; flex-direction: column; align-items: flex-end; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 30px;">
+            <div style="display: flex; gap: 40px; font-size: 18px; margin-bottom: 25px;">
+                <span style="color: var(--text-muted);">Sub-Total Amount:</span>
+                <span id="summary-subtotal" style="font-weight: 700; color: var(--primary-color);">₦0.00</span>
+            </div>
+            
+            <!-- Three Control Interaction Action Buttons Row -->
+            <div class="cart-control-button-grid">
+                <button onclick="actionContinueShopping()" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 12px 25px; font-weight: 600; cursor: pointer; border-radius: 4px; text-transform: uppercase; font-size: 13px; letter-spacing: 1px;">Continue Shopping</button>
+                <button onclick="actionUpdateCartRedirect()" style="background: transparent; border: 1px solid var(--primary-color); color: var(--primary-color); padding: 12px 25px; font-weight: 600; cursor: pointer; border-radius: 4px; text-transform: uppercase; font-size: 13px; letter-spacing: 1px;">Update Cart</button>
+                <button onclick="actionProceedCheckout()" style="background: var(--primary-color); border: none; color: #000; padding: 12px 35px; font-weight: bold; cursor: pointer; border-radius: 4px; text-transform: uppercase; font-size: 13px; letter-spacing: 1px;">Check Out</button>
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="/js/cart.js"></script>
+    <script type="module" src="/js/route-guard.js"></script>
+    <script type="module" src="/js/guard.js"></script>
+    
+</body>
+</html>
