@@ -280,6 +280,13 @@ input[type="checkbox"]{
     text-align: left;
 }
 
+#orders-body td:first-child,
+.table-scroll th:first-child{
+    width: 90px;
+    min-width: 90px;
+    text-align: center;
+}
+
 #admin-inventory-table-body td:first-child,
 .table-scroll th:first-child{
     min-width: 350px;
@@ -288,6 +295,36 @@ input[type="checkbox"]{
 #admin-inventory-table-body td{
     white-space: nowrap;
     padding: 15px;
+}
+
+.order-product-title{
+    max-width: 220px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.paid-cell{
+    text-align:center;
+}
+
+.paid-cell small{
+    display:block;
+    margin-top:4px;
+    font-size:11px;
+    color:var(--text-muted);
+}
+
+.orders-table{
+    min-width: 700px;
+}
+
+@media (max-width:768px){
+
+    .order-product-title{
+        max-width: 120px;
+    }
+
 }
 
 @media (max-width:768px){

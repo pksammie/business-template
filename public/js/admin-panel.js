@@ -226,26 +226,15 @@ async function loadOrders() {
 
       <td>
 
+<td class="paid-cell">
+
 <input
 type="checkbox"
-
 ${order.paid ? "checked" : ""}
-
-onchange="
-togglePaid(
-'${docSnap.id}',
-this.checked
-)
-">
-
-<br>
+onchange="togglePaid('${docSnap.id}', this.checked)">
 
 <small>
-
-${order.stockDeducted
-? "Stock Updated"
-: "Pending"}
-
+${order.stockDeducted ? "Done" : "Pending"}
 </small>
 
 </td>
@@ -259,8 +248,10 @@ ${order.stockDeducted
       </td>
 
       <td>
-      ${order.productTitle}
-      </td>
+    <div class="order-product-title">
+        ${order.productTitle}
+    </div>
+</td>
 
       <td>
 ${order.quantity}
