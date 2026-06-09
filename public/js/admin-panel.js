@@ -138,7 +138,7 @@ border-radius:6px;
 
 <div>
 
-<div>${p.title}</div>
+<div class="product-title-cell">${p.title}</div>
 
 <small>
 
