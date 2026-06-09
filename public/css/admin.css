@@ -319,6 +319,50 @@ input[type="checkbox"]{
     min-width: 700px;
 }
 
+/* CUSTOMER ORDERS */
+
+.orders-table{
+    width:100%;
+    min-width:700px;
+    border-collapse:collapse;
+}
+
+.orders-table th,
+.orders-table td{
+    padding:15px;
+    white-space:nowrap;
+    text-align:left;
+}
+
+.orders-table th{
+    color:var(--text-main);
+}
+
+/* Product column */
+.orders-table th:nth-child(4),
+.orders-table td:nth-child(4){
+    min-width:220px;
+}
+
+.order-product-title{
+    display:-webkit-box;
+    -webkit-box-orient:vertical;
+    -webkit-line-clamp:1;
+
+    overflow:hidden;
+    text-overflow:ellipsis;
+
+    max-width:220px;
+}
+
+@media(max-width:768px){
+
+    .orders-table{
+        min-width:650px;
+    }
+
+}
+
 @media (max-width:768px){
 
     .order-product-title{
