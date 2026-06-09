@@ -151,12 +151,9 @@ for (const item of cart) {
     cart.forEach((item, index) => {
         const itemCost = item.price * item.quantity;
         subtotalValueAmount += itemCost;
-        messageText += `${index + 1}. *${item.title}*\n`;
-        messageText += ` [Size: ${item.size}
-        Qty: ${item.quantity}
-        Colour: ${item.color}
-        Price: ₦${itemCost.toLocaleString()}]\n\n`;
-        messageText += `   _Image Link:_ ${item.image}\n\n`;
+        messageText +=`${index + 1}. *${item.title}*\n`;
+        messageText +=`[Size: ${item.size}  |  Qty: ${item.quantity}  |  Colour: ${item.color}  |  Price: ₦${itemCost.toLocaleString()}]\n\n`;
+        messageText += `  _Image Link:_ ${item.image}\n\n`;
     });
 
     messageText += `───────────────────\n`;

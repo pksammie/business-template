@@ -450,6 +450,10 @@ body[data-theme="luxury"] .main-signature-logo span {
   max-width: 900px;
 }
 
+#item-quantity {
+  color: white;
+}
+
 .admin-form{
     display:flex;
     flex-direction:column;
