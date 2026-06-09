@@ -224,8 +224,6 @@ async function loadOrders() {
 
       <tr>
 
-      <td>
-
 <td class="paid-cell">
 
 <input

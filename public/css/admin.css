@@ -323,7 +323,7 @@ input[type="checkbox"]{
 
 .orders-table{
     width:100%;
-    min-width:700px;
+    min-width: 560px;
     border-collapse:collapse;
 }
 
@@ -341,7 +341,8 @@ input[type="checkbox"]{
 /* Product column */
 .orders-table th:nth-child(4),
 .orders-table td:nth-child(4){
-    min-width:220px;
+    width:150px;
+    max-width:150px;
 }
 
 .order-product-title{
@@ -352,7 +353,14 @@ input[type="checkbox"]{
     overflow:hidden;
     text-overflow:ellipsis;
 
-    max-width:220px;
+    max-width: 150px;
+}
+
+.orders-table th:first-child,
+.orders-table td:first-child{
+    width:65px;
+    min-width:65px;
+    text-align:center;
 }
 
 @media(max-width:768px){
@@ -365,9 +373,18 @@ input[type="checkbox"]{
 
 @media (max-width:768px){
 
-    .order-product-title{
-        max-width: 120px;
-    }
+    .orders-table{
+    min-width:520px;
+}
+
+.order-product-title{
+    max-width:100px;
+}
+
+.orders-table th,
+.orders-table td{
+    padding:12px 10px;
+}
 
 }
 
