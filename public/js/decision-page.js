@@ -89,6 +89,11 @@ Array.isArray(product.colors)
 
 window.submitToCartBag = function () {
 
+  if (!product) {
+  alert("Please wait, product is still loading.");
+  return;
+}
+
   const sizes = Array.isArray(product.sizes)
     ? product.sizes
     : [];
@@ -111,33 +116,23 @@ window.submitToCartBag = function () {
 )
 ].map(el=>el.value);
 
-  /* REQUIRE SIZE */
-  if (
-    !sizes.includes("None") &&
-    !selectedSize
-  ) {
-    alert("Please select a size.");
-    return;
-  }
+/* REQUIRE SIZE */
+if (
+  !sizes.includes("None") &&
+  selectedSizes.length === 0
+) {
+  alert("Please select at least one size.");
+  return;
+}
 
-  /* REQUIRE COLOR */
-  if (
-    !colors.includes("None") &&
-    !selectedColor
-  ) {
-    alert("Please select a color.");
-    return;
-  }
-
-  const size =
-    selectedSize
-      ? selectedSize.value
-      : "None";
-
-  const color =
-    selectedColor
-      ? selectedColor.value
-      : "None";
+/* REQUIRE COLOR */
+if (
+  !colors.includes("None") &&
+  selectedColors.length === 0
+) {
+  alert("Please select at least one color.");
+  return;
+}
 
   const qty = Number(
     document.getElementById("item-quantity").value
