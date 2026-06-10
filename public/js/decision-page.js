@@ -182,3 +182,5 @@ window.submitToCartBag = function () {
 
   location.href = "/cart";
 };
+
+load();

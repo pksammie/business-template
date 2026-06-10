@@ -401,7 +401,7 @@ body[data-theme="luxury"] .main-signature-logo span {
     height:350px;
     object-fit:contain;
     object-position:center;
-    background:#111;
+    background:#3f3f3f;
 }
 
 .product-info {
@@ -455,6 +455,7 @@ body[data-theme="luxury"] .main-signature-logo span {
 #item-quantity {
   background-color: #000;
   color: #fff;
+  border-radius: 10px;
 }
 
 .admin-form{
