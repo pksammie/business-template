@@ -1,6 +1,13 @@
+let allProducts = [];
 // At the absolute top of public/js/index.js (Line 1 or 2)
 import { db } from "./firebase.js";
-import { collection, getDocs } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+import {
+    collection,
+    getDocs,
+    query,
+    orderBy
+}
+from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 import { auth } from "./firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
@@ -51,10 +58,20 @@ async function loadStorefrontGrid() {
     productsGrid.innerHTML = `<p style="color: var(--primary-color); text-align:center;">Loading luxury catalog...</p>`;
 
     try {
-        const querySnapshot = await getDocs(collection(db, "products"));
+        const q = query(
+    collection(db, "products"),
+    orderBy("createdAt", "desc")
+);
+
+const snap = await getDocs(q);
         productsGrid.innerHTML = ""; 
 
-        querySnapshot.forEach((docSnap) => {
+        snap.forEach((docSnap) => {
+            allProducts.push({
+    id: productId,
+    ...product
+});
+
             const product = docSnap.data();
             const productId = docSnap.id;
 
@@ -116,3 +133,37 @@ async function initStorefront() {
 
 // run immediately (module scripts already wait for DOM)
 initStorefront();
+
+const searchInput =
+document.getElementById("search-input");
+
+if(searchInput){
+
+    searchInput.addEventListener(
+        "input",
+        e => {
+
+            const term =
+            e.target.value.toLowerCase();
+
+            const cards =
+            document.querySelectorAll(".product-card");
+
+            cards.forEach(card => {
+
+                const title =
+                card.querySelector(
+                    ".product-title"
+                ).textContent.toLowerCase();
+
+                card.style.display =
+                    title.includes(term)
+                    ? ""
+                    : "none";
+
+            });
+
+        }
+    );
+
+}

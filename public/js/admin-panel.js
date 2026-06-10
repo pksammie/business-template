@@ -160,7 +160,7 @@ ${(p.colors || []).join(", ")}
 
 <td>
 
-${p.quantity || 0}
+${(p.quantity || 0) - (p.sold || 0)}
 
 </td>
 
@@ -228,7 +228,14 @@ async function loadOrders() {
 
 <button
 onclick="toggleApproval('${docSnap.id}')"
-class="approve-btn">
+style="
+background:${order.paid ? '#ff4d4d' : '#28a745'};
+color:white;
+border:none;
+padding:8px 12px;
+cursor:pointer;
+border-radius:4px;
+">
 
 ${order.paid ? "Unapprove" : "Approve"}
 

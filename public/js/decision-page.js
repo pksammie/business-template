@@ -52,7 +52,7 @@ Array.isArray(product.sizes)
     sizes.forEach(size => {
       sizeWrapper.innerHTML += `
         <label class="size-radio-chip">
-          <input type="radio" name="size" value="${size}">
+          <input type="checkbox" name="size" value="${size}">
           <span>${size}</span>
         </label>
       `;
@@ -76,7 +76,7 @@ Array.isArray(product.colors)
       colors.forEach(color => {
         colorWrapper.innerHTML += `
           <label class="size-radio-chip">
-            <input type="radio" name="color" value="${color}">
+            <input type="checkbox" name="color" value="${color}">
             <span>${color}</span>
           </label>
         `;
@@ -97,11 +97,19 @@ window.submitToCartBag = function () {
     ? product.colors
     : [];
 
-  const selectedSize =
-    document.querySelector('input[name="size"]:checked');
+  const selectedSizes =
+[
+...document.querySelectorAll(
+'input[name="size"]:checked'
+)
+].map(el=>el.value);
 
-  const selectedColor =
-    document.querySelector('input[name="color"]:checked');
+  const selectedColors =
+[
+...document.querySelectorAll(
+'input[name="color"]:checked'
+)
+].map(el=>el.value);
 
   /* REQUIRE SIZE */
   if (
@@ -168,8 +176,15 @@ window.submitToCartBag = function () {
     title: product.title,
     price: product.price,
     image: product.image,
-    size: size,
-    color: color,
+    size:
+selectedSizes.length
+? selectedSizes
+: ["None"],
+
+color:
+selectedColors.length
+? selectedColors
+: ["None"],
     quantity: qty
   });
 
