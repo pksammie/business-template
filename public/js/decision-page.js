@@ -68,7 +68,7 @@ Array.isArray(product.colors)
 ? product.colors
 : [];
 
-    if (colors.includes("NONE")) {
+    if (colors.includes("None")) {
       colorWrapper.style.display = "none";
     } else {
       colorWrapper.style.display = "flex";
@@ -88,57 +88,97 @@ Array.isArray(product.colors)
 /* ---------------- CART ---------------- */
 
 window.submitToCartBag = function () {
-  const size = document.querySelector('input[name="size"]:checked')?.value;
-  const color = document.querySelector('input[name="color"]:checked')?.value;
 
-  const qty = Number(document.getElementById("item-quantity").value);
+  const sizes = Array.isArray(product.sizes)
+    ? product.sizes
+    : [];
+
+  const colors = Array.isArray(product.colors)
+    ? product.colors
+    : [];
+
+  const selectedSize =
+    document.querySelector('input[name="size"]:checked');
+
+  const selectedColor =
+    document.querySelector('input[name="color"]:checked');
+
+  /* REQUIRE SIZE */
+  if (
+    !sizes.includes("None") &&
+    !selectedSize
+  ) {
+    alert("Please select a size.");
+    return;
+  }
+
+  /* REQUIRE COLOR */
+  if (
+    !colors.includes("None") &&
+    !selectedColor
+  ) {
+    alert("Please select a color.");
+    return;
+  }
+
+  const size =
+    selectedSize
+      ? selectedSize.value
+      : "None";
+
+  const color =
+    selectedColor
+      ? selectedColor.value
+      : "None";
+
+  const qty = Number(
+    document.getElementById("item-quantity").value
+  );
 
   const remaining =
+    (product.quantity || 0) -
+    (product.sold || 0);
 
-(product.quantity || 0)
+  if (remaining <= 0) {
 
--
+    alert("This product is sold out.");
+    return;
 
-(product.sold || 0);
+  }
 
-if (remaining <= 0) {
+  if (qty > remaining) {
 
-  alert(
-    "This product is sold out."
-  );
+    alert(
+      "Only " +
+      remaining +
+      " left in stock"
+    );
 
-  return;
+    return;
 
-}
+  }
 
-if (qty > remaining) {
-
-  alert(
-    "Only "
-    + remaining +
-    " left in stock"
-  );
-
-  return;
-
-}
-
-  let cart = JSON.parse(localStorage.getItem("vanguard_cart")) || [];
+  let cart =
+    JSON.parse(
+      localStorage.getItem("vanguard_cart")
+    ) || [];
 
   cart.push({
     id: id,
     title: product.title,
     price: product.price,
     image: product.image,
-    size: size || "None",
-    color: color || "None",
+    size: size,
+    color: color,
     quantity: qty
   });
 
-  localStorage.setItem("vanguard_cart", JSON.stringify(cart));
+  localStorage.setItem(
+    "vanguard_cart",
+    JSON.stringify(cart)
+  );
 
   alert("Added to cart");
+
   location.href = "/cart";
 };
-
-load();
