@@ -395,6 +395,11 @@ adminForm.addEventListener("submit", async (e) => {
   const finalColors = colors.includes("None") ? ["None"] : colors;
   const finalSizes = sizes.includes("None") ? ["None"] : sizes;
 
+  if (!uploadedImageUrl) {
+    alert("Please upload a product image.");
+    return;
+}
+
   await addDoc(collection(db, "products"), {
     title,
     price,
@@ -409,10 +414,18 @@ adminForm.addEventListener("submit", async (e) => {
 
   alert("Product added!");
 
-  adminForm.reset();
-  uploadedImageUrl = "";
+adminForm.reset();
 
-  loadInventory();
+uploadedImageUrl = "";
+
+/* Reset upload box */
+uploadBox.innerHTML = `
+    <i class="fa-solid fa-cloud-arrow-up"></i>
+    <p>Upload Product Image</p>
+`;
+
+loadInventory();
+
 });
 
 /* ---------------- DELETE ---------------- */
