@@ -226,10 +226,13 @@ async function loadOrders() {
 
 <td class="paid-cell">
 
-<input
-type="checkbox"
-${order.paid ? "checked" : ""}
-onchange="togglePaid('${docSnap.id}', this.checked)">
+<button
+onclick="toggleApproval('${docSnap.id}')"
+class="approve-btn">
+
+${order.paid ? "Unapprove" : "Approve"}
+
+</button>
 
 <small>
 ${order.stockDeducted ? "Done" : "Pending"}
@@ -283,99 +286,61 @@ Delete
   });
 }
 
-window.togglePaid =
-async function(
-id,
-status
-){
+window.toggleApproval = async function(id) {
 
-  const reservationRef =
-  doc(
-    db,
-    "cart_reservations",
-    id
-  );
+    const reservationRef = doc(db, "cart_reservations", id);
 
-  const reservationSnap =
-  await getDoc(
-    reservationRef
-  );
+    const reservationSnap = await getDoc(reservationRef);
 
-  if(
-    !reservationSnap.exists()
-  ){
-    return;
-  }
+    if (!reservationSnap.exists()) return;
 
-  const reservation =
-  reservationSnap.data();
+    const reservation = reservationSnap.data();
 
-  await updateDoc(
-    reservationRef,
-    {
-      paid: status
-    }
-  );
+    const productRef = doc(db, "products", reservation.productId);
 
-  if(
-    status === true &&
-    reservation.stockDeducted !== true
-  ){
+    const productSnap = await getDoc(productRef);
 
-    const productRef =
-    doc(
-      db,
-      "products",
-      reservation.productId
-    );
+    if (!productSnap.exists()) return;
 
-    const productSnap =
-    await getDoc(
-      productRef
-    );
+    const product = productSnap.data();
 
-    if(
-      productSnap.exists()
-    ){
+    if (!reservation.paid) {
 
-      const product =
-      productSnap.data();
+        const remaining =
+            (product.quantity || 0) -
+            (product.sold || 0);
 
-      const currentSold =
-      product.sold || 0;
+        if (remaining < reservation.quantity) {
 
-      const currentQuantity =
-      product.quantity || 0;
+            alert("Not enough stock left.");
 
-      const newSold =
-      currentSold +
-      reservation.quantity;
-
-      const soldOut =
-      newSold >= currentQuantity;
-
-      await updateDoc(
-        productRef,
-        {
-          sold:
-          increment(
-            reservation.quantity
-          ),
-
-          isSuspended:
-          soldOut
+            return;
         }
-      );
 
-      await updateDoc(
-        reservationRef,
-        {
-          stockDeducted: true
-        }
-      );
+        await updateDoc(productRef, {
+            sold: increment(reservation.quantity)
+        });
+
+        await updateDoc(reservationRef, {
+            paid: true,
+            stockDeducted: true
+        });
+
+    } else {
+
+        await updateDoc(productRef, {
+            sold: increment(-reservation.quantity)
+        });
+
+        await updateDoc(reservationRef, {
+            paid: false,
+            stockDeducted: false
+        });
+
     }
-  }
 
+    loadOrders();
+    loadInventory();
 };
 
 window.deleteOrder =
