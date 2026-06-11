@@ -59,6 +59,7 @@ body {
     cursor:pointer;
 }
 
+/* PHONE LAYOUT */
 @media (max-width: 900px) {
     .cart-wrapper {
         grid-template-columns: 1fr;
