@@ -38,30 +38,39 @@ body {
     gap: 40px;
 }
 
-.product-col{
+.cart-table-row{
     position: relative;
 }
 
-.cart-update-overlay{
-    position:absolute;
-    inset:0;
-    background:rgba(100, 111, 155, 0.6);
-    backdrop-filter:blur(4px);
-    display:flex;
-    justify-content:flex-end;
-    align-items:center;
-    padding-right:20px;
-    border-radius:8px;
+.cart-edit-mode{
+    background: rgba(255,255,255,0.05);
+}
+
+.cart-edit-mode td{
+    position: relative;
+}
+
+.cart-edit-mode td:not(.selector-col){
+    opacity: 0.35;
+    pointer-events: none;
+}
+
+.selector-col{
+    width: 90px;
+    text-align: center;
 }
 
 .cart-update-selector{
-    width:32px;
-    height:32px;
+    width: 28px;
+    height: 28px;
+    accent-color: var(--primary-color);
+    cursor: pointer;
+}
+
+.cart-update-selector{
     border:2px solid var(--primary-color);
     border-radius:50%;
-    background:var(--primary-color);
 box-shadow:0 0 12px rgba(197,168,128,0.5);
-    cursor:pointer;
 }
 
 @media (max-width: 900px) {

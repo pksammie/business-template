@@ -22,28 +22,12 @@ let selectedIndex = null;
             calculatedGrossTotal += itemLineTotal;
 
             const tableRowHtml = document.createElement('tr');
-            tableRowHtml.className = 'cart-table-row';
+            tableRowHtml.className = `
+cart-table-row
+${editMode ? "cart-edit-mode" : ""}
+`;
             tableRowHtml.innerHTML = `
                 <td class="product-col">
-
-    ${
-        editMode
-        ? `
-        <div class="cart-update-overlay">
-            <input
-                type="radio"
-                class="cart-update-selector"
-                name="edit-selection"
-                onchange="selectCartItem(${index})"
-                ${
-                    selectedIndex === index
-                    ? "checked"
-                    : ""
-                }>
-        </div>
-        `
-        : ""
-    }
 
     <img src="${item.image}"
          alt="Product preview image frame"
@@ -79,7 +63,30 @@ let selectedIndex = null;
         )"
         class="table-qty-input">
 </td>
-                <td class="total-col">₦${itemLineTotal.toLocaleString()}</td>
+                <td class="total-col">
+    ₦${itemLineTotal.toLocaleString()}
+</td>
+
+${
+editMode
+?
+`
+<td class="selector-col">
+    <input
+        type="radio"
+        class="cart-update-selector"
+        name="edit-selection"
+        onchange="selectCartItem(${index})"
+        ${
+            selectedIndex === index
+            ? "checked"
+            : ""
+        }>
+</td>
+`
+:
+""
+}
             `;
             cartItemsContainer.appendChild(tableRowHtml);
         });
