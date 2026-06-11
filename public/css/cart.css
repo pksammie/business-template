@@ -38,6 +38,10 @@ body {
     gap: 40px;
 }
 
+.product-col{
+    position: relative;
+}
+
 .cart-update-overlay{
     position:absolute;
     inset:0;

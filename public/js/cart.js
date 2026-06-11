@@ -25,61 +25,59 @@ let selectedIndex = null;
             tableRowHtml.className = 'cart-table-row';
             tableRowHtml.innerHTML = `
                 <td class="product-col">
-                    <img src="${item.image}" alt="Product preview image frame" class="table-cart-img">
-                    <div class="table-product-details">
-                        <span class="table-item-title">${item.title}</span>
-                        <span class="table-item-variant-label">Size: ${item.size}</span>
-                        <span class="table-item-variant-label">Color: ${item.color}</span>
-                        <button class="table-remove-item-btn" onclick="removeLineItem(${index})">Remove</button>
-                    </div>
-                </td>
-                <td class="price-col">₦${item.price.toLocaleString()}</td>
-                <td class="quantity-col">
 
     ${
-      editMode
-      ? `
-      <label
-      style="
-      display:flex;
-      align-items:center;
-      gap:8px;
-      justify-content:center;
-      ">
-
-      <input
-      type="radio"
-      name="edit-selection"
-      onchange="
-      selectCartItem(
-      ${index}
-      )
-      "
-      ${
-        selectedIndex === index
-        ? "checked"
+        editMode
+        ? `
+        <div class="cart-update-overlay">
+            <input
+                type="radio"
+                class="cart-update-selector"
+                name="edit-selection"
+                onchange="selectCartItem(${index})"
+                ${
+                    selectedIndex === index
+                    ? "checked"
+                    : ""
+                }>
+        </div>
+        `
         : ""
-      }>
-
-      Select
-
-      </label>
-      `
-      :
-      `
-      <input
-      type="number"
-      min="1"
-      value="${item.quantity}"
-      onchange="
-      modifyLineQuantity(
-      ${index},
-      this.value
-      )"
-      class="table-qty-input">
-      `
     }
 
+    <img src="${item.image}"
+         alt="Product preview image frame"
+         class="table-cart-img">
+
+    <div class="table-product-details">
+        <span class="table-item-title">${item.title}</span>
+        <span class="table-item-variant-label">
+            Size: ${item.size}
+        </span>
+        <span class="table-item-variant-label">
+            Color: ${item.color}
+        </span>
+
+        <button
+            class="table-remove-item-btn"
+            onclick="removeLineItem(${index})">
+            Remove
+        </button>
+    </div>
+
+</td>
+                <td class="price-col">₦${item.price.toLocaleString()}</td>
+                <td class="quantity-col">
+    <input
+        type="number"
+        min="1"
+        value="${item.quantity}"
+        onchange="
+        modifyLineQuantity(
+            ${index},
+            this.value
+        )"
+        class="table-qty-input">
 </td>
                 <td class="total-col">₦${itemLineTotal.toLocaleString()}</td>
             `;
