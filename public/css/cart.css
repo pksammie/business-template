@@ -45,7 +45,7 @@ body {
 .cart-update-overlay{
     position:absolute;
     inset:0;
-    background:rgba(11,12,16,0.6);
+    background:rgba(99, 83, 41, 0.6);
     backdrop-filter:blur(4px);
     display:flex;
     justify-content:flex-end;
