@@ -64,12 +64,29 @@ body {
 }
 
 .cart-update-selector{
-    width: 22px;
-    height: 22px;
-    accent-color: var(--primary-color);
+    appearance: none;
+    -webkit-appearance: none;
+
+    width: 24px;
+    height: 24px;
+
+    border: 2px solid var(--primary-color);
+    border-radius: 50%;
+
+    background: transparent;
+
     cursor: pointer;
-    border-radius:50%;
-box-shadow:0 0 12px rgba(197,168,128,0.5);
+
+    transition: 0.25s ease;
+}
+
+.cart-update-selector:checked{
+    background: var(--primary-color);
+    box-shadow: 0 0 12px rgba(197,168,128,0.5);
+}
+
+.cart-update-selector:hover{
+    transform: scale(1.08);
 }
 
 table{
