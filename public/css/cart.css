@@ -54,12 +54,13 @@ body {
     opacity: 0.45;
     pointer-events: none;
     transition: 0.25s ease;
+    background: rgba(255,255,255,0.06);
 }
 
 .selector-col{
     width: 80px;
     text-align: center;
-    background: rgba(255,255,255,0.06);
+    background: transparent;
 }
 
 .cart-update-selector{
@@ -67,9 +68,6 @@ body {
     height: 22px;
     accent-color: var(--primary-color);
     cursor: pointer;
-}
-
-.cart-update-selector{
     border-radius:50%;
 box-shadow:0 0 12px rgba(197,168,128,0.5);
 }
@@ -81,10 +79,6 @@ table{
 
 .cart-table-row td{
     background: transparent;
-}
-
-.cart-edit-mode td{
-    background: rgba(255,255,255,0.06);
 }
 
 .cart-edit-mode td:first-child{
