@@ -208,3 +208,15 @@ table{
 .checkout-btn:hover {
     background: #ebd0a7;
 }
+
+.selector-col{
+    background: transparent !important;
+}
+
+.cart-edit-mode .selector-col{
+    background: transparent !important;
+}
+
+.selector-col input{
+    background: transparent !important;
+}
