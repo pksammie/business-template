@@ -146,7 +146,7 @@ function(index){
     renderTabularCart();
 
 };
-// hi
+
     // Route handlers for your three control actions buttons
     window.actionContinueShopping = function() { window.location.href = "/"; };
     // Look at your action button methods inside public/js/cart.js
