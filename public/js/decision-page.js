@@ -52,7 +52,7 @@ Array.isArray(product.sizes)
     sizes.forEach(size => {
       sizeWrapper.innerHTML += `
         <label class="size-radio-chip">
-          <input type="checkbox" name="size" value="${size}">
+          <input type="radio" name="size" value="${size}">
           <span>${size}</span>
         </label>
       `;
@@ -76,7 +76,7 @@ Array.isArray(product.colors)
       colors.forEach(color => {
         colorWrapper.innerHTML += `
           <label class="size-radio-chip">
-            <input type="checkbox" name="color" value="${color}">
+            <input type="radio" name="color" value="${color}">
             <span>${color}</span>
           </label>
         `;
@@ -90,9 +90,9 @@ Array.isArray(product.colors)
 window.submitToCartBag = function () {
 
   if (!product) {
-  alert("Please wait, product is still loading.");
-  return;
-}
+    alert("Please wait, product is still loading.");
+    return;
+  }
 
   const sizes = Array.isArray(product.sizes)
     ? product.sizes
@@ -102,37 +102,33 @@ window.submitToCartBag = function () {
     ? product.colors
     : [];
 
-  const selectedSizes =
-[
-...document.querySelectorAll(
-'input[name="size"]:checked'
-)
-].map(el=>el.value);
+  const selectedSize =
+    document.querySelector(
+      'input[name="size"]:checked'
+    );
 
-  const selectedColors =
-[
-...document.querySelectorAll(
-'input[name="color"]:checked'
-)
-].map(el=>el.value);
+  const selectedColor =
+    document.querySelector(
+      'input[name="color"]:checked'
+    );
 
-/* REQUIRE SIZE */
-if (
-  !sizes.includes("None") &&
-  selectedSizes.length === 0
-) {
-  alert("Please select at least one size.");
-  return;
-}
+  /* REQUIRE SIZE */
+  if (
+    !sizes.includes("None") &&
+    !selectedSize
+  ) {
+    alert("Please select a size.");
+    return;
+  }
 
-/* REQUIRE COLOR */
-if (
-  !colors.includes("None") &&
-  selectedColors.length === 0
-) {
-  alert("Please select at least one color.");
-  return;
-}
+  /* REQUIRE COLOR */
+  if (
+    !colors.includes("None") &&
+    !selectedColor
+  ) {
+    alert("Please select a color.");
+    return;
+  }
 
   const qty = Number(
     document.getElementById("item-quantity").value
@@ -143,22 +139,17 @@ if (
     (product.sold || 0);
 
   if (remaining <= 0) {
-
     alert("This product is sold out.");
     return;
-
   }
 
   if (qty > remaining) {
-
     alert(
       "Only " +
       remaining +
       " left in stock"
     );
-
     return;
-
   }
 
   let cart =
@@ -171,15 +162,15 @@ if (
     title: product.title,
     price: product.price,
     image: product.image,
-    size:
-selectedSizes.length
-? selectedSizes
-: ["None"],
 
-color:
-selectedColors.length
-? selectedColors
-: ["None"],
+    size: selectedSize
+      ? selectedSize.value
+      : "None",
+
+    color: selectedColor
+      ? selectedColor.value
+      : "None",
+
     quantity: qty
   });
 

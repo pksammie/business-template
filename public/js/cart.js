@@ -1,6 +1,9 @@
     const cartItemsContainer = document.getElementById('cart-items-container');
     const subtotalLabel = document.getElementById('summary-subtotal');
 
+    let editMode = false;
+let selectedIndex = null;
+
     function renderTabularCart() {
         const cart = JSON.parse(localStorage.getItem('vanguard_cart')) || [];
         if (!cartItemsContainer) return;
@@ -32,8 +35,52 @@
                 </td>
                 <td class="price-col">₦${item.price.toLocaleString()}</td>
                 <td class="quantity-col">
-                    <input type="number" min="1" value="${item.quantity}" onchange="modifyLineQuantity(${index}, this.value)" class="table-qty-input">
-                </td>
+
+    ${
+      editMode
+      ? `
+      <label
+      style="
+      display:flex;
+      align-items:center;
+      gap:8px;
+      justify-content:center;
+      ">
+
+      <input
+      type="radio"
+      name="edit-selection"
+      onchange="
+      selectCartItem(
+      ${index}
+      )
+      "
+      ${
+        selectedIndex === index
+        ? "checked"
+        : ""
+      }>
+
+      Select
+
+      </label>
+      `
+      :
+      `
+      <input
+      type="number"
+      min="1"
+      value="${item.quantity}"
+      onchange="
+      modifyLineQuantity(
+      ${index},
+      this.value
+      )"
+      class="table-qty-input">
+      `
+    }
+
+</td>
                 <td class="total-col">₦${itemLineTotal.toLocaleString()}</td>
             `;
             cartItemsContainer.appendChild(tableRowHtml);
@@ -91,18 +138,57 @@ newQty
         renderTabularCart();
     };
 
+    window.selectCartItem =
+function(index){
+
+    selectedIndex = index;
+
+    renderTabularCart();
+
+};
+
     // Route handlers for your three control actions buttons
     window.actionContinueShopping = function() { window.location.href = "/"; };
     // Look at your action button methods inside public/js/cart.js
-    window.actionUpdateCartRedirect = function() {
-        const cart = JSON.parse(localStorage.getItem('vanguard_cart')) || [];
-        if (cart.length > 0) {
-            // Update this line below from /decision.html to /decision-page.html
-            window.location.href = `/decision-page.html?id=${cart[cart.length - 1].id}`;
-        } else {
-            window.location.href = "/";
-        }
-    };
+    
+        window.actionUpdateCartRedirect =
+function() {
+
+    const cart =
+    JSON.parse(
+      localStorage.getItem(
+      'vanguard_cart'
+      )
+    ) || [];
+
+    if(cart.length === 0){
+        return;
+    }
+
+    if(!editMode){
+
+        editMode = true;
+
+        renderTabularCart();
+
+        return;
+    }
+
+    if(selectedIndex === null){
+
+        alert(
+        "Please select a product."
+        );
+
+        return;
+    }
+
+    window.location.href =
+    `/decision-page.html?id=${
+        cart[selectedIndex].id
+    }`;
+
+};
 
     window.actionProceedCheckout = function() { window.location.href = "/checkout"; };
 
