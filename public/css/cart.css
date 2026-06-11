@@ -41,7 +41,7 @@ body {
 .cart-update-overlay{
     position:absolute;
     inset:0;
-    background:rgba(0,0,0,0.45);
+    background:rgba(11,12,16,0.6);
     backdrop-filter:blur(4px);
     display:flex;
     justify-content:flex-end;
@@ -55,11 +55,11 @@ body {
     height:32px;
     border:2px solid var(--primary-color);
     border-radius:50%;
-    background:rgba(255,255,255,0.1);
+    background:var(--primary-color);
+box-shadow:0 0 12px rgba(197,168,128,0.5);
     cursor:pointer;
 }
 
-/* PHONE LAYOUT */
 @media (max-width: 900px) {
     .cart-wrapper {
         grid-template-columns: 1fr;
