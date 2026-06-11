@@ -2,6 +2,8 @@ import { db } from "./firebase.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 const id = new URLSearchParams(location.search).get("id");
+const editIndex =
+new URLSearchParams(location.search).get("editIndex");
 
 let product;
 
@@ -157,22 +159,25 @@ window.submitToCartBag = function () {
       localStorage.getItem("vanguard_cart")
     ) || [];
 
-  cart.push({
+  const updatedItem = {
     id: id,
     title: product.title,
     price: product.price,
     image: product.image,
-
     size: selectedSize
-      ? selectedSize.value
-      : "None",
-
+        ? selectedSize.value
+        : "None",
     color: selectedColor
-      ? selectedColor.value
-      : "None",
-
+        ? selectedColor.value
+        : "None",
     quantity: qty
-  });
+};
+
+if (editIndex !== null) {
+    cart[editIndex] = updatedItem;
+} else {
+    cart.push(updatedItem);
+}
 
   localStorage.setItem(
     "vanguard_cart",

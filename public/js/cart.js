@@ -189,9 +189,7 @@ function() {
     }
 
     window.location.href =
-    `/decision-page.html?id=${
-        cart[selectedIndex].id
-    }`;
+`/decision-page.html?id=${cart[selectedIndex].id}&editIndex=${selectedIndex}`;
 
 };
 
