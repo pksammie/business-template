@@ -81,7 +81,8 @@ body {
 }
 
 .cart-update-selector:checked{
-    background: var(--primary-color);
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color);
     box-shadow: 0 0 12px rgba(197,168,128,0.5);
 }
 
