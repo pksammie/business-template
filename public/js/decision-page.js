@@ -16,7 +16,8 @@ new URLSearchParams(location.search);
 const id =
 params.get("id");
 
-
+const cartDocId =
+params.get("cartDocId");
 
 let product;
 

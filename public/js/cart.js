@@ -296,7 +296,7 @@ document.getElementById(
     }
 
     window.location.href =
-`/decision-page.html?id=${firestoreCart[selectedIndex].id}&editIndex=${selectedIndex}`;
+`/decision-page.html?id=${firestoreCart[selectedIndex].productId}&cartDocId=${firestoreCart[selectedIndex].firestoreId}`;
 
 };
 
