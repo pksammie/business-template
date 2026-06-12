@@ -7,12 +7,7 @@ function updateCartCount(){
         )
     ) || [];
 
-    const total =
-    cart.reduce(
-        (sum,item)=>
-        sum+item.quantity,
-        0
-    );
+    const total = cart.length;
 
     const badge =
     document.getElementById(

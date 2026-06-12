@@ -32,11 +32,25 @@ async function load() {
 
 (product.sold || 0);
 
-document.getElementById(
-"stock-left"
-).innerHTML =
+const stockText =
+document.getElementById("stock-left");
 
+stockText.textContent =
 `${remaining} available`;
+
+if (remaining <= 0) {
+
+    stockText.style.color = "#ff4d4d";
+
+} else if (remaining < 4) {
+
+    stockText.style.color = "orange";
+
+} else {
+
+    stockText.style.color = "lime";
+
+}
 
 const soldBadge =
 document.getElementById(
@@ -173,13 +187,8 @@ window.submitToCartBag = function () {
 
   if (remaining <= 0) {
 
-    document.getElementById(
-        "add-to-cart-btn"
-    ).disabled = true;
-
-    document.getElementById(
-        "add-to-cart-btn"
-    ).textContent = "Sold Out";
+    addBtn.disabled = true;
+addBtn.textContent = "Sold Out";
 
     return;
 }
