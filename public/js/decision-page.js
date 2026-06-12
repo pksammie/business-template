@@ -38,6 +38,32 @@ document.getElementById(
 
 `${remaining} available`;
 
+const soldBadge =
+document.getElementById(
+"sold-out-badge"
+);
+
+const addBtn =
+document.querySelector(
+".add-to-cart-btn"
+);
+
+if(remaining <= 0){
+
+    soldBadge.style.display =
+    "inline-block";
+
+    addBtn.disabled = true;
+
+    addBtn.textContent =
+    "Sold Out";
+
+}else{
+
+    soldBadge.style.display =
+    "none";
+}
+
   document.getElementById("decision-title").textContent = product.title;
   document.getElementById("decision-price").textContent = "₦" + product.price;
   document.getElementById("decision-product-img").src = product.image || "https://via.placeholder.com/600x600?text=No+Image";
@@ -146,9 +172,17 @@ window.submitToCartBag = function () {
     (product.sold || 0);
 
   if (remaining <= 0) {
-    alert("This product is sold out.");
+
+    document.getElementById(
+        "add-to-cart-btn"
+    ).disabled = true;
+
+    document.getElementById(
+        "add-to-cart-btn"
+    ).textContent = "Sold Out";
+
     return;
-  }
+}
 
   if (qty > remaining) {
     alert(
@@ -181,7 +215,29 @@ window.submitToCartBag = function () {
 if (editIndex !== null) {
     cart[editIndex] = updatedItem;
 } else {
+    const existingIndex =
+cart.findIndex(item=>
+
+    item.id===updatedItem.id &&
+
+    item.size===
+    updatedItem.size &&
+
+    item.color===
+    updatedItem.color
+
+);
+
+if(existingIndex>-1){
+
+    cart[existingIndex].quantity +=
+    updatedItem.quantity;
+
+}else{
+
     cart.push(updatedItem);
+
+}
 }
 
   localStorage.setItem(
@@ -189,9 +245,21 @@ if (editIndex !== null) {
     JSON.stringify(cart)
 );
 
-  alert("Added to cart");
+  const toast = document.createElement("div");
 
-  location.href = "/cart";
+toast.className = "toast";
+
+toast.textContent = "✓ Added to cart";
+
+document.body.appendChild(toast);
+
+setTimeout(()=>{
+    toast.remove();
+},2500);
+
+setTimeout(()=>{
+    location.href="/cart";
+},1000);
 };
 
 load();

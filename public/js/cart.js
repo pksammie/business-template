@@ -197,6 +197,17 @@ document.getElementById(
 
 };
 
+window.clearCart = function(){
+
+    if(!confirm("Clear all items from cart?")){
+        return;
+    }
+
+    localStorage.removeItem("vanguard_cart");
+
+    renderTabularCart();
+};
+
     window.actionProceedCheckout = function() { window.location.href = "/checkout"; };
 
     document.addEventListener('DOMContentLoaded', renderTabularCart);

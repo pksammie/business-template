@@ -16,6 +16,11 @@ document
 .getElementById("loginForm")
 .addEventListener("submit", async (e) => {
 
+    const loginBtn = e.target.querySelector("button");
+
+loginBtn.disabled = true;
+loginBtn.textContent = "Logging in...";
+
     e.preventDefault();
 
     try {
@@ -43,6 +48,9 @@ if(
         location.href = "/";
 
     } catch (err) {
+
+        loginBtn.disabled = false;
+loginBtn.textContent = "Login";
 
         failedAttempts++;
 

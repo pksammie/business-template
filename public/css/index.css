@@ -749,6 +749,55 @@ nav,
     border-color:var(--primary-color);
 }
 
+.toast{
+    position:fixed;
+    top:30px;
+    right:30px;
+
+    background:#1f2833;
+    color:white;
+
+    padding:14px 22px;
+
+    border-radius:12px;
+
+    border-left:4px solid var(--primary-color);
+
+    z-index:9999;
+
+    animation:slideIn .3s ease;
+}
+
+.sold-out-badge{
+    display:inline-block;
+
+    background:#ff4d4d;
+
+    color:white;
+
+    padding:8px 14px;
+
+    border-radius:20px;
+
+    font-size:12px;
+
+    letter-spacing:1px;
+
+    font-weight:700;
+}
+
+@keyframes slideIn{
+    from{
+        transform:translateX(100%);
+        opacity:0;
+    }
+
+    to{
+        transform:translateX(0);
+        opacity:1;
+    }
+}
+
 @media(min-width:769px){
 
 .product-title{

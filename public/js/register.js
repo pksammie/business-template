@@ -34,8 +34,10 @@ registerForm.addEventListener("submit", async (e) => {
       userCredential.user
     );
 
+    await auth.signOut();
+    
     alert(
-      "Registration successful. Please verify your email before logging in."
+      "Account created. Please check your email and verify your account before logging in."
     );
 
     await auth.signOut();

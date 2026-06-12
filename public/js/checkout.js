@@ -2,7 +2,9 @@ import { db } from "./firebase.js";
 
 import {
   collection,
-  addDoc
+  addDoc,
+  doc,
+  getDoc
 }
 from
 "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
@@ -96,6 +98,40 @@ window.executeOrderCompilationPipeline = async function(event) {
         phone: f['phone'].value
     };
 
+    /* VERIFY STOCK BEFORE CHECKOUT */
+
+for (const item of cart) {
+
+    const productSnap = await getDoc(
+        doc(db, "products", item.id)
+    );
+
+    if (!productSnap.exists()) {
+
+        alert(
+            `${item.title} no longer exists.`
+        );
+
+        return;
+    }
+
+    const productData = productSnap.data();
+
+    const remaining =
+        (productData.quantity || 0)
+        -
+        (productData.sold || 0);
+
+    if (item.quantity > remaining) {
+
+        alert(
+            `Sorry, only ${remaining} of ${item.title} remain in stock.`
+        );
+
+        return;
+    }
+}
+
     // Save profile to LocalStorage if check option is ticked
     if (f['save_info'].checked) {
 
@@ -165,10 +201,18 @@ for (const item of cart) {
     const destinationWhatsAppUrlEndpoint =`https://wa.me/${ADMIN_WHATSAPP_NUMBER}?text=${customEncodedUriString}`;
 
     // Clear out cart bag arrays to complete transaction safely
-    localStorage.removeItem('vanguard_cart');
-    
-    // Open communication tunnel interface link
-    window.open(destinationWhatsAppUrlEndpoint, '_blank');
+    localStorage.removeItem("vanguard_cart");
+
+alert(
+    "Order compiled successfully. You will now be redirected to WhatsApp."
+);
+
+window.open(
+    destinationWhatsAppUrlEndpoint,
+    "_blank"
+);
+
+location.href = "/";
 };
 
 document.addEventListener('DOMContentLoaded', () => {

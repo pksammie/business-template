@@ -221,3 +221,26 @@ table{
 .selector-col input{
     background: transparent !important;
 }
+
+.update-banner{
+    background: rgba(197,168,128,0.12);
+    border: 1px solid rgba(197,168,128,0.4);
+    color: var(--primary-color);
+    padding: 14px 18px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    font-weight: 600;
+    animation: fadeIn .3s ease;
+}
+
+@keyframes fadeIn{
+    from{
+        opacity:0;
+        transform:translateY(-10px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
