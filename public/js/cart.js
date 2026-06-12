@@ -1,70 +1,163 @@
-    const cartItemsContainer = document.getElementById('cart-items-container');
-    const subtotalLabel = document.getElementById('summary-subtotal');
+    import { db, auth } from "./firebase.js";
 
-    let editMode = false;
+import {
+    collection,
+    getDocs,
+    deleteDoc,
+    doc,
+    updateDoc
+}
+from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+
+import {
+    onAuthStateChanged
+}
+from
+"https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+
+    const cartItemsContainer =
+document.getElementById("cart-items-container");
+
+const subtotalLabel =
+document.getElementById("summary-subtotal");
+
+let editMode = false;
+
 let selectedIndex = null;
 
-    function renderTabularCart() {
-        const cart = JSON.parse(localStorage.getItem('vanguard_cart')) || [];
-        if (!cartItemsContainer) return;
+let firestoreCart = [];
 
-        if (cart.length === 0) {
-            cartItemsContainer.innerHTML = `<tr><td colspan="4" style="padding: 40px; text-align: center; color: var(--text-muted);">Your shopping bag is completely empty.</td></tr>`;
-            if (subtotalLabel) subtotalLabel.innerText = "₦0.00";
-            return;
-        }
+    async function renderTabularCart() {
 
-        cartItemsContainer.innerHTML = "";
-        let calculatedGrossTotal = 0;
+    const user = auth.currentUser;
 
-        cart.forEach((item, index) => {
-            const itemLineTotal = item.price * item.quantity;
-            calculatedGrossTotal += itemLineTotal;
+    if (!user) return;
 
-            const tableRowHtml = document.createElement('tr');
-            tableRowHtml.className = `
-cart-table-row
-${editMode ? "cart-edit-mode" : ""}
-`;
-            tableRowHtml.innerHTML = `
-                <td class="product-col">
+    const cartRef =
+    collection(
+        db,
+        "users",
+        user.uid,
+        "cart"
+    );
 
-    <img src="${item.image}"
-         alt="Product preview image frame"
-         class="table-cart-img">
+    const snap =
+    await getDocs(cartRef);
 
-    <div class="table-product-details">
-        <span class="table-item-title">${item.title}</span>
-        <span class="table-item-variant-label">
-            Size: ${item.size}
-        </span>
-        <span class="table-item-variant-label">
-            Color: ${item.color}
-        </span>
+    firestoreCart = [];
 
-        <button
-            class="table-remove-item-btn"
-            onclick="removeLineItem(${index})">
-            Remove
-        </button>
-    </div>
+    snap.forEach(docSnap => {
+
+        firestoreCart.push({
+
+            firestoreId: docSnap.id,
+
+            ...docSnap.data()
+
+        });
+
+    });
+
+    if (!cartItemsContainer) return;
+
+    if (firestoreCart.length === 0) {
+
+        cartItemsContainer.innerHTML = `
+            <tr>
+                <td colspan="5"
+                    style="
+                        padding:40px;
+                        text-align:center;
+                    ">
+                    Your shopping bag is empty.
+                </td>
+            </tr>
+        `;
+
+        subtotalLabel.innerText = "₦0";
+
+        return;
+    }
+
+    cartItemsContainer.innerHTML = "";
+
+    let calculatedGrossTotal = 0;
+
+    firestoreCart.forEach((item,index)=>{
+
+        const itemLineTotal =
+        item.price * item.quantity;
+
+        calculatedGrossTotal +=
+        itemLineTotal;
+
+        const row =
+        document.createElement("tr");
+
+        row.className = `
+            cart-table-row
+            ${editMode ? "cart-edit-mode" : ""}
+            ${
+                selectedIndex === index
+                ? "selected"
+                : ""
+            }
+        `;
+
+        row.innerHTML = `
+<td class="product-col">
+
+<img
+src="${item.image}"
+class="table-cart-img">
+
+<div class="table-product-details">
+
+<span class="table-item-title">
+${item.title}
+</span>
+
+<span class="table-item-variant-label">
+Size: ${item.size}
+</span>
+
+<span class="table-item-variant-label">
+Color: ${item.color}
+</span>
+
+<button
+class="table-remove-item-btn"
+onclick="removeLineItem(${index})">
+
+Remove
+
+</button>
+
+</div>
 
 </td>
-                <td class="price-col">₦${item.price.toLocaleString()}</td>
-                <td class="quantity-col">
-    <input
-        type="number"
-        min="1"
-        value="${item.quantity}"
-        onchange="
-        modifyLineQuantity(
-            ${index},
-            this.value
-        )"
-        class="table-qty-input">
+
+<td class="price-col">
+₦${item.price.toLocaleString()}
 </td>
-                <td class="total-col">
-    ₦${itemLineTotal.toLocaleString()}
+
+<td class="quantity-col">
+
+<input
+type="number"
+min="1"
+value="${item.quantity}"
+class="table-qty-input"
+onchange="
+modifyLineQuantity(
+${index},
+this.value
+)">
+
+</td>
+
+<td class="total-col">
+₦${itemLineTotal.toLocaleString()}
 </td>
 
 ${
@@ -72,81 +165,98 @@ editMode
 ?
 `
 <td class="selector-col">
-    <input
-        type="radio"
-        class="cart-update-selector"
-        name="edit-selection"
-        onchange="selectCartItem(${index})"
-        ${
-            selectedIndex === index
-            ? "checked"
-            : ""
-        }>
+
+<input
+type="radio"
+name="edit-selection"
+class="cart-update-selector"
+
+${
+selectedIndex===index
+?
+"checked"
+:
+""
+}>
+
 </td>
 `
 :
 ""
 }
-            `;
-            cartItemsContainer.appendChild(tableRowHtml);
-        });
+`;
 
-        if (subtotalLabel) subtotalLabel.innerText = `₦${calculatedGrossTotal.toLocaleString()}`;
-    }
+        if(editMode){
+
+    row.addEventListener("click",(e)=>{
+
+        if(
+            e.target.tagName === "INPUT" ||
+            e.target.tagName === "BUTTON"
+        ){
+            return;
+        }
+
+        selectedIndex = index;
+
+        renderTabularCart();
+
+    });
+
+}
+
+        cartItemsContainer.appendChild(row);
+
+    });
+
+    subtotalLabel.innerText =
+    `₦${calculatedGrossTotal.toLocaleString()}`;
+}
 
     window.modifyLineQuantity =
-function(
-index,
-newQty
-){
+async function(index,newQty){
 
-    let cart =
-    JSON.parse(
-      localStorage.getItem(
-      'vanguard_cart'
-      )
-    ) || [];
-
-    const sanitizedValue =
+    const qty =
     Number(newQty);
 
-    if (
-      isNaN(
-      sanitizedValue
-      )
-    ) {
-      return;
-    }
+    if(isNaN(qty)) return;
 
-    if (
-      sanitizedValue < 1
-    ) {
-      return;
-    }
+    if(qty < 1) return;
 
-    cart[index].quantity =
-    sanitizedValue;
+    await updateDoc(
 
-    localStorage.setItem(
-      'vanguard_cart',
-      JSON.stringify(cart)
+        doc(
+            db,
+            "users",
+            auth.currentUser.uid,
+            "cart",
+            firestoreCart[index].firestoreId
+        ),
+
+        {
+            quantity: qty
+        }
+
     );
 
     renderTabularCart();
 
 };
 
-    window.removeLineItem = function(index) {
-        let cart = JSON.parse(localStorage.getItem('vanguard_cart')) || [];
-        cart.splice(index, 1);
-        localStorage.setItem('vanguard_cart', JSON.stringify(cart));
-        renderTabularCart();
-    };
+    window.removeLineItem =
+async function(index){
 
-    window.selectCartItem =
-function(index){
+    await deleteDoc(
 
-    selectedIndex = index;
+        doc(
+            db,
+            "users",
+            auth.currentUser.uid,
+            "cart",
+            firestoreCart[index].firestoreId
+        )
+
+    );
 
     renderTabularCart();
 
@@ -159,16 +269,9 @@ function(index){
         window.actionUpdateCartRedirect =
 function() {
 
-    const cart =
-    JSON.parse(
-      localStorage.getItem(
-      'vanguard_cart'
-      )
-    ) || [];
-
-    if(cart.length === 0){
-        return;
-    }
+    if(firestoreCart.length === 0){
+    return;
+}
 
     if(!editMode){
 
@@ -193,21 +296,50 @@ document.getElementById(
     }
 
     window.location.href =
-`/decision-page.html?id=${cart[selectedIndex].id}&editIndex=${selectedIndex}`;
+`/decision-page.html?id=${firestoreCart[selectedIndex].id}&editIndex=${selectedIndex}`;
 
 };
 
-window.clearCart = function(){
 
-    if(!confirm("Clear all items from cart?")){
+window.clearCart =
+async function(){
+
+    if(
+        !confirm(
+            "Clear all items from cart?"
+        )
+    ){
         return;
     }
 
-    localStorage.removeItem("vanguard_cart");
+    for(const item of firestoreCart){
+
+        await deleteDoc(
+
+            doc(
+                db,
+                "users",
+                auth.currentUser.uid,
+                "cart",
+                item.firestoreId
+            )
+
+        );
+
+    }
 
     renderTabularCart();
+
 };
 
     window.actionProceedCheckout = function() { window.location.href = "/checkout"; };
 
-    document.addEventListener('DOMContentLoaded', renderTabularCart);
+    onAuthStateChanged(auth,(user)=>{
+
+    if(user){
+
+        renderTabularCart();
+
+    }
+
+});

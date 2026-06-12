@@ -222,6 +222,11 @@ table{
     background: transparent !important;
 }
 
+.cart-item.selected{
+    background:#1f2833;
+    border:1px solid #c5a880;
+}
+
 .update-banner{
     background: rgba(197,168,128,0.12);
     border: 1px solid rgba(197,168,128,0.4);

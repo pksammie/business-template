@@ -1,32 +1,48 @@
-function updateCartCount(){
+import { auth, db } from "./firebase.js";
 
-    const cart =
-    JSON.parse(
-        localStorage.getItem(
-            "vanguard_cart"
-        )
-    ) || [];
+import {
+    collection,
+    onSnapshot
+}
+from
+"https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
-    const total = cart.length;
+import {
+    onAuthStateChanged
+}
+from
+"https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+
+onAuthStateChanged(auth, (user) => {
 
     const badge =
-    document.getElementById(
-        "cart-count"
+    document.getElementById("cart-count");
+
+    if (!badge) return;
+
+    if (!user) {
+
+        badge.textContent = "0";
+
+        return;
+    }
+
+    onSnapshot(
+
+        collection(
+            db,
+            "users",
+            user.uid,
+            "cart"
+        ),
+
+        (snapshot) => {
+
+            badge.textContent =
+            snapshot.size;
+
+        }
+
     );
 
-    if(badge){
-
-        badge.textContent =
-        total;
-    }
-}
-
-updateCartCount();
-
-window.addEventListener(
-    "storage",
-    updateCartCount
-);
-
-window.updateCartCount =
-updateCartCount;
+});

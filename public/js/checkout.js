@@ -1,10 +1,12 @@
-import { db } from "./firebase.js";
+import { db, auth } from "./firebase.js";
 
 import {
-  collection,
-  addDoc,
-  doc,
-  getDoc
+    collection,
+    addDoc,
+    doc,
+    getDoc,
+    getDocs,
+    deleteDoc
 }
 from
 "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
@@ -15,8 +17,34 @@ const checkoutFormInstance = document.getElementById('shipping-address-capture-f
 // Admin Phone Variable Setup (Format: Country code first, no spaces or special symbols)
 const ADMIN_WHATSAPP_NUMBER = "2348109007611"; 
 
-function renderCheckoutOverview() {
-    const cart = JSON.parse(localStorage.getItem('vanguard_cart')) || [];
+async function renderCheckoutOverview() {
+    const user = auth.currentUser;
+
+if (!user) {
+    orderSummaryWrapper.innerHTML =
+    "<p>Please login first.</p>";
+    return;
+}
+
+const cartSnap = await getDocs(
+    collection(
+        db,
+        "users",
+        user.uid,
+        "cart"
+    )
+);
+
+const cart = [];
+
+cartSnap.forEach(docSnap => {
+
+    cart.push({
+        cartDocId: docSnap.id,
+        ...docSnap.data()
+    });
+
+});
     if (!orderSummaryWrapper) return;
 
     if (cart.length === 0) {
@@ -81,7 +109,34 @@ function prefillSavedUserAddressMetadata() {
 window.executeOrderCompilationPipeline = async function(event) {
     event.preventDefault();
     
-    const cart = JSON.parse(localStorage.getItem('vanguard_cart')) || [];
+    const user = auth.currentUser;
+
+if (!user) {
+
+    alert("Please login.");
+
+    return;
+}
+
+const cartSnap = await getDocs(
+    collection(
+        db,
+        "users",
+        user.uid,
+        "cart"
+    )
+);
+
+const cart = [];
+
+cartSnap.forEach(docSnap => {
+
+    cart.push({
+        cartDocId: docSnap.id,
+        ...docSnap.data()
+    });
+
+});
     if (cart.length === 0) {
         alert("Your cart is empty. Cannot process checkout compilation pipeline.");
         return;
@@ -201,7 +256,19 @@ for (const item of cart) {
     const destinationWhatsAppUrlEndpoint =`https://wa.me/${ADMIN_WHATSAPP_NUMBER}?text=${customEncodedUriString}`;
 
     // Clear out cart bag arrays to complete transaction safely
-    localStorage.removeItem("vanguard_cart");
+    for (const item of cart) {
+
+    await deleteDoc(
+        doc(
+            db,
+            "users",
+            user.uid,
+            "cart",
+            item.cartDocId
+        )
+    );
+
+}
 
 alert(
     "Order compiled successfully. You will now be redirected to WhatsApp."
@@ -215,10 +282,22 @@ window.open(
 location.href = "/";
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-    renderCheckoutOverview();
-    prefillSavedUserAddressMetadata();
-    if(checkoutFormInstance) {
-        checkoutFormInstance.addEventListener('submit', executeOrderCompilationPipeline);
+document.addEventListener(
+    'DOMContentLoaded',
+    async () => {
+
+        await renderCheckoutOverview();
+
+        prefillSavedUserAddressMetadata();
+
+        if (checkoutFormInstance) {
+
+            checkoutFormInstance.addEventListener(
+                'submit',
+                executeOrderCompilationPipeline
+            );
+
+        }
+
     }
-});
+);

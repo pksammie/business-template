@@ -1,5 +1,14 @@
-import { db } from "./firebase.js";
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+import { db, auth } from "./firebase.js";
+
+import {
+    doc,
+    getDoc,
+    collection,
+    getDocs,
+    addDoc,
+    updateDoc
+}
+from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 const params =
 new URLSearchParams(location.search);
@@ -7,8 +16,7 @@ new URLSearchParams(location.search);
 const id =
 params.get("id");
 
-const editIndex =
-params.get("editIndex");
+
 
 let product;
 
@@ -134,7 +142,7 @@ Array.isArray(product.colors)
 
 /* ---------------- CART ---------------- */
 
-window.submitToCartBag = function () {
+window.submitToCartBag = async function () {
 
   if (!product) {
     alert("Please wait, product is still loading.");
@@ -202,57 +210,105 @@ addBtn.textContent = "Sold Out";
     return;
   }
 
-  let cart =
-    JSON.parse(
-      localStorage.getItem("vanguard_cart")
-    ) || [];
+  const user = auth.currentUser;
 
-  const updatedItem = {
-    id: id,
+if (!user) {
+
+    alert("Please login first.");
+
+    location.href = "/login";
+
+    return;
+}
+
+const updatedItem = {
+
+    productId: id,
+
     title: product.title,
+
     price: product.price,
+
     image: product.image,
+
     size: selectedSize
         ? selectedSize.value
         : "None",
+
     color: selectedColor
         ? selectedColor.value
         : "None",
+
     quantity: qty
 };
 
-if (editIndex !== null) {
-    cart[editIndex] = updatedItem;
+const cartRef =
+collection(
+    db,
+    "users",
+    user.uid,
+    "cart"
+);
+
+const cartSnap =
+await getDocs(cartRef);
+
+let existingDoc = null;
+
+cartSnap.forEach(docSnap => {
+
+    const item = docSnap.data();
+
+    if (
+
+        item.productId === updatedItem.productId &&
+
+        item.size === updatedItem.size &&
+
+        item.color === updatedItem.color
+
+    ) {
+
+        existingDoc = docSnap;
+
+    }
+
+});
+
+if (cartDocId) {
+
+    await updateDoc(
+        doc(
+            db,
+            "users",
+            user.uid,
+            "cart",
+            cartDocId
+        ),
+        updatedItem
+    );
+
 } else {
-    const existingIndex =
-cart.findIndex(item=>
 
-    item.id===updatedItem.id &&
+    if (existingDoc) {
 
-    item.size===
-    updatedItem.size &&
+        await updateDoc(
+            existingDoc.ref,
+            {
+                quantity:
+                    existingDoc.data().quantity +
+                    updatedItem.quantity
+            }
+        );
 
-    item.color===
-    updatedItem.color
+    } else {
 
-);
-
-if(existingIndex>-1){
-
-    cart[existingIndex].quantity +=
-    updatedItem.quantity;
-
-}else{
-
-    cart.push(updatedItem);
-
+        await addDoc(
+            cartRef,
+            updatedItem
+        );
+    }
 }
-}
-
-  localStorage.setItem(
-    "vanguard_cart",
-    JSON.stringify(cart)
-);
 
   const toast = document.createElement("div");
 
