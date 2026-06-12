@@ -174,6 +174,10 @@ function() {
 
         editMode = true;
 
+document.getElementById(
+"update-mode-message"
+).style.display = "block";
+
         renderTabularCart();
 
         return;

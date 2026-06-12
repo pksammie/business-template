@@ -1,9 +1,14 @@
 import { db } from "./firebase.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
-const id = new URLSearchParams(location.search).get("id");
+const params =
+new URLSearchParams(location.search);
+
+const id =
+params.get("id");
+
 const editIndex =
-new URLSearchParams(location.search).get("editIndex");
+params.get("editIndex");
 
 let product;
 
@@ -182,7 +187,7 @@ if (editIndex !== null) {
   localStorage.setItem(
     "vanguard_cart",
     JSON.stringify(cart)
-  );
+);
 
   alert("Added to cart");
 

@@ -20,11 +20,25 @@ document
 
     try {
 
-        await signInWithEmailAndPassword(
-            auth,
-            email.value,    
-            password.value
-        );
+        const credential =
+await signInWithEmailAndPassword(
+    auth,
+    email.value,
+    password.value
+);
+
+if(
+    !credential.user.emailVerified
+){
+
+    alert(
+      "Please verify your email first."
+    );
+
+    await auth.signOut();
+
+    return;
+}
 
         location.href = "/";
 
