@@ -165,6 +165,21 @@ ${(p.quantity || 0) - (p.sold || 0)}
 </td>
 
 <td>
+<button
+onclick="editProduct('${docSnap.id}')"
+style="
+margin-right:8px;
+background:#007bff;
+color:white;
+border:none;
+padding:8px 12px;
+cursor:pointer;
+border-radius:4px;
+">
+
+Edit
+
+</button>
 
 <button
 onclick="toggleSuspension(
@@ -409,8 +424,10 @@ adminForm.addEventListener("submit", async (e) => {
     colors: finalColors,
     quantity,
     sold: 0,
+    isSuspended: false,
+    isEditing: false,
     createdAt: Date.now(),
-  });
+});
 
   alert("Product added!");
 
@@ -454,6 +471,19 @@ status
 window.deleteProduct = async (id) => {
   await deleteDoc(doc(db, "products", id));
   loadInventory();
+};
+
+window.editProduct = async function(id){
+
+    await updateDoc(
+        doc(db,"products",id),
+        {
+            isEditing: true
+        }
+    );
+
+    location.href =
+    `/edit-product.html?id=${id}`;
 };
 
 loadInventory();

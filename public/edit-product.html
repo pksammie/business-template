@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edit Product</title>
+
+<link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="/css/admin.css">
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+</head>
+
+<body>
+
+<header class="luxury-nav">
+
+    <div class="nav-left-menu">
+        <a href="/admin">← Back to Admin</a>
+    </div>
+
+    <div class="main-signature-logo">
+        EDIT<span>PRODUCT</span>
+    </div>
+
+</header>
+
+<main class="store-mainframe">
+
+<section class="admin-section">
+
+<h2>Edit Product</h2>
+
+<form id="edit-product-form" class="admin-form">
+
+<input
+type="text"
+id="prod-title"
+placeholder="Product Title"
+required>
+
+<input
+type="number"
+id="prod-price"
+placeholder="Price"
+required>
+
+<input
+type="number"
+id="prod-quantity"
+placeholder="Stock Quantity"
+required>
+
+<div
+id="upload-image-box"
+class="upload-box">
+
+<i class="fa-solid fa-cloud-arrow-up"></i>
+
+<p>Change Product Image</p>
+
+</div>
+
+<!-- SIZES -->
+
+<div class="admin-option-box">
+
+<h4>Sizes</h4>
+
+<div class="checkbox-grid">
+
+<label><input type="checkbox" name="prod_sizes" value="S"> S</label>
+
+<label><input type="checkbox" name="prod_sizes" value="M"> M</label>
+
+<label><input type="checkbox" name="prod_sizes" value="L"> L</label>
+
+<label><input type="checkbox" name="prod_sizes" value="XL"> XL</label>
+
+<label><input type="checkbox" name="prod_sizes" value="None"> None</label>
+
+</div>
+
+</div>
+
+<!-- COLORS -->
+
+<div class="admin-option-box">
+
+<h4>Colors</h4>
+
+<div class="checkbox-grid">
+
+<label><input type="checkbox" name="prod_colors" value="None"> None</label>
+
+<label><input type="checkbox" name="prod_colors" value="Black"> Black</label>
+
+<label><input type="checkbox" name="prod_colors" value="White"> White</label>
+
+<label><input type="checkbox" name="prod_colors" value="Red"> Red</label>
+
+<label><input type="checkbox" name="prod_colors" value="Blue"> Blue</label>
+
+<label><input type="checkbox" name="prod_colors" value="Green"> Green</label>
+
+<label><input type="checkbox" name="prod_colors" value="Orange"> Orange</label>
+
+<label><input type="checkbox" name="prod_colors" value="Yellow"> Yellow</label>
+
+<label><input type="checkbox" name="prod_colors" value="Gold"> Gold</label>
+
+</div>
+
+</div>
+
+<textarea
+id="prod-desc"
+placeholder="Description"
+required></textarea>
+
+<button type="submit">
+
+Save Changes
+
+</button>
+
+</form>
+
+</section>
+
+</main>
+
+<script src="https://upload-widget.cloudinary.com/global/all.js"></script>
+
+<script type="module"
+src="/js/edit-product.js"></script>
+
+</body>
+</html>

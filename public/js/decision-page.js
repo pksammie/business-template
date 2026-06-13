@@ -150,6 +150,31 @@ window.submitToCartBag = async function () {
     return;
   }
 
+  const latestSnap = await getDoc(
+    doc(db,"products",id)
+);
+
+const latestProduct =
+latestSnap.data();
+
+if(latestProduct.isEditing){
+
+    alert(
+        "This product is currently being updated by the administrator. Please try again shortly."
+    );
+
+    return;
+}
+
+if(latestProduct.isSuspended){
+
+    alert(
+        "This product is unavailable."
+    );
+
+    return;
+}
+
   const sizes = Array.isArray(product.sizes)
     ? product.sizes
     : [];
