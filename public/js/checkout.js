@@ -113,7 +113,7 @@ window.executeOrderCompilationPipeline = async function(event) {
 
 if (!user) {
 
-    alert("Please login.");
+    showToast("Please login.");
 
     return;
 }
@@ -138,7 +138,7 @@ cartSnap.forEach(docSnap => {
 
 });
     if (cart.length === 0) {
-        alert("Your cart is empty. Cannot process checkout compilation pipeline.");
+        showToast("Your cart is empty. Cannot process checkout compilation pipeline.");
         return;
     }
 
@@ -163,7 +163,7 @@ for (const item of cart) {
 
     if (!productSnap.exists()) {
 
-        alert(
+        showToast(
             `${item.title} no longer exists.`
         );
 
@@ -179,7 +179,7 @@ for (const item of cart) {
 
     if (item.quantity > remaining) {
 
-        alert(
+        showToast(
             `Sorry, only ${remaining} of ${item.title} remain in stock.`
         );
 
@@ -278,7 +278,7 @@ for (const item of cart) {
 
 }
 
-alert(
+showToast(
     "Order compiled successfully. You will now be redirected to WhatsApp."
 );
 

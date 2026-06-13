@@ -382,7 +382,7 @@ window.toggleApproval = async function(id) {
 
         if (remaining < reservation.quantity) {
 
-            alert("Not enough stock left.");
+            showToast("Not enough stock left.");
 
             return;
         }
@@ -461,7 +461,7 @@ adminForm.addEventListener("submit", async (e) => {
   const finalSizes = sizes.includes("None") ? ["None"] : sizes;
 
   if (!uploadedImageUrl) {
-    alert("Please upload a product image.");
+    showToast("Please upload a product image.");
     return;
 }
 
@@ -479,7 +479,7 @@ adminForm.addEventListener("submit", async (e) => {
     createdAt: Date.now(),
 });
 
-  alert("Product added!");
+  showToast("Product added!");
 
 adminForm.reset();
 

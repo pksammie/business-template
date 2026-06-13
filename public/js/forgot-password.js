@@ -22,7 +22,7 @@ document
             email
         );
 
-        alert(
+        showToast(
             "Password reset email sent. Check your inbox / spam."
         );
 
@@ -38,7 +38,7 @@ document
             "No account exists with this email.";
         }
 
-        alert(message);
+        showToast(message);
 
     }
 

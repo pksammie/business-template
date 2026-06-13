@@ -292,7 +292,7 @@ document.getElementById(
 
     if(selectedIndex === null){
 
-        alert(
+        showToast(
         "Please select a product."
         );
 

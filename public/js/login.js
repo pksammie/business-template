@@ -36,7 +36,7 @@ if(
     !credential.user.emailVerified
 ){
 
-    alert(
+    showToast(
       "Please verify your email first."
     );
 
@@ -97,7 +97,7 @@ loginBtn.textContent = "Login";
 
         }
 
-        alert(message);
+        showToast(message);
     }
 
 });
@@ -117,7 +117,7 @@ document
 
     } catch (err) {
 
-        alert(
+        showToast(
             "Google sign in failed. Please try again."
         );
 

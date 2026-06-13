@@ -146,7 +146,7 @@ Array.isArray(product.colors)
 window.submitToCartBag = async function () {
 
   if (!product) {
-    alert("Please wait, product is still loading.");
+    showToast("Please wait, product is still loading.");
     return;
   }
 
@@ -159,7 +159,7 @@ latestSnap.data();
 
 if(latestProduct.isEditing){
 
-    alert(
+    showToast(
         "This product is currently being updated by the administrator. Please try again shortly."
     );
 
@@ -168,7 +168,7 @@ if(latestProduct.isEditing){
 
 if(latestProduct.isSuspended){
 
-    alert(
+    showToast(
         "This product is unavailable."
     );
 
@@ -198,7 +198,7 @@ if(latestProduct.isSuspended){
     !sizes.includes("None") &&
     !selectedSize
   ) {
-    alert("Please select a size.");
+    showToast("Please select a size.");
     return;
   }
 
@@ -207,7 +207,7 @@ if(latestProduct.isSuspended){
     !colors.includes("None") &&
     !selectedColor
   ) {
-    alert("Please select a color.");
+    showToast("Please select a color.");
     return;
   }
 
@@ -228,7 +228,7 @@ addBtn.textContent = "Sold Out";
 }
 
   if (qty > remaining) {
-    alert(
+    showToast(
       "Only " +
       remaining +
       " left in stock"
@@ -240,7 +240,7 @@ addBtn.textContent = "Sold Out";
 
 if (!user) {
 
-    alert("Please login first.");
+    showToast("Please login first.");
 
     location.href = "/login";
 

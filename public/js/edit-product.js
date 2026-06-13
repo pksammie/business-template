@@ -30,7 +30,7 @@ async function loadProduct(){
 
     if(!snap.exists()){
 
-        alert("Product not found.");
+        showToast("Product not found.");
 
         location.href="/admin";
 
@@ -212,7 +212,7 @@ await updateDoc(
 
 );
 
-alert(
+showToast(
     "Product updated successfully."
 );
 

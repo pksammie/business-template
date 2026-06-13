@@ -17,7 +17,7 @@ registerForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   if (password.value !== confirmPassword.value) {
-    alert("Passwords don't match");
+    showToast("Passwords don't match");
     return;
   }
 
@@ -36,7 +36,7 @@ registerForm.addEventListener("submit", async (e) => {
 
     await auth.signOut();
     
-    alert(
+    showToast(
       "Account created. Please check your email and verify your account before logging in."
     );
 
@@ -64,7 +64,7 @@ registerForm.addEventListener("submit", async (e) => {
 
     }
 
-    alert(message);
+    showToast(message);
   }
 });
 
@@ -79,6 +79,6 @@ googleSignup.addEventListener("click", async () => {
     location.href = "/";
 
   } catch (err) {
-    alert(err.message);
+    showToast(err.message);
   }
 });
