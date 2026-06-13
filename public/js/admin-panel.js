@@ -123,14 +123,14 @@ async function loadDashboardStats(){
 
         if(order.paid){
 
-            revenue +=
-            (order.quantity || 0);
+    revenue +=
+    (order.total || 0);
 
-        }else{
+}else{
 
-            pending++;
+    pending++;
 
-        }
+}
 
     });
 
@@ -406,6 +406,7 @@ window.toggleApproval = async function(id) {
 
     loadOrders();
     loadInventory();
+    loadDashboardStats();
 };
 
 window.deleteOrder =
@@ -429,6 +430,7 @@ async function(id){
   );
 
   loadOrders();
+  loadDashboardStats();
 
 };
 
@@ -532,3 +534,5 @@ window.editProduct = async function(id){
 loadInventory();
 
 loadOrders();
+
+loadDashboardStats();
