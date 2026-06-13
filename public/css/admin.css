@@ -396,6 +396,11 @@ input[type="checkbox"]{
     text-transform:uppercase;
 }
 
+.inventory-action-btn:hover{
+    opacity:.85;
+    transform:translateY(-1px);
+}
+
 @media(max-width:768px){
 
     .admin-dashboard-stats{

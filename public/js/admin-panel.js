@@ -209,15 +209,18 @@ ${(p.quantity || 0) - (p.sold || 0)}
 
 <td>
 <button
+class="inventory-action-btn"
 onclick="editProduct('${docSnap.id}')"
 style="
 margin-right:8px;
-background:#007bff;
-color:white;
+background:#c5a880;
+color:#000;
 border:none;
 padding:8px 12px;
 cursor:pointer;
-border-radius:4px;
+border-radius:6px;
+font-weight:700;
+transition:.3s;
 ">
 
 Edit
@@ -225,6 +228,7 @@ Edit
 </button>
 
 <button
+class="inventory-action-btn"
 onclick="toggleSuspension(
 '${docSnap.id}',
 ${p.isSuspended ? false : true}
@@ -244,6 +248,7 @@ ${p.isSuspended ? "Unsuspend" : "Suspend"}
 </button>
 
 <button
+class="inventory-action-btn"
 onclick="deleteProduct('${docSnap.id}')"
 style="
 background:#222;
