@@ -749,6 +749,16 @@ nav,
     border-color:var(--primary-color);
 }
 
+.cart-table-row.selected{
+    background: rgba(197,168,128,0.15);
+    border-left: 4px solid #c5a880;
+    transition: 0.2s;
+}
+
+.cart-edit-mode{
+    cursor:pointer;
+}
+
 .toast{
     position:fixed;
     top:30px;

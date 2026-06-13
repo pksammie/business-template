@@ -94,15 +94,19 @@ let firestoreCart = [];
         const row =
         document.createElement("tr");
 
-        row.className = `
-            cart-table-row
-            ${editMode ? "cart-edit-mode" : ""}
-            ${
-                selectedIndex === index
-                ? "selected"
-                : ""
-            }
-        `;
+        row.className = "cart-table-row";
+
+if(editMode){
+
+    row.classList.add("cart-edit-mode");
+
+}
+
+if(selectedIndex === index){
+
+    row.classList.add("selected");
+
+}
 
         row.innerHTML = `
 <td class="product-col">

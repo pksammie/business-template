@@ -3,20 +3,15 @@ import { auth, db } from "./firebase.js";
 import {
     collection,
     onSnapshot
-}
-from
-"https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 import {
     onAuthStateChanged
-}
-from
-"https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+
+const badge = document.getElementById("cart-count");
 
 onAuthStateChanged(auth, (user) => {
-
-    const badge =
-    document.getElementById("cart-count");
 
     if (!badge) return;
 
@@ -38,8 +33,15 @@ onAuthStateChanged(auth, (user) => {
 
         (snapshot) => {
 
-            badge.textContent =
-            snapshot.size;
+            let total = 0;
+
+            snapshot.forEach(doc => {
+
+                total += doc.data().quantity || 0;
+
+            });
+
+            badge.textContent = total;
 
         }
 
