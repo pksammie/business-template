@@ -35,7 +35,12 @@ function showUserDropdown(user, isAdmin) {
             </button>
 
             <div class="dropdown-menu" id="dropdownMenu">
-                ${isAdmin ? `<div class="dropdown-item">Admin Panel</div>` : ""}
+                ${isAdmin ? `
+<div class="dropdown-item" id="adminPanelBtn">
+    <i class="fa-solid fa-shield-halved"></i>
+    Admin Panel
+</div>
+` : ""}
                 
                 <div class="dropdown-item" id="themeToggle">Change Theme</div>
 
@@ -53,6 +58,8 @@ function showUserDropdown(user, isAdmin) {
     const menuBtn = document.getElementById("userMenuBtn");
     const menu = document.getElementById("dropdownMenu");
     const logoutBtn = document.getElementById("logoutBtn");
+    const adminPanelBtn =
+document.getElementById("adminPanelBtn");
     const themeToggle = document.getElementById("themeToggle");
     const themeMenu = document.getElementById("themeMenu");
 
@@ -80,6 +87,16 @@ document.addEventListener(
         once: true
     }
 );
+
+if(adminPanelBtn){
+
+    adminPanelBtn.addEventListener("click",()=>{
+
+        location.href = "/admin";
+
+    });
+
+}
 
     // logout
     logoutBtn.addEventListener("click", async () => {
@@ -114,13 +131,11 @@ onAuthStateChanged(auth, async (user) => {
     const isAdmin = adminDoc.exists();
 
     // ADMIN ICON FIX
-    if (adminLinkContainer) {
-        adminLinkContainer.innerHTML = isAdmin
-            ? `<a href="/admin" class="admin-link-badge">
-                    <i class="fa-solid fa-gear"></i> Management
-               </a>`
-            : "";
-    }
+    if(adminLinkContainer){
+
+    adminLinkContainer.innerHTML = "";
+
+}
 
     showUserDropdown(user, isAdmin);
 });

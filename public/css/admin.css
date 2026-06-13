@@ -365,6 +365,53 @@ input[type="checkbox"]{
     text-align:center;
 }
 
+/* ==========================
+   ADMIN DASHBOARD STATS
+========================== */
+
+.admin-dashboard-stats{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:20px;
+    margin-bottom:40px;
+}
+
+.admin-stat-card{
+    background:#141821;
+    border:1px solid #242d3d;
+    border-radius:12px;
+    padding:25px;
+}
+
+.admin-stat-card h2{
+    margin-top:12px;
+    color:#c5a880;
+    font-size:32px;
+}
+
+.stat-label{
+    color:var(--text-muted);
+    font-size:14px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+}
+
+@media(max-width:768px){
+
+    .admin-dashboard-stats{
+        grid-template-columns:1fr 1fr;
+    }
+
+}
+
+@media(max-width:480px){
+
+    .admin-dashboard-stats{
+        grid-template-columns:1fr;
+    }
+
+}
+
 @media(max-width:768px){
 
     .orders-table{

@@ -105,6 +105,49 @@ colorBoxes.forEach((box) => {
     }
   });
 });
+
+async function loadDashboardStats(){
+
+    const productsSnap =
+    await getDocs(collection(db,"products"));
+
+    const ordersSnap =
+    await getDocs(collection(db,"cart_reservations"));
+
+    let revenue = 0;
+    let pending = 0;
+
+    ordersSnap.forEach(docSnap=>{
+
+        const order = docSnap.data();
+
+        if(order.paid){
+
+            revenue +=
+            (order.quantity || 0);
+
+        }else{
+
+            pending++;
+
+        }
+
+    });
+
+    document.getElementById("products-count").innerText =
+    productsSnap.size;
+
+    document.getElementById("orders-count").innerText =
+    ordersSnap.size;
+
+    document.getElementById("pending-count").innerText =
+    pending;
+
+    document.getElementById("revenue-count").innerText =
+    `₦${revenue.toLocaleString()}`;
+
+}
+
 /* ---------------- LOAD INVENTORY ---------------- */
 
 async function loadInventory() {

@@ -98,23 +98,35 @@ function renderProducts(products) {
             product.isSuspended || false;
 
         const card =
-            document.createElement("div");
+document.createElement("div");
 
-        card.className = "product-card";
+card.className = "product-card";
 
-        card.style.position = "relative";
+card.style.position = "relative";
+
+if (!isSuspended) {
+
+    card.style.cursor = "pointer";
+
+    card.onclick = () => {
+
+        window.location.href =
+        `/decision-page.html?id=${productId}`;
+
+    };
+
+}
 
         let suspensionMaskOverlay = "";
 
         let actionButtonElement = `
-            <button
-                class="add-to-cart-btn"
-                onclick="window.location.href='/decision-page.html?id=${productId}'"
-            >
-                <i class="fa-solid fa-eye"></i>
-                View Product
-            </button>
-        `;
+    <button
+        class="add-to-cart-btn"
+    >
+        <i class="fa-solid fa-eye"></i>
+        View Product
+    </button>
+`;
 
         if (isSuspended) {
 
