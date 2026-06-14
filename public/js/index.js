@@ -4,10 +4,11 @@ import { db, auth } from "./firebase.js";
 
 import {
     collection,
-    getDocs,
     query,
-    orderBy
-} from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+    orderBy,
+    onSnapshot
+}
+from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 import { onAuthStateChanged }
 from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
@@ -219,12 +220,12 @@ async function loadStorefrontGrid() {
 
     try {
 
-        const q = query(
-            collection(db, "products"),
-            orderBy("createdAt", "desc")
-        );
+    const q = query(
+        collection(db, "products"),
+        orderBy("createdAt", "desc")
+    );
 
-        const snap = await getDocs(q);
+    onSnapshot(q, (snap) => {
 
         allProducts = [];
 
@@ -239,7 +240,9 @@ async function loadStorefrontGrid() {
 
         renderProducts(allProducts);
 
-    }
+    });
+
+}
 
     catch (error) {
 
