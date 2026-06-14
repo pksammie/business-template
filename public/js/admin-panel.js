@@ -13,6 +13,49 @@ from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
 
+let confirmCallback = null;
+
+function showVanguardConfirm(message, callback){
+
+    confirmCallback = callback;
+
+    document.getElementById(
+        "vanguard-modal-message"
+    ).textContent = message;
+
+    document.getElementById(
+        "vanguard-confirm-modal"
+    ).classList.add("show");
+}
+
+document.getElementById(
+    "vanguard-modal-cancel"
+).addEventListener("click",()=>{
+
+    document.getElementById(
+        "vanguard-confirm-modal"
+    ).classList.remove("show");
+
+    confirmCallback = null;
+});
+
+document.getElementById(
+    "vanguard-modal-confirm"
+).addEventListener("click",()=>{
+
+    document.getElementById(
+        "vanguard-confirm-modal"
+    ).classList.remove("show");
+
+    if(confirmCallback){
+
+        confirmCallback();
+
+    }
+
+    confirmCallback = null;
+});
+
 /* ---------------- AUTH ---------------- */
 
 onAuthStateChanged(auth, async (user) => {
