@@ -634,7 +634,7 @@ window.deleteProduct = function(id){
 window.editProduct = async function(id){
 
     await updateDoc(
-        doc(db,"products",id),
+        doc(db, "products", id),
         {
             isEditing: true
         }

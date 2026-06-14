@@ -145,6 +145,22 @@ uploadBox.onclick = ()=>{
 
 };
 
+document
+.getElementById("back-admin-btn")
+.addEventListener("click", async (e) => {
+
+    e.preventDefault();
+
+    await updateDoc(
+        doc(db, "products", productId),
+        {
+            isEditing: false
+        }
+    );
+
+    location.href = "/admin";
+});
+
 form.addEventListener(
 "submit",
 async(e)=>{
@@ -224,20 +240,5 @@ await updateDoc(
 );
 
 location.href="/admin";
-
-});
-
-window.addEventListener("beforeunload", async () => {
-
-    if(productId){
-
-        await updateDoc(
-            doc(db,"products",productId),
-            {
-                isEditing:false
-            }
-        );
-
-    }
 
 });

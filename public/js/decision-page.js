@@ -150,27 +150,24 @@ window.submitToCartBag = async function () {
     return;
   }
 
-  const productSnap = await getDoc(
-    doc(db,"products",productId)
+  const latestSnap = await getDoc(
+    doc(db, "products", id)
 );
 
-if(!productSnap.exists()){
+if (!latestSnap.exists()) {
 
     showToast(
         "This product is no longer available."
     );
 
-    setTimeout(()=>{
-
-        location.href="/";
-
-    },1500);
+    setTimeout(() => {
+        location.href = "/";
+    }, 1500);
 
     return;
 }
 
-const latestProduct =
-latestSnap.data();
+const latestProduct = latestSnap.data();
 
 if(latestProduct.isEditing){
 
@@ -233,6 +230,11 @@ if(latestProduct.isSuspended){
   const remaining =
     (product.quantity || 0) -
     (product.sold || 0);
+
+    const addBtn =
+document.querySelector(
+    ".add-to-cart-btn"
+);
 
   if (remaining <= 0) {
 
