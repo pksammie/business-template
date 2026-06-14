@@ -141,6 +141,25 @@ Array.isArray(product.colors)
   }
 }
 
+const productSnap = await getDoc(
+    doc(db,"products",productId)
+);
+
+if(!productSnap.exists()){
+
+    showToast(
+        "This product is no longer available."
+    );
+
+    setTimeout(()=>{
+
+        location.href="/";
+
+    },1500);
+
+    return;
+}
+
 /* ---------------- CART ---------------- */
 
 window.submitToCartBag = async function () {

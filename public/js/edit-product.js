@@ -216,6 +216,28 @@ showToast(
     "Product updated successfully."
 );
 
+await updateDoc(
+    doc(db,"products",productId),
+    {
+        isEditing:false
+    }
+);
+
 location.href="/admin";
+
+});
+
+window.addEventListener("beforeunload", async () => {
+
+    if(productId){
+
+        await updateDoc(
+            doc(db,"products",productId),
+            {
+                isEditing:false
+            }
+        );
+
+    }
 
 });
