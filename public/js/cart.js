@@ -248,21 +248,28 @@ async function(index,newQty){
 };
 
     window.removeLineItem =
-async function(index){
+function(index){
 
-    await deleteDoc(
+    showConfirmModal(
+        "Remove this item from your bag?",
+        async ()=>{
 
-        doc(
-            db,
-            "users",
-            auth.currentUser.uid,
-            "cart",
-            firestoreCart[index].firestoreId
-        )
+            await deleteDoc(
+                doc(
+                    db,
+                    "users",
+                    auth.currentUser.uid,
+                    "cart",
+                    firestoreCart[index].firestoreId
+                )
+            );
 
+            showToast("Item removed.");
+
+            renderTabularCart();
+
+        }
     );
-
-    renderTabularCart();
 
 };
 
@@ -306,33 +313,34 @@ document.getElementById(
 
 
 window.clearCart =
-async function(){
+function(){
 
-    if(
-        !confirm(
-            "Clear all items from cart?"
-        )
-    ){
-        return;
-    }
+    showConfirmModal(
+        "Clear your entire shopping bag?",
+        async ()=>{
 
-    for(const item of firestoreCart){
+            for(const item of firestoreCart){
 
-        await deleteDoc(
+                await deleteDoc(
 
-            doc(
-                db,
-                "users",
-                auth.currentUser.uid,
-                "cart",
-                item.firestoreId
-            )
+                    doc(
+                        db,
+                        "users",
+                        auth.currentUser.uid,
+                        "cart",
+                        item.firestoreId
+                    )
 
-        );
+                );
 
-    }
+            }
 
-    renderTabularCart();
+            renderTabularCart();
+
+            showToast("Cart cleared.");
+
+        }
+    );
 
 };
 
