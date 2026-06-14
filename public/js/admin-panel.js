@@ -457,28 +457,23 @@ window.toggleApproval = async function(id) {
     loadDashboardStats();
 };
 
-window.deleteOrder =
-async function(id){
+window.deleteOrder = function(id){
 
-  const confirmDelete =
-  confirm(
-    "Delete this order?"
-  );
+    showVanguardConfirm(
+        "Delete this order?",
+        async ()=>{
 
-  if(!confirmDelete){
-    return;
-  }
+            await deleteDoc(
+                doc(db,"cart_reservations",id)
+            );
 
-  await deleteDoc(
-    doc(
-      db,
-      "cart_reservations",
-      id
-    )
-  );
+            showToast("Order deleted.");
 
-  loadOrders();
-  loadDashboardStats();
+            loadOrders();
+            loadDashboardStats();
+
+        }
+    );
 
 };
 
@@ -561,9 +556,24 @@ status
 
 };
 
-window.deleteProduct = async (id) => {
-  await deleteDoc(doc(db, "products", id));
-  loadInventory();
+window.deleteProduct = function(id){
+
+    showVanguardConfirm(
+        "Delete this product?",
+        async ()=>{
+
+            await deleteDoc(
+                doc(db,"products",id)
+            );
+
+            showToast("Product deleted.");
+
+            loadInventory();
+            loadDashboardStats();
+
+        }
+    );
+
 };
 
 window.editProduct = async function(id){
