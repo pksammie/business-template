@@ -344,7 +344,22 @@ function(){
 
 };
 
-    window.actionProceedCheckout = function() { window.location.href = "/checkout"; };
+    window.actionProceedCheckout = function() {
+
+    if (!auth.currentUser) {
+
+        sessionStorage.setItem(
+            "redirectAfterLogin",
+            "/checkout"
+        );
+
+        window.location.href = "/login";
+
+        return;
+    }
+
+    window.location.href = "/checkout";
+};
 
     onAuthStateChanged(auth,(user)=>{
 

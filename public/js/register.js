@@ -37,7 +37,7 @@ registerForm.addEventListener("submit", async (e) => {
     await auth.signOut();
     
     showToast(
-      "Account created. Please check your email and verify your account before logging in."
+      "Account created. Please check your Inbox and Spam folder and verify your account before logging in."
     );
 
     await auth.signOut();

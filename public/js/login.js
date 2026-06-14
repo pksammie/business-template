@@ -37,7 +37,7 @@ if(
 ){
 
     showToast(
-      "Please verify your email first."
+      "Please verify your email first. Check your Spam/Junk folder if you can't find the verification email."
     );
 
     await auth.signOut();
@@ -109,11 +109,25 @@ document
     try {
 
         await signInWithPopup(
-            auth,
-            googleProvider
-        );
+    auth,
+    googleProvider
+);
 
-        location.href = "/";
+const redirect =
+sessionStorage.getItem("redirectAfterLogin");
+
+if (redirect) {
+
+    sessionStorage.removeItem(
+        "redirectAfterLogin"
+    );
+
+    window.location.href = redirect;
+
+} else {
+
+    window.location.href = "/";
+}
 
     } catch (err) {
 

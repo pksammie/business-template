@@ -23,7 +23,7 @@ document
         );
 
         showToast(
-            "Password reset email sent. Check your inbox / spam."
+            "Password reset email sent. Check your inbox or spam folder."
         );
 
     } catch (err) {
