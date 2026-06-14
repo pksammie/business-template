@@ -141,7 +141,16 @@ Array.isArray(product.colors)
   }
 }
 
-const productSnap = await getDoc(
+/* ---------------- CART ---------------- */
+
+window.submitToCartBag = async function () {
+
+  if (!product) {
+    showToast("Please wait, product is still loading.");
+    return;
+  }
+
+  const productSnap = await getDoc(
     doc(db,"products",productId)
 );
 
@@ -159,19 +168,6 @@ if(!productSnap.exists()){
 
     return;
 }
-
-/* ---------------- CART ---------------- */
-
-window.submitToCartBag = async function () {
-
-  if (!product) {
-    showToast("Please wait, product is still loading.");
-    return;
-  }
-
-  const latestSnap = await getDoc(
-    doc(db,"products",id)
-);
 
 const latestProduct =
 latestSnap.data();
