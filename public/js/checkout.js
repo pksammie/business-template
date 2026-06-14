@@ -158,7 +158,7 @@ cartSnap.forEach(docSnap => {
 for (const item of cart) {
 
     const productSnap = await getDoc(
-        doc(db, "products", item.id)
+        doc(db, "products", item.productId)
     );
 
     if (!productSnap.exists()) {
@@ -206,7 +206,7 @@ for (const item of cart) {
     ),
     {
 
-        productId: item.id,
+        productId: item.productId,
 
         productTitle: item.title,
 
@@ -290,22 +290,39 @@ window.open(
 location.href = "/";
 };
 
-document.addEventListener(
-    'DOMContentLoaded',
-    async () => {
+import {
+    onAuthStateChanged
+}
+from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    prefillSavedUserAddressMetadata();
+
+    if (checkoutFormInstance) {
+
+        checkoutFormInstance.addEventListener(
+            "submit",
+            executeOrderCompilationPipeline
+        );
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+
+        if (!user) {
+
+            sessionStorage.setItem(
+                "redirectAfterLogin",
+                "/checkout"
+            );
+
+            location.href = "/login";
+
+            return;
+        }
 
         await renderCheckoutOverview();
 
-        prefillSavedUserAddressMetadata();
+    });
 
-        if (checkoutFormInstance) {
-
-            checkoutFormInstance.addEventListener(
-                'submit',
-                executeOrderCompilationPipeline
-            );
-
-        }
-
-    }
-);
+});

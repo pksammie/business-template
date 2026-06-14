@@ -463,13 +463,68 @@ window.deleteOrder = function(id){
         "Delete this order?",
         async ()=>{
 
+            const reservationRef =
+            doc(db, "cart_reservations", id);
+
+            const reservationSnap =
+            await getDoc(reservationRef);
+
+            if(!reservationSnap.exists()){
+
+                showToast("Order not found.");
+
+                return;
+
+            }
+
+            const reservation =
+            reservationSnap.data();
+
+            /*
+            If this order was approved,
+            restore the stock first.
+            */
+
+            if(
+                reservation.paid &&
+                reservation.stockDeducted
+            ){
+
+                const productRef =
+                doc(
+                    db,
+                    "products",
+                    reservation.productId
+                );
+
+                const productSnap =
+                await getDoc(productRef);
+
+                if(productSnap.exists()){
+
+                    await updateDoc(
+                        productRef,
+                        {
+                            sold: increment(
+                                -reservation.quantity
+                            )
+                        }
+                    );
+
+                }
+
+            }
+
             await deleteDoc(
-                doc(db,"cart_reservations",id)
+                reservationRef
             );
 
-            showToast("Order deleted.");
+            showToast(
+                "Order deleted."
+            );
 
             loadOrders();
+            loadInventory();
             loadDashboardStats();
 
         }
