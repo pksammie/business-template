@@ -21,20 +21,6 @@ document.getElementById("cart-count");
 const searchInput =
 document.getElementById("search-input");
 
-/* ---------------- AUTH ---------------- */
-
-onAuthStateChanged(auth, (user) => {
-
-    const cart =
-        JSON.parse(
-            localStorage.getItem("vanguard_cart")
-        ) || [];
-
-    if (cartCountBadge) {
-        cartCountBadge.innerText = cart.length;
-    }
-
-});
 
 /* ---------------- MOBILE MENU ---------------- */
 
@@ -303,18 +289,6 @@ if (searchInput) {
 async function initStorefront() {
 
     await loadStorefrontGrid();
-
-    const cart =
-        JSON.parse(
-            localStorage.getItem("vanguard_cart")
-        ) || [];
-
-    if (cartCountBadge) {
-
-        cartCountBadge.innerText =
-            cart.length;
-
-    }
 
 }
 

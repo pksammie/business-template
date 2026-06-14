@@ -1,33 +1,34 @@
 window.showConfirmModal = function(message, onConfirm) {
 
-    const existing = document.getElementById("vanguard-modal");
+    const existing =
+    document.getElementById("vanguard-confirm-modal");
 
     if(existing){
         existing.remove();
     }
 
-    const modal = document.createElement("div");
+    const modal =
+    document.createElement("div");
 
-    modal.id = "vanguard-modal";
+    modal.id = "vanguard-confirm-modal";
+    modal.className = "vanguard-modal show";
 
     modal.innerHTML = `
-        <div class="vanguard-modal-overlay">
+        <div class="vanguard-modal-box">
 
-            <div class="vanguard-modal-box">
+            <h3>Confirm Action</h3>
 
-                <p>${message}</p>
+            <p>${message}</p>
 
-                <div class="vanguard-modal-actions">
+            <div class="vanguard-modal-actions">
 
-                    <button class="modal-cancel">
-                        Cancel
-                    </button>
+                <button id="vanguard-modal-cancel">
+                    Cancel
+                </button>
 
-                    <button class="modal-confirm">
-                        Confirm
-                    </button>
-
-                </div>
+                <button id="vanguard-modal-confirm">
+                    Confirm
+                </button>
 
             </div>
 
@@ -36,10 +37,12 @@ window.showConfirmModal = function(message, onConfirm) {
 
     document.body.appendChild(modal);
 
-    modal.querySelector(".modal-cancel")
-    .onclick = () => modal.remove();
+    document.getElementById("vanguard-modal-cancel")
+    .onclick = () => {
+        modal.remove();
+    };
 
-    modal.querySelector(".modal-confirm")
+    document.getElementById("vanguard-modal-confirm")
     .onclick = () => {
 
         modal.remove();
