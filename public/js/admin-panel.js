@@ -7,7 +7,8 @@ import {
   deleteDoc,
   getDoc,
   updateDoc,
-  increment
+  increment,
+  onSnapshot
 }
 from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
@@ -149,61 +150,90 @@ colorBoxes.forEach((box) => {
   });
 });
 
-async function loadDashboardStats(){
+function loadDashboardStats(){
 
-    const productsSnap =
-    await getDocs(collection(db,"products"));
+    onSnapshot(
 
-    const ordersSnap =
-    await getDocs(collection(db,"cart_reservations"));
+        collection(db,"products"),
 
-    let revenue = 0;
-    let pending = 0;
+        (productsSnap)=>{
 
-    ordersSnap.forEach(docSnap=>{
+            document.getElementById(
+                "products-count"
+            ).innerText =
+            productsSnap.size;
 
-        const order = docSnap.data();
+        }
 
-        if(order.paid){
+    );
 
-    revenue +=
-    (order.total || 0);
+    onSnapshot(
 
-}else{
+        collection(db,"cart_reservations"),
 
-    pending++;
+        (ordersSnap)=>{
 
-}
+            let revenue = 0;
 
-    });
+            let pending = 0;
 
-    document.getElementById("products-count").innerText =
-    productsSnap.size;
+            ordersSnap.forEach(docSnap=>{
 
-    document.getElementById("orders-count").innerText =
-    ordersSnap.size;
+                const order =
+                docSnap.data();
 
-    document.getElementById("pending-count").innerText =
-    pending;
+                if(order.paid){
 
-    document.getElementById("revenue-count").innerText =
-    `₦${revenue.toLocaleString()}`;
+                    revenue +=
+                    (order.total || 0);
+
+                }else{
+
+                    pending++;
+
+                }
+
+            });
+
+            document.getElementById(
+                "orders-count"
+            ).innerText =
+            ordersSnap.size;
+
+            document.getElementById(
+                "pending-count"
+            ).innerText =
+            pending;
+
+            document.getElementById(
+                "revenue-count"
+            ).innerText =
+            `₦${revenue.toLocaleString()}`;
+
+        }
+
+    );
 
 }
 
 /* ---------------- LOAD INVENTORY ---------------- */
 
-async function loadInventory() {
-  const snap = await getDocs(collection(db, "products"));
+function loadInventory() {
+  onSnapshot(
+    collection(db,"products"),
 
-  tableBody.innerHTML = "";
+    (snap)=>{
 
-  snap.forEach((docSnap) => {
-    const p = docSnap.data();
+        tableBody.innerHTML = "";
 
-    const row = document.createElement("tr");
+        snap.forEach((docSnap)=>{
 
-    row.innerHTML = `
+            const p = docSnap.data();
+
+            const row =
+            document.createElement("tr");
+
+            row.innerHTML = `
 
 <td>
 
@@ -227,9 +257,7 @@ border-radius:6px;
 <div class="product-title-cell">${p.title}</div>
 
 <small>
-
 ${(p.colors || []).join(", ")}
-
 </small>
 
 </div>
@@ -239,18 +267,15 @@ ${(p.colors || []).join(", ")}
 </td>
 
 <td>
-
 ₦${Number(p.price).toLocaleString()}
-
 </td>
 
 <td>
-
 ${(p.quantity || 0) - (p.sold || 0)}
-
 </td>
 
 <td>
+
 <button
 class="inventory-action-btn"
 onclick="editProduct('${docSnap.id}')"
@@ -310,25 +335,38 @@ Delete
 
 `;
 
-    tableBody.appendChild(row);
-  });
+            tableBody.appendChild(row);
+
+        });
+
+    }
+);
+
 }
 
-async function loadOrders() {
-  const snap = await getDocs(collection(db, "cart_reservations"));
+function loadOrders() {
 
-  const body = document.getElementById("orders-body");
+    const body =
+    document.getElementById("orders-body");
 
-  if (!body) return;
+    if(!body) return;
 
-  body.innerHTML = "";
+    onSnapshot(
 
-  snap.forEach((docSnap) => {
-    const order = docSnap.data();
+        collection(db,"cart_reservations"),
 
-    body.innerHTML += `
+        (snap)=>{
 
-      <tr>
+            body.innerHTML = "";
+
+            snap.forEach((docSnap)=>{
+
+                const order =
+                docSnap.data();
+
+                body.innerHTML += `
+
+<tr>
 
 <td class="paid-cell">
 
@@ -353,32 +391,34 @@ ${order.stockDeducted ? "Done" : "Pending"}
 
 </td>
 
-      <td>
-      ${order.customerName}
-      </td>
-
-      <td>
-      ${order.phone}
-      </td>
-
-      <td>
-    <div class="order-product-title">
-        ${order.productTitle}
-    </div>
+<td>
+${order.customerName}
 </td>
 
-      <td>
+<td>
+${order.phone}
+</td>
+
+<td>
+
+<div class="order-product-title">
+
+${order.productTitle}
+
+</div>
+
+</td>
+
+<td>
+
 ${order.quantity}
+
 </td>
 
 <td>
 
 <button
-onclick="
-deleteOrder(
-'${docSnap.id}'
-)
-"
+onclick="deleteOrder('${docSnap.id}')"
 style="
 background:#ff4d4d;
 color:white;
@@ -395,8 +435,15 @@ Delete
 </td>
 
 </tr>
+
 `;
-  });
+
+            });
+
+        }
+
+    );
+
 }
 
 window.toggleApproval = async function(id) {
@@ -451,10 +498,6 @@ window.toggleApproval = async function(id) {
         });
 
     }
-
-    loadOrders();
-    loadInventory();
-    loadDashboardStats();
 };
 
 window.deleteOrder = function(id){
@@ -522,11 +565,6 @@ window.deleteOrder = function(id){
             showToast(
                 "Order deleted."
             );
-
-            loadOrders();
-            loadInventory();
-            loadDashboardStats();
-
         }
     );
 
@@ -583,9 +621,6 @@ uploadBox.innerHTML = `
     <i class="fa-solid fa-cloud-arrow-up"></i>
     <p>Upload Product Image</p>
 `;
-
-loadInventory();
-
 });
 
 /* ---------------- DELETE ---------------- */
@@ -607,8 +642,6 @@ status
     }
   );
 
-  loadInventory();
-
 };
 
 window.deleteProduct = function(id){
@@ -622,9 +655,6 @@ window.deleteProduct = function(id){
             );
 
             showToast("Product deleted.");
-
-            loadInventory();
-            loadDashboardStats();
 
         }
     );
