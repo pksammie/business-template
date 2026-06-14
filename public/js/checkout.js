@@ -269,7 +269,9 @@ for (const item of cart) {
 
     messageText += `───────────────────\n`;
     messageText += `*ORDER ITEM TOTAL:* ₦${subtotalValueAmount.toLocaleString()}\n`;
-    messageText += `_Note: Shipping fee will be calculated based on the address provided above._`;
+    messageText += `_Shipping fee will be calculated based on the address above._\n\n`;
+
+messageText += `⚠️ Please do not edit or cancel this message so your order can be processed faster.`;
 
     // URI encode the compiled text block safely
     const customEncodedUriString = encodeURIComponent(messageText);
@@ -291,7 +293,7 @@ for (const item of cart) {
 }
 
 showToast(
-    "Order compiled successfully. You will now be redirected to WhatsApp."
+    "WhatsApp is opening. Please tap SEND to complete your order."
 );
 
 window.open(

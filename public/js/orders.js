@@ -141,7 +141,7 @@ function loadOrders(userId){
                         <div class="order-card-product">
 
     <img
-    src="${order.productImage}"
+    src="${order.productImage || "/images/placeholder.jpg"}"
     class="order-card-image">
 
     <div>
@@ -149,9 +149,9 @@ function loadOrders(userId){
         <h4>${order.productTitle}</h4>
 
         <p>
-            ${order.productColor}
+            ${order.productColor || "N/A"}
             •
-            ${order.productSize}
+            ${order.productSize || "N/A"}
         </p>
 
         <p>

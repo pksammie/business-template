@@ -423,7 +423,7 @@ gap:10px;
 ">
 
     <img
-    src="${order.productImage}"
+    src="${order.productImage || "/images/placeholder.jpg"}"
     style="
     width:50px;
     height:50px;
@@ -438,9 +438,9 @@ gap:10px;
         </div>
 
         <small>
-            ${order.productColor}
+            ${order.productColor || "N/A"}
             •
-            ${order.productSize}
+            ${order.productSize || "N/A"}
         </small>
 
     </div>
