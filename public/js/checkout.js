@@ -200,38 +200,50 @@ for (const item of cart) {
 for (const item of cart) {
 
     await addDoc(
-    collection(
-        db,
-        "cart_reservations"
-    ),
+    collection(db, "cart_reservations"),
     {
+
+        /* CUSTOMER */
+
+        userId: user.uid,
+
+        customerName:
+        `${addressProfile.first_name} ${addressProfile.last_name}`,
+
+        phone: addressProfile.phone,
+
+        address: {
+            country: addressProfile.country,
+            state: addressProfile.state,
+            city: addressProfile.city,
+            address: addressProfile.address
+        },
+
+        /* PRODUCT SNAPSHOT */
 
         productId: item.productId,
 
         productTitle: item.title,
 
-        customerName:
-        `${addressProfile.first_name}
-        ${addressProfile.last_name}`,
+        productImage: item.image,
 
-        phone:
-        addressProfile.phone,
+        productPrice: item.price,
 
-        quantity:
-        item.quantity,
+        productSize: item.size,
 
-        price:
-        item.price,
+        productColor: item.color,
 
-        total:
-        item.price * item.quantity,
+        quantity: item.quantity,
 
-        paid: false,
+        total: item.price * item.quantity,
+
+        /* ORDER */
+
+        status: "Pending",
 
         stockDeducted: false,
 
-        createdAt:
-        Date.now()
+        createdAt: Date.now()
     }
 );
 

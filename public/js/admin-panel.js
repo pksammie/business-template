@@ -182,16 +182,18 @@ function loadDashboardStats(){
                 const order =
                 docSnap.data();
 
-                if(order.paid){
+                if(order.status === "Delivered"){
 
-                    revenue +=
-                    (order.total || 0);
+    revenue +=
+    (order.total || 0);
 
-                }else{
+}
 
-                    pending++;
+if(order.status === "Pending"){
 
-                }
+    pending++;
+
+}
 
             });
 
@@ -368,26 +370,37 @@ function loadOrders() {
 
 <tr>
 
-<td class="paid-cell">
+<td>
 
-<button
-onclick="toggleApproval('${docSnap.id}')"
-style="
-background:${order.paid ? '#ff4d4d' : '#28a745'};
-color:white;
-border:none;
-padding:8px 12px;
-cursor:pointer;
-border-radius:4px;
+<span style="
+padding:6px 12px;
+border-radius:20px;
+font-size:12px;
+font-weight:700;
+background:
+${
+order.status === "Pending"
+? "#ffc107"
+
+: order.status === "Approved"
+? "#28a745"
+
+: order.status === "Delivered"
+? "#17a2b8"
+
+: "#ff4d4d"
+};
+color:
+${
+order.status === "Pending"
+? "#000"
+: "#fff"
+};
 ">
 
-${order.paid ? "Unapprove" : "Approve"}
+${order.status || "Pending"}
 
-</button>
-
-<small>
-${order.stockDeducted ? "Done" : "Pending"}
-</small>
+</span>
 
 </td>
 
@@ -403,7 +416,36 @@ ${order.phone}
 
 <div class="order-product-title">
 
-${order.productTitle}
+<div style="
+display:flex;
+align-items:center;
+gap:10px;
+">
+
+    <img
+    src="${order.productImage}"
+    style="
+    width:50px;
+    height:50px;
+    object-fit:cover;
+    border-radius:6px;
+    ">
+
+    <div>
+
+        <div>
+            ${order.productTitle}
+        </div>
+
+        <small>
+            ${order.productColor}
+            •
+            ${order.productSize}
+        </small>
+
+    </div>
+
+</div>
 
 </div>
 
@@ -417,8 +459,29 @@ ${order.quantity}
 
 <td>
 
+${
+order.status === "Pending"
+
+? `
+
 <button
-onclick="deleteOrder('${docSnap.id}')"
+onclick="approveOrder('${docSnap.id}')"
+style="
+background:#28a745;
+color:white;
+border:none;
+padding:8px 12px;
+cursor:pointer;
+border-radius:4px;
+margin-right:6px;
+">
+
+Approve
+
+</button>
+
+<button
+onclick="cancelOrder('${docSnap.id}')"
 style="
 background:#ff4d4d;
 color:white;
@@ -428,9 +491,36 @@ cursor:pointer;
 border-radius:4px;
 ">
 
-Delete
+Cancel
 
 </button>
+
+`
+
+: order.status === "Approved"
+
+? `
+
+<button
+onclick="deliverOrder('${docSnap.id}')"
+style="
+background:#17a2b8;
+color:white;
+border:none;
+padding:8px 12px;
+cursor:pointer;
+border-radius:4px;
+">
+
+Delivered
+
+</button>
+
+`
+
+: `-`
+
+}
 
 </td>
 
@@ -446,58 +536,173 @@ Delete
 
 }
 
-window.toggleApproval = async function(id) {
+window.approveOrder = async function(id){
 
-    const reservationRef = doc(db, "cart_reservations", id);
+    const reservationRef =
+    doc(db,"cart_reservations",id);
 
-    const reservationSnap = await getDoc(reservationRef);
+    const reservationSnap =
+    await getDoc(reservationRef);
 
-    if (!reservationSnap.exists()) return;
+    if(!reservationSnap.exists()) return;
 
-    const reservation = reservationSnap.data();
+    const reservation =
+    reservationSnap.data();
 
-    const productRef = doc(db, "products", reservation.productId);
+    const productRef =
+    doc(db,"products",reservation.productId);
 
-    const productSnap = await getDoc(productRef);
+    const productSnap =
+    await getDoc(productRef);
 
-    if (!productSnap.exists()) return;
+    if(!productSnap.exists()) return;
 
-    const product = productSnap.data();
+    const product =
+    productSnap.data();
 
-    if (!reservation.paid) {
+    const remaining =
 
-        const remaining =
-            (product.quantity || 0) -
-            (product.sold || 0);
+    (product.quantity || 0)
 
-        if (remaining < reservation.quantity) {
+    -
 
-            showToast("Not enough stock left.");
+    (product.sold || 0);
 
-            return;
+    if(remaining < reservation.quantity){
+
+        showToast("Not enough stock left.");
+
+        return;
+    }
+
+    await updateDoc(productRef,{
+
+        sold: increment(
+            reservation.quantity
+        )
+
+    });
+
+    await updateDoc(reservationRef,{
+
+        status:"Approved",
+
+        stockDeducted:true
+
+    });
+
+    showToast(
+        "Order approved."
+    );
+
+};
+
+window.deliverOrder = async function(id){
+
+    await updateDoc(
+
+        doc(
+            db,
+            "cart_reservations",
+            id
+        ),
+
+        {
+
+            status:"Delivered"
+
         }
 
-        await updateDoc(productRef, {
-            sold: increment(reservation.quantity)
-        });
+    );
 
-        await updateDoc(reservationRef, {
-            paid: true,
-            stockDeducted: true
-        });
+    showToast(
+        "Order delivered."
+    );
 
-    } else {
+};
 
-        await updateDoc(productRef, {
-            sold: increment(-reservation.quantity)
-        });
+window.cancelOrder = async function(id){
 
-        await updateDoc(reservationRef, {
-            paid: false,
-            stockDeducted: false
-        });
+    showVanguardConfirm(
 
-    }
+        "Cancel this order?",
+
+        async()=>{
+
+            const reservationRef =
+            doc(
+                db,
+                "cart_reservations",
+                id
+            );
+
+            const reservationSnap =
+            await getDoc(
+                reservationRef
+            );
+
+            if(!reservationSnap.exists()){
+
+                return;
+
+            }
+
+            const reservation =
+            reservationSnap.data();
+
+            if(
+
+                reservation.stockDeducted
+
+            ){
+
+                const productRef =
+                doc(
+                    db,
+                    "products",
+                    reservation.productId
+                );
+
+                await updateDoc(
+
+                    productRef,
+
+                    {
+
+                        sold: increment(
+
+                            -reservation.quantity
+
+                        )
+
+                    }
+
+                );
+
+            }
+
+            await updateDoc(
+
+                reservationRef,
+
+                {
+
+                    status:"Cancelled",
+
+                    stockDeducted:false
+
+                }
+
+            );
+
+            showToast(
+                "Order cancelled."
+            );
+
+        }
+
+    );
+
 };
 
 window.deleteOrder = function(id){
@@ -529,9 +734,8 @@ window.deleteOrder = function(id){
             */
 
             if(
-                reservation.paid &&
-                reservation.stockDeducted
-            ){
+    reservation.status === "Approved"
+){
 
                 const productRef =
                 doc(

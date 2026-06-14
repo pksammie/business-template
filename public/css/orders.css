@@ -1,0 +1,93 @@
+.orders-section{
+    max-width:900px;
+    margin:auto;
+}
+
+.orders-section h2{
+    margin-bottom:30px;
+}
+
+.order-card{
+    background:#111;
+    border:1px solid #2a2a2a;
+
+    border-radius:12px;
+
+    padding:20px;
+
+    margin-bottom:20px;
+}
+
+.order-card-product{
+    display:flex;
+    gap:15px;
+    align-items:center;
+}
+
+.order-card-image{
+    width:80px;
+    height:80px;
+    object-fit:cover;
+    border-radius:10px;
+    border:1px solid rgba(255,255,255,.1);
+}
+
+.order-header{
+    display:flex;
+
+    justify-content:space-between;
+
+    margin-bottom:15px;
+
+    flex-wrap:wrap;
+
+    gap:10px;
+}
+
+.order-title{
+    font-size:18px;
+
+    font-weight:700;
+}
+
+.order-details{
+    color:#b5b5b5;
+
+    line-height:1.8;
+}
+
+.order-status{
+    padding:6px 14px;
+
+    border-radius:30px;
+
+    font-size:13px;
+
+    font-weight:700;
+}
+
+.status-approved{
+    background:#28a74533;
+
+    color:#28a745;
+}
+
+.status-pending{
+    background:#ffc10733;
+
+    color:#ffc107;
+}
+
+.status-cancelled{
+    background:#ff4d4d33;
+
+    color:#ff4d4d;
+}
+
+.empty-orders{
+    text-align:center;
+
+    color:#999;
+
+    margin-top:80px;
+}
