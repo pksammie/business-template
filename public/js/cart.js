@@ -50,7 +50,15 @@ async function backupCurrentCart(){
         {
             createdAt: Date.now(),
 
-            items: firestoreCart
+            items: firestoreCart.map(item => ({
+    productId: item.productId,
+    title: item.title,
+    image: item.image,
+    price: item.price,
+    quantity: item.quantity,
+    size: item.size,
+    color: item.color
+}))
         }
 
     );
@@ -284,17 +292,15 @@ function(index){
         "Remove this item from your bag?",
         async ()=>{
 
-            await backupCurrentCart();
-
             await deleteDoc(
-                doc(
-                    db,
-                    "users",
-                    auth.currentUser.uid,
-                    "cart",
-                    firestoreCart[index].firestoreId
-                )
-            );
+    doc(
+        db,
+        "users",
+        auth.currentUser.uid,
+        "cart",
+        firestoreCart[index].firestoreId
+    )
+);
 
             showToast("Item removed.");
 
