@@ -575,15 +575,13 @@ window.approveOrder = async function(id){
         return;
     }
 
-    const productSnap = await getDoc(productRef);
-
-if(productSnap.exists()){
-
     await updateDoc(productRef,{
-        sold: increment(-reservation.quantity)
-    });
 
-}
+        sold: increment(
+                reservation.quantity
+        )
+
+    });
 
     await updateDoc(reservationRef,{
 
