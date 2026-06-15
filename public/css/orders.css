@@ -57,13 +57,20 @@
 }
 
 .order-status{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+
+    width:fit-content;
+
     padding:6px 14px;
 
     border-radius:30px;
 
     font-size:13px;
-
     font-weight:700;
+
+    white-space:nowrap;
 }
 
 .status-approved{
@@ -75,6 +82,11 @@
 .status-pending{
     background:#3a3125;
 color:#c5a880;
+}
+
+.status-delivered{
+    background:#17a2b833;
+    color:#17a2b8;
 }
 
 .status-cancelled{
@@ -102,4 +114,21 @@ color:#c5a880;
 
 .back-home-btn:hover {
     opacity: .8;
+}
+
+.status-badge{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+
+    padding:8px 14px;
+
+    border-radius:20px;
+
+    font-size:12px;
+    font-weight:700;
+
+    white-space:nowrap;
+
+    width:fit-content;
 }

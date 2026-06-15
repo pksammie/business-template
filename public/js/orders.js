@@ -108,22 +108,27 @@ function loadOrders(userId){
             let statusText;
             let statusClass;
 
-            if(order.paid){
+            switch(order.status){
 
-                statusText =
-                "Approved";
+    case "Approved":
+        statusText = "Approved";
+        statusClass = "status-approved";
+        break;
 
-                statusClass =
-                "status-approved";
+    case "Delivered":
+        statusText = "Delivered";
+        statusClass = "status-delivered";
+        break;
 
-            }else{
+    case "Cancelled":
+        statusText = "Cancelled";
+        statusClass = "status-cancelled";
+        break;
 
-                statusText =
-                "Pending Approval";
-
-                statusClass =
-                "status-pending";
-            }
+    default:
+        statusText = "Pending";
+        statusClass = "status-pending";
+}
 
             const date =
             new Date(
