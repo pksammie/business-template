@@ -713,3 +713,53 @@ display:block;
     gap:8px;
     font-size:14px;
 }
+
+/* ==========================
+   CUSTOMER ORDER SEARCH
+========================== */
+
+.orders-search-wrapper{
+    display:flex;
+    align-items:center;
+    gap:12px;
+
+    width:100%;
+    max-width:450px;
+
+    margin-bottom:20px;
+    padding:0 16px;
+
+    background:#141821;
+
+    border:1px solid rgba(197,168,128,.2);
+    border-radius:12px;
+
+    transition:0.3s;
+}
+
+.orders-search-wrapper:focus-within{
+    border-color:#c5a880;
+    box-shadow:0 0 0 3px rgba(197,168,128,.1);
+}
+
+.orders-search-wrapper i{
+    color:#c5a880;
+    font-size:14px;
+}
+
+#orders-search{
+    flex:1;
+
+    background:transparent;
+    border:none;
+    outline:none;
+
+    padding:14px 0;
+
+    color:#ffffff;
+    font-size:14px;
+}
+
+#orders-search::placeholder{
+    color:rgba(255,255,255,.45);
+}

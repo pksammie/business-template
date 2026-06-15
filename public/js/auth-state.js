@@ -50,10 +50,10 @@ function showUserDropdown(user, isAdmin) {
                     <div class="theme-box" data-theme="luxury"></div>
                 </div>
 
-                <div><a href="/orders" class="dropdown-link">
+                <a href="/orders" class="dropdown-link">
     <i class="fa-solid fa-box"></i>
-    <div>My Orders</div>
-</a></div>
+    <span>My Orders</span>
+</a>
 
                 <div class="dropdown-item danger" id="logoutBtn">Logout</div>
             </div>
