@@ -286,3 +286,181 @@ table{
 }
 
 }
+
+/* Clear Cart Button */
+
+.clear-cart-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+
+    background:transparent;
+
+    border:1px solid rgba(255,255,255,.15);
+
+    color:#ff6b6b;
+
+    padding:12px 25px;
+
+    border-radius:4px;
+
+    cursor:pointer;
+
+    font-size:13px;
+
+    font-weight:600;
+
+    letter-spacing:1px;
+
+    text-transform:uppercase;
+
+    transition:all .3s ease;
+}
+
+.clear-cart-btn:hover{
+
+    background:#ff4d4d15;
+
+    border-color:#ff4d4d;
+
+    color:#ff4d4d;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 8px 20px rgba(255,77,77,.15);
+}
+
+.clear-cart-btn:active{
+
+    transform:translateY(0);
+
+    box-shadow:none;
+}
+
+.clear-cart-btn i{
+
+    font-size:12px;
+}
+
+/* Restore Cart Controls */
+
+#restore-cart-btn,
+#restore-range{
+
+    height:46px;
+
+    border-radius:4px;
+
+    font-size:13px;
+
+    letter-spacing:1px;
+
+    text-transform:uppercase;
+
+    transition:.3s ease;
+}
+
+#restore-cart-btn{
+
+    background:transparent;
+
+    border:1px solid rgba(255,255,255,.2);
+
+    color:#fff;
+
+    padding:0 22px;
+
+    cursor:pointer;
+
+    font-weight:600;
+}
+
+#restore-cart-btn:hover{
+
+    border-color:var(--primary-color);
+
+    color:var(--primary-color);
+
+    background:rgba(197,168,128,.08);
+}
+
+#restore-range{
+
+    background:#111;
+
+    color:#fff;
+
+    border:1px solid rgba(255,255,255,.15);
+
+    padding:0 16px;
+
+    cursor:pointer;
+}
+
+#restore-range:focus{
+
+    outline:none;
+
+    border-color:var(--primary-color);
+
+    box-shadow:
+    0 0 0 2px rgba(197,168,128,.15);
+}
+
+@media(max-width:768px){
+
+    .cart-control-button-grid{
+
+        display:flex;
+
+        flex-direction:column;
+
+        gap:12px;
+    }
+
+    .cart-control-button-grid button,
+    .cart-control-button-grid select{
+
+        width:100%;
+    }
+
+}
+
+.restore-cart-section{
+
+    width:100%;
+
+    margin-bottom:35px;
+
+    padding:20px;
+
+    border:1px solid rgba(255,255,255,.08);
+
+    border-radius:8px;
+
+    background:rgba(255,255,255,.02);
+}
+
+.restore-cart-title{
+
+    margin:0 0 15px;
+
+    color:rgba(255,255,255,.65);
+
+    font-size:13px;
+
+    letter-spacing:1px;
+
+    text-transform:uppercase;
+}
+
+.restore-cart-controls{
+
+    display:flex;
+
+    gap:12px;
+
+    flex-wrap:wrap;
+}

@@ -361,7 +361,23 @@ function loadOrders() {
 
             body.innerHTML = "";
 
-            snap.forEach((docSnap)=>{
+            const orders = [];
+
+snap.forEach((docSnap)=>{
+
+    orders.push({
+        id: docSnap.id,
+        ...docSnap.data()
+    });
+
+});
+
+orders.sort(
+    (a,b)=>
+    b.createdAt - a.createdAt
+);
+
+orders.forEach((order)=>{
 
                 const order =
                 docSnap.data();
@@ -465,7 +481,7 @@ order.status === "Pending"
 ? `
 
 <button
-onclick="approveOrder('${docSnap.id}')"
+onclick="approveOrder('${order.id}')"
 style="
 background:#28a745;
 color:white;
@@ -481,7 +497,7 @@ Approve
 </button>
 
 <button
-onclick="cancelOrder('${docSnap.id}')"
+onclick="cancelOrder('${order.id}')"
 style="
 background:#ff4d4d;
 color:white;
@@ -502,7 +518,7 @@ Cancel
 ? `
 
 <button
-onclick="deliverOrder('${docSnap.id}')"
+onclick="deliverOrder('${order.id}')"
 style="
 background:#17a2b8;
 color:white;
