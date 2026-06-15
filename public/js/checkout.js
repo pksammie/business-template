@@ -135,6 +135,8 @@ window.executeOrderCompilationPipeline = async function(event) {
     
     const user = auth.currentUser;
 
+    console.log(user);
+
 if (!user) {
 
     showToast("Please login.");
@@ -317,7 +319,7 @@ messageText += `⚠️ Please do not edit or cancel this message so your order c
     const destinationWhatsAppUrlEndpoint =`https://wa.me/${ADMIN_WHATSAPP_NUMBER}?text=${customEncodedUriString}`;
 
     await backupCart(user.uid, cart);
-    
+
     // Clear out cart bag arrays to complete transaction safely
     for (const item of cart) {
 
@@ -364,20 +366,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     onAuthStateChanged(auth, async (user) => {
 
-        if (!user) {
+    if (!user) {
+        return;
+    }
 
-            sessionStorage.setItem(
-                "redirectAfterLogin",
-                "/checkout"
-            );
+    await renderCheckoutOverview();
 
-            location.href = "/login";
-
-            return;
-        }
-
-        await renderCheckoutOverview();
-
-    });
+});
 
 });

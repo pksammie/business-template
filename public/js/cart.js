@@ -380,6 +380,15 @@ function(){
 
     window.actionProceedCheckout = function() {
 
+    if (firestoreCart.length === 0) {
+
+        showToast(
+            "Your shopping bag is empty."
+        );
+
+        return;
+    }
+
     if (!auth.currentUser) {
 
         sessionStorage.setItem(
