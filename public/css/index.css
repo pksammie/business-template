@@ -654,6 +654,15 @@ a:active {
     text-decoration: none !important;
 }
 
+#my-order-color {
+  text-decoration: none;
+  color: white;
+}
+
+#logoutBtn {
+  color: red;
+}
+
 .danger {
   color: red;
 }
