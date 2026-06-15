@@ -271,9 +271,9 @@ input[type="checkbox"]{
 }
 
 .table-scroll table{
-    width:100%;
-    border-collapse:collapse;
-    table-layout:fixed;
+    width: 100%;
+    min-width: 900px;
+    border-collapse: collapse;
 }
 
 .table-scroll th,
@@ -399,52 +399,6 @@ input[type="checkbox"]{
 .inventory-action-btn:hover{
     opacity:.85;
     transform:translateY(-1px);
-}
-
-.orders-search-wrapper{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:12px;
-
-    background:rgba(255,255,255,.03);
-
-    border:1px solid rgba(255,255,255,.08);
-
-    border-radius:8px;
-
-    padding:12px 16px;
-
-    margin-bottom:25px;
-}
-
-.orders-search-wrapper i{
-
-    color:var(--primary-color);
-
-    font-size:14px;
-}
-
-.orders-search-wrapper input{
-
-    flex:1;
-
-    background:transparent;
-
-    border:none;
-
-    outline:none;
-
-    color:#fff;
-
-    font-size:14px;
-}
-
-.orders-search-wrapper input::placeholder{
-
-    color:rgba(255,255,255,.45);
 }
 
 @media(max-width:768px){
@@ -758,77 +712,4 @@ display:block;
     align-items:center;
     gap:8px;
     font-size:14px;
-}
-
-@media (max-width:768px){
-
-    #orders-body tr{
-
-        background:#151c24;
-
-        border-radius:16px;
-
-        margin-bottom:18px;
-
-        padding:18px;
-
-        border:1px solid rgba(255,255,255,.08);
-
-    }
-
-    #orders-body td{
-
-        border:none;
-
-        padding:10px 0;
-
-        white-space:normal;
-    }
-
-    #orders-body button{
-
-        width:100%;
-
-        margin-top:10px;
-    }
-
-}
-
-/* ===== ADMIN MOBILE FIX ===== */
-
-@media (max-width:768px){
-
-    .table-scroll{
-        overflow-x:visible;
-    }
-
-    .table-scroll table{
-    width:100%;
-    border-collapse:collapse;
-    table-layout:fixed;
-}
-
-    #admin-inventory-table-body td,
-    #orders-body td{
-        white-space:normal;
-        word-break:break-word;
-    }
-
-    #admin-inventory-table-body img{
-        width:50px;
-        height:60px;
-        object-fit:cover;
-    }
-
-    .product-title-cell,
-    .order-product-title{
-        max-width:none;
-        overflow:visible;
-        text-overflow:unset;
-    }
-
-    .admin-section{
-        padding:15px;
-        overflow:hidden;
-    }
 }
