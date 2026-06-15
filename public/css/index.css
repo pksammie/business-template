@@ -623,6 +623,38 @@ a:active {
     text-decoration: none;
 }
 
+.dropdown-item {
+  padding: 10px;
+  cursor: pointer;
+  color: white;
+}
+
+.dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dropdown-item,
+.dropdown-item:link,
+.dropdown-item:visited,
+.dropdown-item:hover,
+.dropdown-item:active {
+    text-decoration: none !important;
+    color: #f5f5f5 !important;
+}
+
+.dropdown-item,
+.dropdown-item * {
+    text-decoration: none !important;
+}
+
+.dropdown-item span,
+.dropdown-item i {
+    text-decoration: none !important;
+}
+
+.dropdown-item span {
+    text-decoration: none !important;
+}
 
 .danger {
   color: red;
