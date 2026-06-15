@@ -27,6 +27,13 @@ app.get('/contact-us', (req, res) => res.sendFile(path.join(__dirname, 'public',
 app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'public', 'login.html')));
 app.get('/register', (req, res) => res.sendFile(path.join(__dirname, 'public', 'register.html')));
 app.get('/developer', (req, res) => res.sendFile(path.join(__dirname, 'public', 'developer.html')));
+app.get('/orders', (req, res) =>
+    res.sendFile(path.join(__dirname, 'public', 'orders.html'))
+);
+
+app.get('/orders.html', (req, res) =>
+    res.sendFile(path.join(__dirname, 'public', 'orders.html'))
+);
 app.get("/forgot-password", (req, res)=> {res.sendFile(path.join(__dirname, "public", "forgot-password.html"));});
 
 // Catch-all route to prevent raw text error dumps

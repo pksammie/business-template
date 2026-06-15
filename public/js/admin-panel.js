@@ -380,7 +380,7 @@ font-weight:700;
 background:
 ${
 order.status === "Pending"
-? "#ffc107"
+? "#c5a880"
 
 : order.status === "Approved"
 ? "#28a745"
@@ -575,13 +575,15 @@ window.approveOrder = async function(id){
         return;
     }
 
+    const productSnap = await getDoc(productRef);
+
+if(productSnap.exists()){
+
     await updateDoc(productRef,{
-
-        sold: increment(
-            reservation.quantity
-        )
-
+        sold: increment(-reservation.quantity)
     });
+
+}
 
     await updateDoc(reservationRef,{
 
@@ -650,36 +652,35 @@ window.cancelOrder = async function(id){
             const reservation =
             reservationSnap.data();
 
-            if(
+            if(reservation.stockDeducted){
 
-                reservation.stockDeducted
+    const productRef =
+    doc(
+        db,
+        "products",
+        reservation.productId
+    );
 
-            ){
+    const productSnap =
+    await getDoc(productRef);
 
-                const productRef =
-                doc(
-                    db,
-                    "products",
-                    reservation.productId
-                );
+    if(productSnap.exists()){
 
-                await updateDoc(
+        await updateDoc(
 
-                    productRef,
+            productRef,
 
-                    {
-
-                        sold: increment(
-
-                            -reservation.quantity
-
-                        )
-
-                    }
-
-                );
-
+            {
+                sold: increment(
+                    -reservation.quantity
+                )
             }
+
+        );
+
+    }
+
+}
 
             await updateDoc(
 
