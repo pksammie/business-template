@@ -28,6 +28,35 @@ let selectedIndex = null;
 
 let firestoreCart = [];
 
+async function backupCurrentCart(){
+
+    const user = auth.currentUser;
+
+    if(!user || firestoreCart.length === 0){
+
+        return;
+
+    }
+
+    await addDoc(
+
+        collection(
+            db,
+            "users",
+            user.uid,
+            "cart_backups"
+        ),
+
+        {
+            createdAt: Date.now(),
+
+            items: firestoreCart
+        }
+
+    );
+
+}
+
     async function renderTabularCart() {
 
     const user = auth.currentUser;
@@ -255,6 +284,8 @@ function(index){
         "Remove this item from your bag?",
         async ()=>{
 
+            await backupCurrentCart();
+
             await deleteDoc(
                 doc(
                     db,
@@ -319,6 +350,8 @@ function(){
     showConfirmModal(
         "Clear your entire shopping bag?",
         async ()=>{
+
+            await backupCurrentCart();
 
             for(const item of firestoreCart){
 

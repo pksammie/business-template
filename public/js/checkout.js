@@ -6,7 +6,8 @@ import {
     doc,
     getDoc,
     getDocs,
-    deleteDoc
+    deleteDoc,
+    setDoc
 }
 from
 "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
@@ -15,7 +16,30 @@ const orderSummaryWrapper = document.getElementById('checkout-summary-target');
 const checkoutFormInstance = document.getElementById('shipping-address-capture-form');
 
 // Admin Phone Variable Setup (Format: Country code first, no spaces or special symbols)
-const ADMIN_WHATSAPP_NUMBER = "2348109007611"; 
+const ADMIN_WHATSAPP_NUMBER = "2348109007611";
+
+async function backupCart(userId, cartItems){
+
+    if(cartItems.length === 0) return;
+
+    await addDoc(
+
+        collection(
+            db,
+            "users",
+            userId,
+            "cart_backups"
+        ),
+
+        {
+            createdAt: Date.now(),
+
+            items: cartItems
+        }
+
+    );
+
+}
 
 async function renderCheckoutOverview() {
     const user = auth.currentUser;
@@ -292,6 +316,8 @@ messageText += `⚠️ Please do not edit or cancel this message so your order c
     const customEncodedUriString = encodeURIComponent(messageText);
     const destinationWhatsAppUrlEndpoint =`https://wa.me/${ADMIN_WHATSAPP_NUMBER}?text=${customEncodedUriString}`;
 
+    await backupCart(user.uid, cart);
+    
     // Clear out cart bag arrays to complete transaction safely
     for (const item of cart) {
 

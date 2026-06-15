@@ -52,7 +52,6 @@ function showUserDropdown(user, isAdmin) {
 
                 <div><a href="/orders" class="dropdown-link">
     <i class="fa-solid fa-box"></i>
-
 <div>
     My Orders
 </div>
