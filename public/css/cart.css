@@ -514,3 +514,39 @@ table{
     }
 
 }
+
+/* Hide old cart headers */
+
+.cart-table thead,
+table thead{
+    display:none;
+}
+
+@media(max-width:768px){
+
+    .table-scroll{
+        overflow:visible;
+    }
+
+    table,
+    tbody,
+    tr,
+    td{
+        display:block;
+        width:100%;
+    }
+
+    tr{
+        background:#151c24;
+        border-radius:16px;
+        margin-bottom:18px;
+        padding:18px;
+        border:1px solid rgba(255,255,255,.08);
+    }
+
+    td{
+        border:none;
+        white-space:normal;
+        padding:8px 0;
+    }
+}

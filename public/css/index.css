@@ -1151,12 +1151,6 @@ a:active {
 }
 
 @media (max-width: 768px) {
-    table {
-        display: block;
-        overflow-x: auto;
-        white-space: nowrap;
-    }
-
     .decision-split-container {
         grid-template-columns: 1fr !important;
         gap: 20px !important;
@@ -1380,12 +1374,6 @@ a:active {
 
 @media (max-width:768px){
 
-table{
-    display:block;
-    overflow-x:auto;
-    white-space:nowrap;
-}
-
 .cart-control-button-grid{
     width:100%;
     flex-direction:column;
@@ -1472,12 +1460,6 @@ grid-template-columns:1fr !important;
 }
 
 @media(max-width:768px){
-
-table{
-display:block;
-overflow-x:auto;
-white-space:nowrap;
-}
 
 }
 @media(max-width:768px){
