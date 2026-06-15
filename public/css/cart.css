@@ -409,6 +409,23 @@ table{
     0 0 0 2px rgba(197,168,128,.15);
 }
 
+.cart-control-button-grid{
+
+    display:flex;
+
+    justify-content:flex-end;
+
+    align-items:center;
+
+    gap:15px;
+
+    flex-wrap:nowrap;
+
+    width:100%;
+
+    margin-top:25px;
+}
+
 @media(max-width:768px){
 
     .cart-control-button-grid{
