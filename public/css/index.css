@@ -656,11 +656,7 @@ a:active {
 
 #my-order-color {
   text-decoration: none;
-  color: white;
-}
-
-#logoutBtn {
-  color: red;
+  /* color: white; */
 }
 
 .danger {
