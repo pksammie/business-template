@@ -379,10 +379,7 @@ orders.sort(
 
 orders.forEach((order)=>{
 
-                const order =
-                docSnap.data();
-
-                body.innerHTML += `
+    body.innerHTML += `
 
 <tr>
 
