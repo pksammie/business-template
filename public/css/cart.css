@@ -524,7 +524,7 @@ table thead{
 
 @media(max-width:768px){
 
-    .table-scroll{
+    /* .table-scroll{
         overflow:visible;
     }
 
@@ -534,7 +534,7 @@ table thead{
     td{
         display:block;
         width:100%;
-    }
+    } */
 
     tr{
         background:#151c24;
@@ -550,3 +550,4 @@ table thead{
         padding:8px 0;
     }
 }
+

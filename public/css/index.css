@@ -1546,7 +1546,7 @@ width:100%;
 
 @media (max-width:768px){
 
-    /* Hide old table headers */
+    /* Hide old table headers
     table thead{
         display:none;
     }
@@ -1557,7 +1557,7 @@ width:100%;
     td{
         display:block;
         width:100%;
-    }
+    } */
 
     /* Remove horizontal scrolling */
     .table-scroll{
