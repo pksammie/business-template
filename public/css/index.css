@@ -620,6 +620,19 @@ nav,
   background: rgba(255, 255, 255, 0.1);
 }
 
+.dropdown-item,
+.dropdown-item:link,
+.dropdown-item:visited,
+.dropdown-item:hover,
+.dropdown-item:active {
+    text-decoration: none !important;
+    color: #f5f5f5 !important;
+}
+
+.dropdown-link span {
+    text-decoration: none !important;
+}
+
 .danger {
   color: red;
 }
