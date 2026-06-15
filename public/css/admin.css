@@ -797,8 +797,7 @@ display:block;
 @media (max-width:768px){
 
     #admin-inventory-table-body tr{
-        display: block;
-        
+
         background:#151c24;
 
         border-radius:16px;
