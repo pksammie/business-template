@@ -90,3 +90,16 @@ color:#c5a880;
 
     margin-top:80px;
 }
+
+.back-home-btn {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 1px;
+    transition: opacity .3s;
+}
+
+.back-home-btn:hover {
+    opacity: .8;
+}
