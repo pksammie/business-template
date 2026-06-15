@@ -72,6 +72,7 @@ const adminForm = document.getElementById("admin-product-form");
 const tableBody = document.getElementById("admin-inventory-table-body");
 
 let uploadedImageUrl = "";
+let ordersSearchTerm = "";
 
 const uploadBox = document.getElementById("upload-image-box");
 
@@ -377,7 +378,38 @@ orders.sort(
     b.createdAt - a.createdAt
 );
 
-orders.forEach((order)=>{
+const filteredOrders =
+orders.filter(order=>{
+
+    if(!ordersSearchTerm){
+
+        return true;
+
+    }
+
+    return (
+
+        (order.customerName || "")
+        .toLowerCase()
+        .includes(ordersSearchTerm)
+
+        ||
+
+        (order.phone || "")
+        .toLowerCase()
+        .includes(ordersSearchTerm)
+
+        ||
+
+        (order.productTitle || "")
+        .toLowerCase()
+        .includes(ordersSearchTerm)
+
+    );
+
+});
+
+filteredOrders.forEach((order)=>{
 
     body.innerHTML += `
 
@@ -889,6 +921,27 @@ window.editProduct = async function(id){
     location.href =
     `/edit-product.html?id=${id}`;
 };
+
+const ordersSearchInput =
+document.getElementById("orders-search");
+
+if(ordersSearchInput){
+
+    ordersSearchInput.addEventListener(
+        "input",
+        ()=>{
+
+            ordersSearchTerm =
+            ordersSearchInput.value
+            .toLowerCase()
+            .trim();
+
+            loadOrders();
+
+        }
+    );
+
+}
 
 loadInventory();
 
