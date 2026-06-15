@@ -249,3 +249,40 @@ table{
         transform:translateY(0);
     }
 }
+
+.restore-cart-control{
+
+    display:flex;
+    gap:10px;
+    align-items:center;
+    flex-wrap:wrap;
+}
+
+#restore-range{
+
+    padding:10px 14px;
+
+    border-radius:8px;
+
+    background:#1f2833;
+
+    color:white;
+
+    border:1px solid rgba(255,255,255,.15);
+}
+
+@media(max-width:768px){
+
+.restore-cart-control{
+
+    width:100%;
+
+    flex-direction:column;
+}
+
+#restore-range{
+
+    width:100%;
+}
+
+}

@@ -5,7 +5,8 @@ import {
     getDocs,
     deleteDoc,
     doc,
-    updateDoc
+    updateDoc,
+    addDoc
 }
 from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
@@ -370,3 +371,119 @@ function(){
     }
 
 });
+
+const restoreBtn =
+document.getElementById(
+    "restore-cart-btn"
+);
+
+if(restoreBtn){
+
+restoreBtn.addEventListener(
+"click",
+async ()=>{
+
+    const range =
+    document.getElementById(
+        "restore-range"
+    ).value;
+
+    const backupsSnap =
+    await getDocs(
+        collection(
+            db,
+            "users",
+            auth.currentUser.uid,
+            "cart_backups"
+        )
+    );
+
+    let backups = [];
+
+    backupsSnap.forEach(docSnap=>{
+
+        backups.push(docSnap.data());
+
+    });
+
+    const now = Date.now();
+
+    backups = backups.filter(backup=>{
+
+        if(range === "all"){
+
+            return true;
+
+        }
+
+        const hours =
+        Number(range);
+
+        return (
+            now - backup.createdAt
+        )
+
+        <=
+
+        hours * 60 * 60 * 1000;
+
+    });
+
+    if(backups.length === 0){
+
+        showToast(
+            "No cart backups found."
+        );
+
+        return;
+    }
+
+    backups.sort(
+        (a,b)=>
+        b.createdAt - a.createdAt
+    );
+
+    const latestBackup =
+    backups[0];
+
+    for(const item of latestBackup.items){
+
+        await addDoc(
+
+            collection(
+                db,
+                "users",
+                auth.currentUser.uid,
+                "cart"
+            ),
+
+            {
+
+                productId:item.productId,
+
+                title:item.title,
+
+                image:item.image,
+
+                price:item.price,
+
+                quantity:item.quantity,
+
+                size:item.size,
+
+                color:item.color
+
+            }
+
+        );
+
+    }
+
+    showToast(
+        "Cart restored."
+    );
+
+    renderTabularCart();
+
+});
+}

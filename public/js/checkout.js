@@ -249,6 +249,21 @@ for (const item of cart) {
 
 } 
 
+/* SAVE CART BACKUP */
+
+await addDoc(
+    collection(
+        db,
+        "users",
+        user.uid,
+        "cart_backups"
+    ),
+    {
+        items: cart,
+        createdAt: Date.now()
+    }
+);
+
     // --- WHATSAPP ORDER COMPILER STRING BUILDER ---
     let messageText = `*NEW INCOMING ORDER - TIME-LESS* \n\n`;
     messageText += `*CUSTOMER DETAILS:*\n\n`;
