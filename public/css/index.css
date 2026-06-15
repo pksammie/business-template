@@ -1557,33 +1557,3 @@ width:100%;
     font-size:18px;
 }
 }
-
-/* ===================================
-   MOBILE CARD LAYOUT
-=================================== */
-
-@media (max-width:768px){
-
-    /* Hide old table headers */
-    table thead{
-        display:none;
-    }
-
-    table,
-    tbody,
-    tr,
-    td{
-        display:block;
-        width:100%;
-    }
-
-    /* Remove horizontal scrolling */
-    .table-scroll{
-        overflow:visible;
-    }
-
-    .scroll-hint{
-        display:none;
-    }
-
-}

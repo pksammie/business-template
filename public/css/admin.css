@@ -271,9 +271,9 @@ input[type="checkbox"]{
 }
 
 .table-scroll table{
-    width:100%;
-    border-collapse:collapse;
-    table-layout:fixed;
+    width: 100%;
+    min-width: 900px;
+    border-collapse: collapse;
 }
 
 .table-scroll th,
@@ -794,41 +794,37 @@ display:block;
 
 }
 
-/* ===== ADMIN MOBILE FIX ===== */
-
 @media (max-width:768px){
 
-    .table-scroll{
-        overflow-x:visible;
+    #admin-inventory-table-body tr{
+        display: block;
+        
+        background:#151c24;
+
+        border-radius:16px;
+
+        margin-bottom:18px;
+
+        padding:18px;
+
+        border:1px solid rgba(255,255,255,.08);
+
     }
 
-    .table-scroll table{
-    width:100%;
-    border-collapse:collapse;
-    table-layout:fixed;
-}
+    #admin-inventory-table-body td{
 
-    #admin-inventory-table-body td,
-    #orders-body td{
+        border:none;
+
+        padding:10px 0;
+
         white-space:normal;
-        word-break:break-word;
     }
 
-    #admin-inventory-table-body img{
-        width:50px;
-        height:60px;
-        object-fit:cover;
+    #admin-inventory-table-body button{
+
+        width:100%;
+
+        margin-top:10px;
     }
 
-    .product-title-cell,
-    .order-product-title{
-        max-width:none;
-        overflow:visible;
-        text-overflow:unset;
-    }
-
-    .admin-section{
-        padding:15px;
-        overflow:hidden;
-    }
 }

@@ -464,3 +464,36 @@ table{
 
     flex-wrap:wrap;
 }
+
+@media (max-width:768px){
+
+    #cart-items-container tr{
+
+        background:#151c24;
+
+        border-radius:16px;
+
+        margin-bottom:18px;
+
+        padding:18px;
+
+        border:1px solid rgba(255,255,255,.08);
+
+    }
+
+    #cart-items-container td{
+
+        border:none;
+
+        padding:8px 0;
+
+        white-space:normal;
+
+    }
+
+    #cart-items-container td:last-child{
+
+        padding-bottom:0;
+    }
+
+}
