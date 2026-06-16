@@ -778,6 +778,9 @@ display:block;
     border-radius:15px;
     overflow:hidden;
     border:1px solid #242d3d;
+
+    display:flex;
+    flex-direction:column;
 }
 
 .order-admin-card{
@@ -791,7 +794,67 @@ display:block;
 
 .products-cards-grid,
 .orders-cards-grid{
+    display:grid;
+    grid-template-columns:
+    repeat(auto-fill,minmax(280px,1fr));
+
+    gap:20px;
+}
+
+.product-admin-card{
+    background:#141821;
+    border-radius:15px;
+    overflow:hidden;
+    border:1px solid #242d3d;
+}
+
+.order-admin-card{
+    background:#141821;
+    border-radius:15px;
+    padding:20px;
+    border:1px solid #242d3d;
+}
+
+}
+
+@media(max-width:768px){
+
+.products-cards-grid,
+.orders-cards-grid{
     grid-template-columns:1fr;
+    gap:20px;
+}
+
+.product-admin-card{
+    min-height:auto;
+}
+
+.admin-card-image{
+    height:240px;
+}
+
+.admin-card-content{
+    padding:20px;
+}
+
+.admin-card-content h4{
+    font-size:18px;
+}
+
+.admin-card-content p{
+    font-size:20px;
+}
+
+.admin-card-actions{
+    flex-direction:column;
+}
+
+.admin-card-actions button{
+    width:100%;
+}
+
+.order-admin-card{
+    padding:20px;
 }
 
 }

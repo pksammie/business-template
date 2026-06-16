@@ -253,12 +253,34 @@ card.innerHTML = `
 
         <div class="admin-card-actions">
 
-            ...
-            Edit
-            Suspend
-            Delete
+<button
+onclick="editProduct('${docSnap.id}')"
+class="edit-btn">
 
-        </div>
+Edit
+
+</button>
+
+<button
+onclick="toggleSuspension(
+'${docSnap.id}',
+${p.isSuspended ? false : true}
+)"
+class="suspend-btn">
+
+${p.isSuspended ? "Unsuspend" : "Suspend"}
+
+</button>
+
+<button
+onclick="deleteProduct('${docSnap.id}')"
+class="delete-btn">
+
+Delete
+
+</button>
+
+</div>
 
     </div>
 `;
@@ -339,162 +361,168 @@ filteredOrders.forEach((order)=>{
     body.innerHTML += `
 <div class="order-admin-card">
 
-<td>
+    <div class="order-status">
+        <span style="
+            display:inline-block;
+            padding:6px 12px;
+            border-radius:20px;
+            font-size:12px;
+            font-weight:700;
+            background:
+            ${
+                order.status === "Pending"
+                ? "#c5a880"
+                : order.status === "Approved"
+                ? "#28a745"
+                : order.status === "Delivered"
+                ? "#17a2b8"
+                : "#ff4d4d"
+            };
+            color:
+            ${
+                order.status === "Pending"
+                ? "#000"
+                : "#fff"
+            };
+        ">
+            ${order.status || "Pending"}
+        </span>
+    </div>
 
-<span style="
-padding:6px 12px;
-border-radius:20px;
-font-size:12px;
-font-weight:700;
-background:
-${
-order.status === "Pending"
-? "#c5a880"
+    <div class="order-customer">
+        <strong>Customer:</strong><br>
+        ${order.customerName}
+    </div>
 
-: order.status === "Approved"
-? "#28a745"
+    <div class="order-phone">
+        <strong>Phone:</strong><br>
+        ${order.phone}
+    </div>
 
-: order.status === "Delivered"
-? "#17a2b8"
-
-: "#ff4d4d"
-};
-color:
-${
-order.status === "Pending"
-? "#000"
-: "#fff"
-};
-">
-
-${order.status || "Pending"}
-
-</span>
-
-</td>
-
-<td>
-${order.customerName}
-</td>
-
-<td>
-${order.phone}
-</td>
-
-<td>
-
-<div class="order-product-title">
-
-<div style="
-display:flex;
-align-items:center;
-gap:10px;
-">
-
-    <img
-    src="${order.productImage || "/images/placeholder.jpg"}"
-    style="
-    width:50px;
-    height:50px;
-    object-fit:cover;
-    border-radius:6px;
+    <div class="order-product" style="
+        display:flex;
+        align-items:center;
+        gap:12px;
+        margin-top:15px;
     ">
 
-    <div>
+        <img
+            src="${order.productImage || "/images/placeholder.jpg"}"
+            style="
+                width:70px;
+                height:70px;
+                object-fit:cover;
+                border-radius:10px;
+                flex-shrink:0;
+            "
+        >
 
         <div>
-            ${order.productTitle}
+            <div style="
+                font-weight:600;
+                margin-bottom:5px;
+            ">
+                ${order.productTitle}
+            </div>
+
+            <small style="color:var(--text-muted);">
+                ${order.productColor || "N/A"}
+                •
+                ${order.productSize || "N/A"}
+            </small>
         </div>
 
-        <small>
-            ${order.productColor || "N/A"}
-            •
-            ${order.productSize || "N/A"}
-        </small>
+    </div>
+
+    <div style="margin-top:15px;">
+        <strong>Quantity:</strong>
+        ${order.quantity}
+    </div>
+
+    <div style="
+        margin-top:20px;
+        display:flex;
+        flex-wrap:wrap;
+        gap:10px;
+    ">
+
+        ${
+            order.status === "Pending"
+
+            ? `
+                <button
+                    onclick="approveOrder('${order.id}')"
+                    style="
+                        flex:1;
+                        min-width:120px;
+                        background:#28a745;
+                        color:white;
+                        border:none;
+                        padding:12px;
+                        border-radius:8px;
+                        cursor:pointer;
+                    "
+                >
+                    Approve
+                </button>
+
+                <button
+                    onclick="cancelOrder('${order.id}')"
+                    style="
+                        flex:1;
+                        min-width:120px;
+                        background:#ff4d4d;
+                        color:white;
+                        border:none;
+                        padding:12px;
+                        border-radius:8px;
+                        cursor:pointer;
+                    "
+                >
+                    Cancel
+                </button>
+            `
+
+            : order.status === "Approved"
+
+            ? `
+                <button
+                    onclick="deliverOrder('${order.id}')"
+                    style="
+                        width:100%;
+                        background:#17a2b8;
+                        color:white;
+                        border:none;
+                        padding:12px;
+                        border-radius:8px;
+                        cursor:pointer;
+                    "
+                >
+                    Mark as Delivered
+                </button>
+            `
+
+            : `
+                <button
+                    onclick="deleteOrder('${order.id}')"
+                    style="
+                        width:100%;
+                        background:#444;
+                        color:white;
+                        border:none;
+                        padding:12px;
+                        border-radius:8px;
+                        cursor:pointer;
+                    "
+                >
+                    Delete Order
+                </button>
+            `
+        }
 
     </div>
 
 </div>
-
-</div>
-
-</td>
-
-<td>
-
-${order.quantity}
-
-</td>
-
-<td>
-
-${
-order.status === "Pending"
-
-? `
-
-<button
-onclick="approveOrder('${order.id}')"
-style="
-background:#28a745;
-color:white;
-border:none;
-padding:8px 12px;
-cursor:pointer;
-border-radius:4px;
-margin-right:6px;
-">
-
-Approve
-
-</button>
-
-<button
-onclick="cancelOrder('${order.id}')"
-style="
-background:#ff4d4d;
-color:white;
-border:none;
-padding:8px 12px;
-cursor:pointer;
-border-radius:4px;
-">
-
-Cancel
-
-</button>
-
-`
-
-: order.status === "Approved"
-
-? `
-
-<button
-onclick="deliverOrder('${order.id}')"
-style="
-background:#17a2b8;
-color:white;
-border:none;
-padding:8px 12px;
-cursor:pointer;
-border-radius:4px;
-">
-
-Delivered
-
-</button>
-
-`
-
-: `-`
-
-}
-
-</td>
-
-</div>
-
 `;
 
             });
