@@ -763,3 +763,35 @@ display:block;
 #orders-search::placeholder{
     color:rgba(255,255,255,.45);
 }
+
+.products-cards-grid,
+.orders-cards-grid{
+    display:grid;
+    grid-template-columns:
+    repeat(auto-fill,minmax(280px,1fr));
+
+    gap:20px;
+}
+
+.product-admin-card{
+    background:#141821;
+    border-radius:15px;
+    overflow:hidden;
+    border:1px solid #242d3d;
+}
+
+.order-admin-card{
+    background:#141821;
+    border-radius:15px;
+    padding:20px;
+    border:1px solid #242d3d;
+}
+
+@media(max-width:768px){
+
+.products-cards-grid,
+.orders-cards-grid{
+    grid-template-columns:1fr;
+}
+
+}

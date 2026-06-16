@@ -233,112 +233,37 @@ function loadInventory() {
 
             const p = docSnap.data();
 
-            const row =
-            document.createElement("tr");
+            const card = document.createElement("div");
 
-            row.innerHTML = `
+card.className = "product-admin-card";
 
-<td>
+card.innerHTML = `
+    <img src="${p.image}" class="admin-card-image">
 
-<div style="
-display:flex;
-gap:10px;
-align-items:center;
-">
+    <div class="admin-card-content">
 
-<img
-src="${p.image}"
-style="
-width:60px;
-height:60px;
-object-fit:cover;
-border-radius:6px;
-">
+        <h4>${p.title}</h4>
 
-<div>
+        <p>₦${Number(p.price).toLocaleString()}</p>
 
-<div class="product-title-cell">${p.title}</div>
+        <small>
+            Stock:
+            ${(p.quantity||0)-(p.sold||0)}
+        </small>
 
-<small>
-${(p.colors || []).join(", ")}
-</small>
+        <div class="admin-card-actions">
 
-</div>
+            ...
+            Edit
+            Suspend
+            Delete
 
-</div>
+        </div>
 
-</td>
-
-<td>
-₦${Number(p.price).toLocaleString()}
-</td>
-
-<td>
-${(p.quantity || 0) - (p.sold || 0)}
-</td>
-
-<td>
-
-<button
-class="inventory-action-btn"
-onclick="editProduct('${docSnap.id}')"
-style="
-margin-right:8px;
-background:#c5a880;
-color:#000;
-border:none;
-padding:8px 12px;
-cursor:pointer;
-border-radius:6px;
-font-weight:700;
-transition:.3s;
-">
-
-Edit
-
-</button>
-
-<button
-class="inventory-action-btn"
-onclick="toggleSuspension(
-'${docSnap.id}',
-${p.isSuspended ? false : true}
-)"
-style="
-margin-right:8px;
-background:${p.isSuspended ? '#28a745' : '#ff4d4d'};
-color:white;
-border:none;
-padding:8px 12px;
-cursor:pointer;
-border-radius:4px;
-">
-
-${p.isSuspended ? "Unsuspend" : "Suspend"}
-
-</button>
-
-<button
-class="inventory-action-btn"
-onclick="deleteProduct('${docSnap.id}')"
-style="
-background:#222;
-color:white;
-border:none;
-padding:8px 12px;
-cursor:pointer;
-border-radius:4px;
-">
-
-Delete
-
-</button>
-
-</td>
-
+    </div>
 `;
 
-            tableBody.appendChild(row);
+tableBody.appendChild(card);
 
         });
 
@@ -412,8 +337,7 @@ orders.filter(order=>{
 filteredOrders.forEach((order)=>{
 
     body.innerHTML += `
-
-<tr>
+<div class="order-admin-card">
 
 <td>
 
@@ -569,7 +493,7 @@ Delivered
 
 </td>
 
-</tr>
+</div>
 
 `;
 
