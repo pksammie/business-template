@@ -129,125 +129,70 @@ async function backupCurrentCart(){
         calculatedGrossTotal +=
         itemLineTotal;
 
-        const row =
-        document.createElement("tr");
+        const card =
+document.createElement("div");
 
-        row.className = "cart-table-row";
+card.className = "cart-product-card";
 
-if(editMode){
-
-    row.classList.add("cart-edit-mode");
-
-}
-
-if(selectedIndex === index){
-
-    row.classList.add("selected");
-
-}
-
-        row.innerHTML = `
-<td class="product-col">
+card.innerHTML = `
 
 <img
 src="${item.image}"
-class="table-cart-img">
+class="cart-card-image">
 
-<div class="table-product-details">
+<div class="cart-card-content">
 
-<span class="table-item-title">
-${item.title}
-</span>
+    <div class="cart-card-title">
+        ${item.title}
+    </div>
 
-<span class="table-item-variant-label">
-Size: ${item.size}
-</span>
+    <div class="cart-card-price">
+        ₦${item.price.toLocaleString()}
+    </div>
 
-<span class="table-item-variant-label">
-Color: ${item.color}
-</span>
+    <div class="cart-card-meta">
+        Size: ${item.size}
+    </div>
 
-<button
-class="table-remove-item-btn"
-onclick="removeLineItem(${index})">
+    <div class="cart-card-meta">
+        Color: ${item.color}
+    </div>
 
-Remove
+    <div class="cart-card-meta">
+        Quantity:
+        <input
+            type="number"
+            min="1"
+            value="${item.quantity}"
+            onchange="
+            modifyLineQuantity(
+                ${index},
+                this.value
+            )"
+        >
+    </div>
 
-</button>
+    <div class="cart-card-meta">
+        Total:
+        ₦${itemLineTotal.toLocaleString()}
+    </div>
+
+    <div class="cart-card-actions">
+
+        <button
+        class="clear-cart-btn"
+        onclick="
+        removeLineItem(${index})
+        ">
+            Remove
+        </button>
+
+    </div>
 
 </div>
-
-</td>
-
-<td class="price-col">
-₦${item.price.toLocaleString()}
-</td>
-
-<td class="quantity-col">
-
-<input
-type="number"
-min="1"
-value="${item.quantity}"
-class="table-qty-input"
-onchange="
-modifyLineQuantity(
-${index},
-this.value
-)">
-
-</td>
-
-<td class="total-col">
-₦${itemLineTotal.toLocaleString()}
-</td>
-
-${
-editMode
-?
-`
-<td class="selector-col">
-
-<input
-type="radio"
-name="edit-selection"
-class="cart-update-selector"
-
-${
-selectedIndex===index
-?
-"checked"
-:
-""
-}>
-
-</td>
-`
-:
-""
-}
 `;
 
-        if(editMode){
-
-    row.addEventListener("click",(e)=>{
-
-        if(
-            e.target.tagName === "INPUT" ||
-            e.target.tagName === "BUTTON"
-        ){
-            return;
-        }
-
-        selectedIndex = index;
-
-        renderTabularCart();
-
-    });
-
-}
-
-        cartItemsContainer.appendChild(row);
+cartItemsContainer.appendChild(card);
 
     });
 

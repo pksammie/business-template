@@ -229,9 +229,20 @@ function loadInventory() {
 
         tableBody.innerHTML = "";
 
-        snap.forEach((docSnap)=>{
+const products = [];
 
-            const p = docSnap.data();
+snap.forEach((docSnap)=>{
+    products.push({
+        id: docSnap.id,
+        ...docSnap.data()
+    });
+});
+
+products.sort(
+    (a,b) => (b.createdAt || 0) - (a.createdAt || 0)
+);
+
+products.forEach((p)=>{
 
             const card = document.createElement("div");
 
@@ -254,7 +265,7 @@ card.innerHTML = `
         <div class="admin-card-actions">
 
 <button
-onclick="editProduct('${docSnap.id}')"
+onclick="editProduct('${p.id}')"
 class="edit-btn">
 
 Edit
@@ -262,8 +273,7 @@ Edit
 </button>
 
 <button
-onclick="toggleSuspension(
-'${docSnap.id}',
+onclick="toggleSuspension('${p.id}',
 ${p.isSuspended ? false : true}
 )"
 class="${p.isSuspended ? "unsuspend-btn" : "suspend-btn"}">
@@ -273,7 +283,7 @@ ${p.isSuspended ? "Unsuspend" : "Suspend"}
 </button>
 
 <button
-onclick="deleteProduct('${docSnap.id}')"
+onclick="deleteProduct('${p.id}')"
 class="delete-btn">
 
 Delete
