@@ -93,7 +93,31 @@ class="decision-product-image"
         <!-- QTY -->
         <div style="margin-top:15px;">
             <h4>Quantity</h4>
-            <input type="number" id="item-quantity" value="1" min="1">
+            <div class="qty-control">
+
+<button
+type="button"
+onclick="decreaseQty()">
+
+-
+
+</button>
+
+<input
+type="text"
+id="item-quantity"
+value="1"
+readonly>
+
+<button
+type="button"
+onclick="increaseQty()">
+
++
+
+</button>
+
+</div>
         </div>
 
         <p id="decision-description"></p>

@@ -141,6 +141,33 @@ Array.isArray(product.colors)
   }
 }
 
+window.increaseQty = function(){
+
+    const qty =
+    document.getElementById(
+        "item-quantity"
+    );
+
+    qty.value =
+    Number(qty.value) + 1;
+};
+
+window.decreaseQty = function(){
+
+    const qty =
+    document.getElementById(
+        "item-quantity"
+    );
+
+    if(Number(qty.value) > 1){
+
+        qty.value =
+        Number(qty.value) - 1;
+
+    }
+
+};
+
 /* ---------------- CART ---------------- */
 
 window.submitToCartBag = async function () {

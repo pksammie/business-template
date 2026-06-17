@@ -101,16 +101,12 @@ async function backupCurrentCart(){
     if (firestoreCart.length === 0) {
 
         cartItemsContainer.innerHTML = `
-            <tr>
-                <td colspan="5"
-                    style="
-                        padding:40px;
-                        text-align:center;
-                    ">
-                    Your shopping bag is empty.
-                </td>
-            </tr>
-        `;
+<div class="empty-cart">
+
+Your shopping bag is empty.
+
+</div>
+`;
 
         subtotalLabel.innerText = "₦0";
 
@@ -159,23 +155,63 @@ class="cart-card-image">
     </div>
 
     <div class="cart-card-meta">
-        Quantity:
-        <input
-            type="number"
-            min="1"
-            value="${item.quantity}"
-            onchange="
-            modifyLineQuantity(
-                ${index},
-                this.value
-            )"
-        >
-    </div>
+
+Quantity:
+
+<div class="qty-control">
+
+<button
+onclick="
+event.stopPropagation();
+decreaseCartQty(${index})
+">
+
+-
+
+</button>
+
+<span class="qty-number">
+
+${item.quantity}
+
+</span>
+
+<button
+onclick="
+event.stopPropagation();
+increaseCartQty(${index})
+">
+
++
+
+</button>
+
+</div>
+
+</div>
 
     <div class="cart-card-meta">
         Total:
         ₦${itemLineTotal.toLocaleString()}
     </div>
+
+    ${editMode ? `
+<div class="cart-card-select">
+
+<label>
+
+<input
+type="radio"
+name="edit-selection"
+${selectedIndex === index ? "checked" : ""}
+>
+
+Select Product
+
+</label>
+
+</div>
+` : ""}
 
     <div class="cart-card-actions">
 
@@ -191,6 +227,18 @@ class="cart-card-image">
 
 </div>
 `;
+
+if(editMode){
+
+    card.addEventListener("click",()=>{
+
+        selectedIndex = index;
+
+        renderTabularCart();
+
+    });
+
+}
 
 cartItemsContainer.appendChild(card);
 
@@ -227,6 +275,38 @@ async function(index,newQty){
     );
 
     renderTabularCart();
+
+};
+
+window.increaseCartQty =
+async function(index){
+
+    const item =
+    firestoreCart[index];
+
+    await modifyLineQuantity(
+        index,
+        item.quantity + 1
+    );
+
+};
+
+window.decreaseCartQty =
+async function(index){
+
+    const item =
+    firestoreCart[index];
+
+    if(item.quantity <= 1){
+
+        return;
+
+    }
+
+    await modifyLineQuantity(
+        index,
+        item.quantity - 1
+    );
 
 };
 
@@ -269,16 +349,18 @@ function() {
 
     if(!editMode){
 
-        editMode = true;
+    editMode = true;
 
-document.getElementById(
-"update-mode-message"
-).style.display = "block";
+    selectedIndex = null;
 
-        renderTabularCart();
+    document.getElementById(
+    "update-mode-message"
+    ).style.display = "block";
 
-        return;
-    }
+    renderTabularCart();
+
+    return;
+}
 
     if(selectedIndex === null){
 

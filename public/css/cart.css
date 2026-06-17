@@ -499,7 +499,7 @@ table{
 
 .cart-card-image{
     width:100%;
-    height:320px;
+    height:300px;
     object-fit:cover;
 }
 
@@ -541,7 +541,43 @@ table{
     }
 
     .cart-card-image{
-        height:420px;
+        height:180px;
     }
 
+}
+
+.qty-control{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-top: 8px;
+}
+
+.qty-control button{
+    width:35px;
+    height:35px;
+
+    border:none;
+
+    border-radius:8px;
+
+    background:#141821;
+
+    color:white;
+
+    font-size:18px;
+
+    cursor:pointer;
+}
+
+.qty-control span{
+    min-width:30px;
+    text-align:center;
+    font-weight:600;
+}
+
+.qty-number{
+min-width:25px;
+text-align:center;
+font-weight:700;
 }
