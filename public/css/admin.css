@@ -830,7 +830,16 @@ display:block;
 }
 
 .admin-card-image{
-    height:240px;
+    height: 320px;
+    object-fit: cover;
+}
+
+@media(max-width:480px){
+
+.admin-card-image{
+    height:380px;
+}
+
 }
 
 .admin-card-content{
@@ -904,9 +913,17 @@ display:block;
 }
 
 .admin-card-actions{
-    display:flex;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
     gap:10px;
-    flex-wrap:wrap;
+}
+
+@media(max-width:480px){
+
+.admin-card-actions{
+    grid-template-columns:1fr;
+}
+
 }
 
 .admin-card-actions button{
@@ -924,22 +941,37 @@ display:block;
     transition:.3s;
 }
 
-.edit-btn{
-    background:#17a2b8;
-    color:white;
-}
-
-.suspend-btn{
-    background:#c5a880;
-    color:black;
-}
-
+.edit-btn,
+.suspend-btn,
 .delete-btn{
-    background:#ff4d4d;
-    color:white;
+    background:transparent;
+    border:1px solid var(--primary-color);
+    color:var(--primary-color);
+}
+
+.edit-btn:hover,
+.suspend-btn:hover,
+.delete-btn:hover{
+    background:var(--primary-color);
+    color:#000;
 }
 
 .admin-card-actions button:hover{
     transform:translateY(-2px);
     opacity:.9;
+}
+
+.order-status{
+    margin-bottom:20px;
+}
+
+.order-customer,
+.order-phone{
+    margin-bottom:15px;
+}
+
+.order-customer strong,
+.order-phone strong{
+    display:block;
+    margin-bottom:4px;
 }
