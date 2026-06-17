@@ -584,7 +584,7 @@ table{
     white-space:nowrap;
 }
 
-#admin-inventory-table-body img{
+#admin-inventory-table-body img:not(.admin-card-image){
     width:40px !important;
     height:50px !important;
 }
@@ -778,7 +778,7 @@ display:block;
     border-radius:15px;
     overflow:hidden;
     border:1px solid #242d3d;
-
+    width: 100%;
     display:flex;
     flex-direction:column;
 }
@@ -819,53 +819,51 @@ display:block;
 
 @media(max-width:768px){
 
-.products-cards-grid,
-.orders-cards-grid{
-    grid-template-columns:1fr;
-    gap:20px;
-}
+    .products-cards-grid,
+    .orders-cards-grid{
+        grid-template-columns:1fr;
+        gap:20px;
+    }
 
-.product-admin-card{
-    min-height:auto;
-}
+    .product-admin-card{
+        min-height:auto;
+    }
 
-.admin-card-image{
-    height: 900px;
-    width: 900px;
+    .admin-card-image{
+        height:420px;
+    }
+
+    .admin-card-content{
+        padding:20px;
+    }
+
+    .admin-card-content h4{
+        font-size:18px;
+    }
+
+    .admin-card-content p{
+        font-size:20px;
+    }
+
+    .admin-card-actions{
+        flex-direction:column;
+    }
+
+    .admin-card-actions button{
+        width:100%;
+    }
+
+    .order-admin-card{
+        padding:20px;
+    }
+
 }
 
 @media(max-width:480px){
 
-.admin-card-image{
-    height:380px;
-    width: 380px;
-}
-
-}
-
-.admin-card-content{
-    padding:20px;
-}
-
-.admin-card-content h4{
-    font-size:18px;
-}
-
-.admin-card-content p{
-    font-size:20px;
-}
-
-.admin-card-actions{
-    flex-direction:column;
-}
-
-.admin-card-actions button{
-    width:100%;
-}
-
-.order-admin-card{
-    padding:20px;
-}
+    .admin-card-image{
+        height:500px;
+    }
 
 }
 
@@ -968,12 +966,12 @@ display:block;
 
 /* DELETE */
 .delete-btn{
-    background:#7f1d1d;
+    background:#1f2833;
     color:#fff;
 }
 
 .delete-btn:hover{
-    background:#5a1010;
+    background:#141821;
     transform:translateY(-2px);
 }
 
