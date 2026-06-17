@@ -934,6 +934,21 @@ display:block;
     transition:.3s;
 }
 
+.edit-btn{
+    background:#c5a880;
+    color:#000;
+}
+
+.suspend-btn{
+    background:#ff8c00;
+    color:#fff;
+}
+
+.delete-btn{
+    background:#ff4d4d;
+    color:#fff;
+}
+
 .admin-card-actions button:hover{
     transform:translateY(-2px);
     opacity:.9;
