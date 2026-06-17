@@ -266,7 +266,7 @@ onclick="toggleSuspension(
 '${docSnap.id}',
 ${p.isSuspended ? false : true}
 )"
-class="suspend-btn">
+class="${p.isSuspended ? "unsuspend-btn" : "suspend-btn"}">
 
 ${p.isSuspended ? "Unsuspend" : "Suspend"}
 

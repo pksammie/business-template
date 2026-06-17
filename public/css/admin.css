@@ -935,19 +935,48 @@ display:block;
 }
 
 .edit-btn{
-    background:#c5a880;
+    background:var(--primary-color);
     color:#000;
 }
 
+.edit-btn:hover{
+    background:#ebd0a7;
+    transform:translateY(-2px);
+}
+
+/* SUSPEND */
 .suspend-btn{
-    background:#ff8c00;
+    background:#dc3545;
     color:#fff;
 }
 
-.delete-btn{
-    background:#ff4d4d;
+.suspend-btn:hover{
+    background:#c82333;
+    transform:translateY(-2px);
+}
+
+/* UNSUSPEND */
+.unsuspend-btn{
+    background:#28a745;
     color:#fff;
 }
+
+.unsuspend-btn:hover{
+    background:#218838;
+    transform:translateY(-2px);
+}
+
+/* DELETE */
+.delete-btn{
+    background:#7f1d1d;
+    color:#fff;
+}
+
+.delete-btn:hover{
+    background:#5a1010;
+    transform:translateY(-2px);
+}
+
 
 .admin-card-actions button:hover{
     transform:translateY(-2px);
