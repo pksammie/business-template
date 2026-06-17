@@ -830,8 +830,8 @@ display:block;
 }
 
 .admin-card-image{
-    height: 320px;
-    width: 320px;
+    height: 900px;
+    width: 900px;
 }
 
 @media(max-width:480px){
@@ -932,21 +932,6 @@ display:block;
     cursor:pointer;
 
     transition:.3s;
-}
-
-.edit-btn{
-    background:#c5a880;
-    color:white;
-}
-
-.suspend-btn{
-    background: green;
-    color: white;
-}
-
-.delete-btn{
-    background:#ff4d4d;
-    color:white;
 }
 
 .admin-card-actions button:hover{
