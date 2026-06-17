@@ -831,13 +831,14 @@ display:block;
 
 .admin-card-image{
     height: 320px;
-    object-fit: cover;
+    width: 320px;
 }
 
 @media(max-width:480px){
 
 .admin-card-image{
     height:380px;
+    width: 380px;
 }
 
 }
@@ -913,17 +914,9 @@ display:block;
 }
 
 .admin-card-actions{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
+    display:flex;
     gap:10px;
-}
-
-@media(max-width:480px){
-
-.admin-card-actions{
-    grid-template-columns:1fr;
-}
-
+    flex-wrap:wrap;
 }
 
 .admin-card-actions button{
@@ -941,19 +934,19 @@ display:block;
     transition:.3s;
 }
 
-.edit-btn,
-.suspend-btn,
-.delete-btn{
-    background:transparent;
-    border:1px solid var(--primary-color);
-    color:var(--primary-color);
+.edit-btn{
+    background:#c5a880;
+    color:white;
 }
 
-.edit-btn:hover,
-.suspend-btn:hover,
-.delete-btn:hover{
-    background:var(--primary-color);
-    color:#000;
+.suspend-btn{
+    background: green;
+    color: white;
+}
+
+.delete-btn{
+    background:#ff4d4d;
+    color:white;
 }
 
 .admin-card-actions button:hover{
