@@ -202,15 +202,21 @@ increaseCartQty(${index})
     </div>
 
     ${editMode ? `
+<div class="cart-update-overlay">
 
-<div class="edit-selector">
+    <div class="update-selector">
 
-<i class="fa-solid fa-pen-to-square"></i>
+        ${
+            selectedIndex === index
+            ?
+            `<i class="fa-solid fa-circle-check"></i>`
+            :
+            `<i class="fa-regular fa-circle"></i>`
+        }
+
+    </div>
 
 </div>
-
-<div class="cart-update-overlay"></div>
-
 ` : ""}
 
     <div class="cart-card-actions">
@@ -230,7 +236,12 @@ increaseCartQty(${index})
 
 if(editMode){
 
-    card.addEventListener("click",()=>{
+    const selector =
+    card.querySelector(".update-selector");
+
+    selector.addEventListener("click",(e)=>{
+
+        e.stopPropagation();
 
         selectedIndex = index;
 
