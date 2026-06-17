@@ -130,6 +130,12 @@ document.createElement("div");
 
 card.className = "cart-product-card";
 
+if(editMode){
+
+card.classList.add("edit-mode");
+
+}
+
 if(selectedIndex === index){
 
     card.classList.add("selected");
@@ -202,21 +208,23 @@ increaseCartQty(${index})
     </div>
 
     ${editMode ? `
+
 <div class="cart-update-overlay">
 
-    <div class="update-selector">
+<div class="edit-selector">
 
-        ${
-            selectedIndex === index
-            ?
-            `<i class="fa-solid fa-circle-check"></i>`
-            :
-            `<i class="fa-regular fa-circle"></i>`
-        }
-
-    </div>
+${
+selectedIndex === index
+?
+`<i class="fa-solid fa-circle-check"></i>`
+:
+`<i class="fa-solid fa-pen-to-square"></i>`
+}
 
 </div>
+
+</div>
+
 ` : ""}
 
     <div class="cart-card-actions">
@@ -237,7 +245,7 @@ increaseCartQty(${index})
 if(editMode){
 
     const selector =
-    card.querySelector(".update-selector");
+    card.querySelector(".edit-selector");
 
     selector.addEventListener("click",(e)=>{
 
