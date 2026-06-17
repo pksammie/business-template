@@ -500,7 +500,8 @@ table{
 .cart-card-image{
     width:100%;
     height:300px;
-    object-fit:cover;
+    object-fit:contain;
+    background-color:#141821
 }
 
 .cart-card-content{
@@ -521,7 +522,7 @@ table{
 
 .cart-card-meta{
     color:var(--text-muted);
-    margin-bottom:8px;
+    margin-bottom: 6px;
 }
 
 .cart-card-actions{
@@ -580,4 +581,83 @@ table{
 min-width:25px;
 text-align:center;
 font-weight:700;
+}
+
+.cart-product-card{
+
+position:relative;
+
+overflow:hidden;
+
+}
+
+.cart-update-overlay{
+
+position:absolute;
+
+inset:0;
+
+background:
+linear-gradient(
+135deg,
+rgba(197,168,128,.08),
+rgba(197,168,128,.03)
+);
+
+backdrop-filter:blur(2px);
+
+pointer-events:none;
+
+}
+
+.edit-selector{
+
+position:absolute;
+
+top:15px;
+
+right:15px;
+
+width:42px;
+
+height:42px;
+
+border-radius:50%;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+border:2px solid var(--primary-color);
+
+color:var(--primary-color);
+
+background:#000;
+
+z-index:50;
+
+transition:.3s;
+
+}
+
+.cart-product-card.selected{
+
+border:1px solid var(--primary-color);
+
+box-shadow:
+0 0 25px rgba(197,168,128,.35);
+
+}
+
+.cart-product-card.selected .edit-selector{
+
+background:var(--primary-color);
+
+color:#000;
+
+box-shadow:
+0 0 20px rgba(197,168,128,.8);
+
 }

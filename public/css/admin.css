@@ -825,7 +825,7 @@ display:block;
 
 }
 
-@media(max-width:768px){
+@media(max-width:500px){
 
     .products-cards-grid,
     .orders-cards-grid{
@@ -838,7 +838,9 @@ display:block;
     }
 
     .admin-card-image{
-        height:180px;
+        height:100px;
+        object-fit: contain;
+        background-color: #1f2833;
     }
 
     .admin-card-content{
@@ -870,7 +872,9 @@ display:block;
 @media(max-width:480px){
 
     .admin-card-image{
-        height: 180px;
+        height: 100px;
+        object-fit: contain;
+        background-color: #1f2833;
     }
 
 }

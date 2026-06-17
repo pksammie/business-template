@@ -130,6 +130,12 @@ document.createElement("div");
 
 card.className = "cart-product-card";
 
+if(selectedIndex === index){
+
+    card.classList.add("selected");
+
+}
+
 card.innerHTML = `
 
 <img
@@ -196,21 +202,15 @@ increaseCartQty(${index})
     </div>
 
     ${editMode ? `
-<div class="cart-card-select">
 
-<label>
+<div class="edit-selector">
 
-<input
-type="radio"
-name="edit-selection"
-${selectedIndex === index ? "checked" : ""}
->
-
-Select Product
-
-</label>
+<i class="fa-solid fa-pen-to-square"></i>
 
 </div>
+
+<div class="cart-update-overlay"></div>
+
 ` : ""}
 
     <div class="cart-card-actions">
