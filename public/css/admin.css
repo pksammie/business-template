@@ -665,7 +665,7 @@ grid-template-columns:1fr;
 }
 
 .product-image{
-height:250px;
+height:220px;
 }
 
 img{
@@ -857,4 +857,89 @@ display:block;
     padding:20px;
 }
 
+}
+
+/* ==========================
+   PRODUCT ADMIN CARDS
+========================== */
+
+.product-admin-card{
+    background:#141821;
+    border:1px solid #242d3d;
+    border-radius:16px;
+    overflow:hidden;
+
+    display:flex;
+    flex-direction:column;
+}
+
+.admin-card-image{
+    width:100%;
+    height:320px;
+    object-fit:cover;
+    display:block;
+}
+
+.admin-card-content{
+    padding:20px;
+}
+
+.admin-card-content h4{
+    font-size:20px;
+    line-height:1.4;
+    margin-bottom:12px;
+}
+
+.admin-card-content p{
+    color:var(--primary-color);
+    font-size:24px;
+    font-weight:700;
+    margin-bottom:8px;
+}
+
+.admin-card-content small{
+    display:block;
+    color:var(--text-muted);
+    margin-bottom:20px;
+}
+
+.admin-card-actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.admin-card-actions button{
+    flex:1;
+    min-width:100px;
+
+    border:none;
+    border-radius:8px;
+
+    padding:12px;
+
+    font-weight:600;
+    cursor:pointer;
+
+    transition:.3s;
+}
+
+.edit-btn{
+    background:#17a2b8;
+    color:white;
+}
+
+.suspend-btn{
+    background:#c5a880;
+    color:black;
+}
+
+.delete-btn{
+    background:#ff4d4d;
+    color:white;
+}
+
+.admin-card-actions button:hover{
+    transform:translateY(-2px);
+    opacity:.9;
 }
