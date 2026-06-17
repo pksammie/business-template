@@ -558,15 +558,15 @@ table{
     width:35px;
     height:35px;
 
-    border:none;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 
-    border-radius:8px;
+    border-radius:12px;
 
-    background:#141821;
+    background: white;
 
-    color:white;
+    color: #1f2833;
 
-    font-size:18px;
+    font-size:24px;
 
     cursor:pointer;
 }
