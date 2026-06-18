@@ -33,13 +33,13 @@ async function load() {
 
   product = snap.data();
 
-  const remaining =
+const remaining =
 
-(latestProduct.quantity || 0)
+(product.quantity || 0)
 
 -
 
-(latestProduct.sold || 0);
+(product.sold || 0);
 
 const stockText =
 document.getElementById("stock-left");
@@ -85,6 +85,11 @@ if(remaining <= 0){
 
     soldBadge.style.display =
     "none";
+
+    addBtn.disabled = false;
+
+    addBtn.textContent =
+    "Add To Cart";
 }
 
   document.getElementById("decision-title").textContent = product.title;
@@ -195,6 +200,23 @@ if (!latestSnap.exists()) {
 }
 
 const latestProduct = latestSnap.data();
+
+const latestRemaining =
+
+(latestProduct.quantity || 0)
+
+-
+
+(latestProduct.sold || 0);
+
+if(latestRemaining <= 0){
+
+    showToast(
+        "This product is sold out."
+    );
+
+    return;
+}
 
 product = latestProduct;
 
@@ -399,5 +421,4 @@ setTimeout(()=>{
 },1000);
 };
 
-latestProduct();
 load();

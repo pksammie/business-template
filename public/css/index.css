@@ -464,7 +464,8 @@ body[data-theme="luxury"] .main-signature-logo span {
 #item-quantity {
   background-color: #000;
   color: #fff;
-  border-radius: 5px;
+  border-radius: 3px;
+  border-color: #c5a880;
 }
 
 .admin-form{
@@ -1588,9 +1589,9 @@ margin-top:10px;
 
 .luxury-qty-btn{
 
-width:48px;
+width:38px;
 
-height:48px;
+height:38px;
 
 border:1px solid var(--primary-color);
 
