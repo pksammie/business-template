@@ -462,10 +462,12 @@ body[data-theme="luxury"] .main-signature-logo span {
 }
 
 #item-quantity {
-  background-color: #000;
-  color: #fff;
   border-radius: 3px;
-  border-color: #c5a880;
+  background:#141821;
+
+border:1px solid #1f2833;
+
+color:white;
 }
 
 .admin-form{
@@ -1594,6 +1596,8 @@ width:33px;
 height:33px;
 
 justify-content: center;
+
+text-align: center;
 
 align-items: center;
 
