@@ -547,7 +547,7 @@ table{
 
 }
 
-.qty-control{
+/* .qty-control{
     display:flex;
     align-items:center;
     gap:12px;
@@ -575,7 +575,7 @@ table{
     min-width:30px;
     text-align:center;
     font-weight:600;
-}
+} */
 
 .qty-number{
 min-width:25px;
@@ -679,7 +679,7 @@ cursor:pointer;
 
 pointer-events:none;
 
-opacity: 35;
+opacity: 35%;
 
 }
 

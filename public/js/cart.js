@@ -176,7 +176,7 @@ Quantity:
 onclick="
 event.stopPropagation();
 decreaseCartQty(${index})
-">
+"class="luxury-qty-btn">
 
 -
 
@@ -192,7 +192,7 @@ ${item.quantity}
 onclick="
 event.stopPropagation();
 increaseCartQty(${index})
-">
+"class="luxury-qty-btn">
 
 +
 

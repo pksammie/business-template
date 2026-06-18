@@ -14,6 +14,7 @@ from
 
 const orderSummaryWrapper = document.getElementById('checkout-summary-target');
 const checkoutFormInstance = document.getElementById('shipping-address-capture-form');
+let isProcessingCheckout = false;
 
 // Admin Phone Variable Setup (Format: Country code first, no spaces or special symbols)
 const ADMIN_WHATSAPP_NUMBER = "2348109007611";
@@ -133,6 +134,27 @@ function prefillSavedUserAddressMetadata() {
 window.executeOrderCompilationPipeline = async function(event) {
     event.preventDefault();
     
+    if(isProcessingCheckout){
+
+    return;
+
+}
+
+isProcessingCheckout = true;
+const submitBtn =
+
+checkoutFormInstance.querySelector(
+'button[type="submit"]'
+);
+
+if(submitBtn){
+
+    submitBtn.disabled = true;
+
+    submitBtn.textContent =
+    "Processing...";
+}
+
     const user = auth.currentUser;
 
     console.log(user);

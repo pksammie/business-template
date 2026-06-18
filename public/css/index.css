@@ -165,9 +165,18 @@ table td {
 
 .table-cart-img {
   width:80px;
-    height:90px;
+  height:90px;
   object-fit:cover;
   border-radius:10px;
+}
+
+@media(max-width: 500px){
+
+.table-cart-img{
+  width:70px;
+  height:80px;
+}
+
 }
 
 .product-col {
@@ -453,9 +462,12 @@ body[data-theme="luxury"] .main-signature-logo span {
 }
 
 #item-quantity {
-  background-color: #000;
-  color: #fff;
-  border-radius: 5px;
+  border-radius: 3px;
+  background:#141821;
+
+border:1px solid #1f2833;
+
+color:white;
 }
 
 .admin-form{
@@ -1563,4 +1575,67 @@ width:100%;
     margin:0;
     font-size:18px;
 }
+}
+
+.luxury-qty-box{
+
+display:flex;
+
+align-items:center;
+
+gap:15px;
+
+margin-top:10px;
+
+}
+
+.luxury-qty-btn{
+
+width:33px;
+
+height:33px;
+
+justify-content: center;
+
+text-align: center;
+
+align-items: center;
+
+background:#141821;
+
+border:1px solid #1f2833;
+
+color:white;
+
+font-size:24px;
+
+font-weight:700;
+
+border-radius:12px;
+
+cursor:pointer;
+
+transition:.3s;
+
+}
+
+.luxury-qty-btn:hover{
+
+background:rgba(197,168,128,.12);
+
+box-shadow:
+0 0 20px rgba(197,168,128,.35);
+
+}
+
+#item-quantity{
+
+width:90px;
+
+text-align:center;
+
+font-size:18px;
+
+font-weight:700;
+
 }
