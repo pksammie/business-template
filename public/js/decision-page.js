@@ -35,11 +35,11 @@ async function load() {
 
   const remaining =
 
-(product.quantity || 0)
+(latestProduct.quantity || 0)
 
 -
 
-(product.sold || 0);
+(latestProduct.sold || 0);
 
 const stockText =
 document.getElementById("stock-left");
@@ -196,6 +196,8 @@ if (!latestSnap.exists()) {
 
 const latestProduct = latestSnap.data();
 
+product = latestProduct;
+
 if(latestProduct.isEditing){
 
     showToast(
@@ -295,11 +297,11 @@ const updatedItem = {
 
     productId: id,
 
-    title: product.title,
+    title: latestProduct.title,
 
-    price: product.price,
+price: latestProduct.price,
 
-    image: product.image,
+image: latestProduct.image,
 
     size: selectedSize
         ? selectedSize.value

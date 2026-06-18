@@ -244,12 +244,7 @@ selectedIndex === index
 
 if(editMode){
 
-    const selector =
-    card.querySelector(".edit-selector");
-
-    selector.addEventListener("click",(e)=>{
-
-        e.stopPropagation();
+    card.addEventListener("click",()=>{
 
         selectedIndex = index;
 

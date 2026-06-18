@@ -51,9 +51,11 @@ async function loadProduct(){
     product.price;
 
     document.getElementById(
-        "prod-quantity"
-    ).value =
-    product.quantity;
+"prod-quantity"
+).value =
+(product.quantity || 0)
+-
+(product.sold || 0);
 
     document.getElementById(
         "prod-desc"
@@ -205,10 +207,12 @@ await updateDoc(
         ),
 
         quantity:Number(
-            document.getElementById(
-                "prod-quantity"
-            ).value
-        ),
+document.getElementById(
+"prod-quantity"
+).value
+),
+
+sold:0,
 
         description:
         document.getElementById(
