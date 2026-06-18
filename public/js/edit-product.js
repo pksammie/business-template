@@ -147,6 +147,36 @@ uploadBox.onclick = ()=>{
 
 };
 
+window.addEventListener(
+"beforeunload",
+async ()=>{
+
+    if(!productId) return;
+
+    try{
+
+        await updateDoc(
+
+            doc(
+                db,
+                "products",
+                productId
+            ),
+
+            {
+                isEditing:false
+            }
+
+        );
+
+    }catch(err){
+
+        console.log(err);
+
+    }
+
+});
+
 document
 .getElementById("back-admin-btn")
 .addEventListener("click", async (e) => {

@@ -339,12 +339,38 @@ showToast(
     "WhatsApp is opening. Please tap SEND to complete your order."
 );
 
+const whatsappWindow =
 window.open(
     destinationWhatsAppUrlEndpoint,
     "_blank"
 );
 
-location.href = "/";
+if(
+
+    !whatsappWindow ||
+
+    whatsappWindow.closed ||
+
+    typeof whatsappWindow.closed === "undefined"
+
+){
+
+    /*
+    Popup blocked
+    */
+
+    location.href =
+    destinationWhatsAppUrlEndpoint;
+
+}else{
+
+    setTimeout(()=>{
+
+        location.href = "/";
+
+    },1500);
+
+}
 };
 
 import {

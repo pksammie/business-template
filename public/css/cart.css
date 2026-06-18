@@ -547,6 +547,36 @@ table{
 
 }
 
+.qty-control{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-top: 8px;
+}
+
+.qty-control button{
+    width:30px;
+    height:30px;
+
+    border:none;
+
+    border-radius: 8px;
+
+    background:#141821;
+
+    color:white;
+
+    font-size:18px;
+
+    cursor:pointer;
+}
+
+.qty-control span{
+    min-width:30px;
+    text-align:center;
+    font-weight:600;
+}
+
 .qty-number{
 min-width:25px;
 text-align:center;

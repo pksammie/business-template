@@ -874,11 +874,12 @@ window.deleteProduct = function(id){
 window.editProduct = async function(id){
 
     await updateDoc(
-        doc(db, "products", id),
-        {
-            isEditing: true
-        }
-    );
+    doc(db, "products", id),
+    {
+        isEditing: true,
+        editingStartedAt: Date.now()
+    }
+);
 
     location.href =
     `/edit-product.html?id=${id}`;

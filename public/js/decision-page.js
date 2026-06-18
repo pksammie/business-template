@@ -222,11 +222,49 @@ product = latestProduct;
 
 if(latestProduct.isEditing){
 
-    showToast(
-        "This product is currently being updated by the administrator. Please try again shortly."
-    );
+    const started =
 
-    return;
+    latestProduct.editingStartedAt || 0;
+
+    const age =
+
+    Date.now() - started;
+
+    /*
+    10 minutes
+    */
+
+    if(age < 600000){
+
+        showToast(
+            "This product is currently being updated by the administrator. Please try again shortly."
+        );
+
+        return;
+
+    }else{
+
+        /*
+        stale lock
+        auto release
+        */
+
+        await updateDoc(
+
+            doc(
+                db,
+                "products",
+                id
+            ),
+
+            {
+                isEditing:false
+            }
+
+        );
+
+    }
+
 }
 
 if(latestProduct.isSuspended){
