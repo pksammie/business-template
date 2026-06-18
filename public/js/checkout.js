@@ -1,5 +1,8 @@
 import { db, auth } from "./firebase.js";
 
+import { locationData }
+from "./location-data.js";
+
 import {
     collection,
     addDoc,
@@ -15,6 +18,24 @@ from
 const orderSummaryWrapper = document.getElementById('checkout-summary-target');
 const checkoutFormInstance = document.getElementById('shipping-address-capture-form');
 let isProcessingCheckout = false;
+
+function resetCheckoutState(){
+
+    isProcessingCheckout = false;
+
+    const submitBtn =
+    checkoutFormInstance?.querySelector(
+        'button[type="submit"]'
+    );
+
+    if(submitBtn){
+
+        submitBtn.disabled = false;
+
+        submitBtn.textContent =
+        "Complete Order";
+    }
+}
 
 // Admin Phone Variable Setup (Format: Country code first, no spaces or special symbols)
 const ADMIN_WHATSAPP_NUMBER = "2348109007611";
@@ -115,6 +136,111 @@ cartSnap.forEach(docSnap => {
     orderSummaryWrapper.appendChild(summaryTotalFooterBlock);
 }
 
+function initializeLocationSelectors(){
+
+const countrySelect =
+document.getElementById("country");
+
+const stateSelect =
+document.getElementById("state");
+
+const citySelect =
+document.getElementById("city");
+
+if(
+!countrySelect ||
+!stateSelect ||
+!citySelect
+){
+return;
+}
+
+/* COUNTRIES */
+
+Object.keys(locationData)
+.forEach(country=>{
+
+const option =
+document.createElement("option");
+
+option.value = country;
+
+option.textContent = country;
+
+countrySelect.appendChild(option);
+
+});
+
+/* COUNTRY CHANGE */
+
+countrySelect.addEventListener(
+"change",
+()=>{
+
+stateSelect.innerHTML =
+`<option value="">Select State</option>`;
+
+citySelect.innerHTML =
+`<option value="">Select City</option>`;
+
+const states =
+locationData[
+countrySelect.value
+];
+
+if(!states) return;
+
+Object.keys(states)
+.forEach(state=>{
+
+const option =
+document.createElement("option");
+
+option.value = state;
+
+option.textContent = state;
+
+stateSelect.appendChild(option);
+
+});
+
+});
+
+/* STATE CHANGE */
+
+stateSelect.addEventListener(
+"change",
+()=>{
+
+citySelect.innerHTML =
+`<option value="">Select City</option>`;
+
+const cities =
+locationData[
+countrySelect.value
+]?.[
+stateSelect.value
+];
+
+if(!cities) return;
+
+cities.forEach(city=>{
+
+const option =
+document.createElement("option");
+
+option.value = city;
+
+option.textContent = city;
+
+citySelect.appendChild(option);
+
+});
+
+});
+
+}
+
 // Prefill form values if persistence checkbox data was saved from a past session
 function prefillSavedUserAddressMetadata() {
     const cachedAddress = JSON.parse(localStorage.getItem('vanguard_saved_customer_profile'));
@@ -127,12 +253,43 @@ function prefillSavedUserAddressMetadata() {
         checkoutFormInstance.elements['state'].value = cachedAddress.state || '';
         checkoutFormInstance.elements['phone'].value = cachedAddress.phone || '';
         checkoutFormInstance.elements['save_info'].checked = true;
+        checkoutFormInstance
+.elements["country"]
+.dispatchEvent(
+new Event("change")
+);
+
+setTimeout(()=>{
+
+checkoutFormInstance
+.elements["state"]
+.value =
+cachedAddress.state || "";
+
+checkoutFormInstance
+.elements["state"]
+.dispatchEvent(
+new Event("change")
+);
+
+setTimeout(()=>{
+
+checkoutFormInstance
+.elements["city"]
+.value =
+cachedAddress.city || "";
+
+},50);
+
+},50);
     }
 }
 
 // Compile all user info and launch the formatted WhatsApp message
 window.executeOrderCompilationPipeline = async function(event) {
     event.preventDefault();
+
+    try{
     
     if(isProcessingCheckout){
 
@@ -163,6 +320,8 @@ if (!user) {
 
     showToast("Please login.");
 
+    resetCheckoutState();
+
     return;
 }
 
@@ -186,9 +345,15 @@ cartSnap.forEach(docSnap => {
 
 });
     if (cart.length === 0) {
-        showToast("Your cart is empty. Cannot process checkout compilation pipeline.");
-        return;
-    }
+
+    showToast(
+        "Your cart is empty."
+    );
+
+    resetCheckoutState();
+
+    return;
+}
 
     const f = checkoutFormInstance.elements;
     const addressProfile = {
@@ -203,11 +368,19 @@ cartSnap.forEach(docSnap => {
 
     /* VERIFY STOCK BEFORE CHECKOUT */
 
+/* PRODUCT REVALIDATION + STOCK CHECK */
+
 for (const item of cart) {
 
-    const productSnap = await getDoc(
-        doc(db, "products", item.productId)
+    const productRef =
+    doc(
+        db,
+        "products",
+        item.productId
     );
+
+    const productSnap =
+    await getDoc(productRef);
 
     if (!productSnap.exists()) {
 
@@ -215,24 +388,128 @@ for (const item of cart) {
             `${item.title} no longer exists.`
         );
 
+        resetCheckoutState();
+
         return;
     }
 
-    const productData = productSnap.data();
+    const productData =
+    productSnap.data();
 
-    const remaining =
-        (productData.quantity || 0)
-        -
-        (productData.sold || 0);
+    if(productData.isSuspended){
 
-    if (item.quantity > remaining) {
+    showToast(
+        `${item.title} is unavailable.`
+    );
+
+    return;
+}
+
+    /*
+    SUSPENDED PRODUCT BLOCK
+    */
+
+    if (
+        productData.status === "Suspended"
+    ) {
 
         showToast(
-            `Sorry, only ${remaining} of ${item.title} remain in stock.`
+            `${item.title} is no longer available.`
         );
+
+        resetCheckoutState();
 
         return;
     }
+
+    /*
+    AUTO SYNC CART DATA
+    */
+
+    let cartNeedsUpdate = false;
+
+    const latestPrice =
+    productData.price;
+
+    const latestTitle =
+    productData.title;
+
+    const latestImage =
+    productData.image;
+
+    if(item.price !== latestPrice){
+
+        item.price =
+        latestPrice;
+
+        cartNeedsUpdate = true;
+    }
+
+    if(item.title !== latestTitle){
+
+        item.title =
+        latestTitle;
+
+        cartNeedsUpdate = true;
+    }
+
+    if(item.image !== latestImage){
+
+        item.image =
+        latestImage;
+
+        cartNeedsUpdate = true;
+    }
+
+    /*
+    UPDATE FIRESTORE CART
+    */
+
+    if(cartNeedsUpdate){
+
+        await setDoc(
+
+            doc(
+                db,
+                "users",
+                user.uid,
+                "cart",
+                item.cartDocId
+            ),
+
+            item
+        );
+
+        showToast(
+            `${item.title} was updated with latest information.`
+        );
+    }
+
+    /*
+    STOCK CHECK
+    */
+
+    const remaining =
+
+        (productData.quantity || 0)
+
+        -
+
+        (productData.sold || 0);
+
+    if(item.quantity > remaining){
+
+        showToast(
+
+            `Only ${remaining} of ${item.title} remain in stock.`
+
+        );
+
+        resetCheckoutState();
+
+        return;
+    }
+
 }
 
     // Save profile to LocalStorage if check option is ticked
@@ -295,23 +572,7 @@ for (const item of cart) {
     }
 );
 
-} 
-
-/* SAVE CART BACKUP */
-
-await addDoc(
-    collection(
-        db,
-        "users",
-        user.uid,
-        "cart_backups"
-    ),
-    {
-        items: cart,
-        createdAt: Date.now()
-    }
-);
-
+}
     // --- WHATSAPP ORDER COMPILER STRING BUILDER ---
     let messageText = `*NEW INCOMING ORDER - TIME-LESS* \n\n`;
     messageText += `*CUSTOMER DETAILS:*\n\n`;
@@ -357,6 +618,8 @@ messageText += `⚠️ Please do not edit or cancel this message so your order c
 
 }
 
+resetCheckoutState();
+
 showToast(
     "WhatsApp is opening. Please tap SEND to complete your order."
 );
@@ -393,6 +656,19 @@ if(
     },1500);
 
 }
+
+}
+catch(error){
+
+    console.error(error);
+
+    showToast(
+        "Something went wrong. Please try again."
+    );
+
+    resetCheckoutState();
+}
+
 };
 
 import {
@@ -401,6 +677,8 @@ import {
 from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
 
 document.addEventListener("DOMContentLoaded", () => {
+
+    initializeLocationSelectors();
 
     prefillSavedUserAddressMetadata();
 

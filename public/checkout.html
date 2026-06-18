@@ -24,7 +24,14 @@
                 <h2 style="font-size: 20px; font-weight: 400; letter-spacing: 1px; margin-bottom: 20px; text-transform: uppercase;">Delivery Address Profile</h2>
                 
                 <form id="shipping-address-capture-form" class="admin-form" style="display: flex; flex-direction: column; gap: 15px;">
-                    <input type="text" name="country" placeholder="Country / Region" required style="width: 100%;">
+                    <select
+id="country"
+name="country"
+required
+style="width:100%;"
+>
+<option value="">Select Country</option>
+</select>
                     
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                         <input type="text" name="first_name" placeholder="First Name" required>
@@ -32,8 +39,22 @@
                     </div>
 
                     <input type="text" name="address" placeholder="Residential Address / Street Name" required style="width: 100%;">
-                    <input type="text" name="city" placeholder="City" required style="width: 100%;">
-                    <input type="text" name="state" placeholder="State" required style="width: 100%;">
+                    <select
+id="city"
+name="city"
+required
+style="width:100%;"
+>
+<option value="">Select City</option>
+</select>
+                    <select
+id="state"
+name="state"
+required
+style="width:100%;"
+>
+<option value="">Select State</option>
+</select>
                     <input type="tel" name="phone" placeholder="Active WhatsApp Phone Number" required style="width: 100%;">
                     
                     <!-- Persistent Profiles State Management Box -->
@@ -54,7 +75,7 @@
             After checkout, WhatsApp will open with your order details.
             Please tap <strong>SEND</strong> to complete your request.
 
-            Your order will then appear in My Orders where you can track its <strong>Status</strong>..
+            Your order will then appear in My Orders where you can track its <strong>Status</strong>
         </p>
 
     </div>

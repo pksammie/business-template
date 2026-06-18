@@ -6,7 +6,9 @@ import {
     deleteDoc,
     doc,
     updateDoc,
-    addDoc
+    addDoc,
+    getDoc,
+    setDoc
 }
 from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
@@ -84,6 +86,58 @@ async function backupCurrentCart(){
 
     firestoreCart = [];
 
+    for(const docSnap of snap.docs){
+
+    const cartItem = {
+
+        firestoreId: docSnap.id,
+
+        ...docSnap.data()
+    };
+
+    try{
+
+        const productSnap = await getDoc(
+
+            doc(
+                db,
+                "products",
+                cartItem.productId
+            )
+
+        );
+
+        if(
+
+            !productSnap.exists()
+
+        ){
+
+            cartItem.isUnavailable = true;
+
+        }else{
+
+            const productData =
+            productSnap.data();
+
+            if(productData.isSuspended){
+
+                cartItem.isUnavailable = true;
+
+            }
+
+        }
+
+    }catch(error){
+
+        console.error(error);
+
+    }
+
+    firestoreCart.push(cartItem);
+
+}
+
     snap.forEach(docSnap => {
 
         firestoreCart.push({
@@ -96,7 +150,153 @@ async function backupCurrentCart(){
 
     });
 
+    /* ===================================
+   CART AUTO SYNC + SUSPENSION CHECK
+=================================== */
+
+let cartUpdated = false;
+
+for(const item of firestoreCart){
+
+    if(!item.productId){
+        continue;
+    }
+
+    const productSnap =
+    await getDoc(
+        doc(
+            db,
+            "products",
+            item.productId
+        )
+    );
+
+    /*
+    PRODUCT DELETED
+    */
+
+    if(!productSnap.exists()){
+
+        await deleteDoc(
+
+            doc(
+                db,
+                "users",
+                user.uid,
+                "cart",
+                item.firestoreId
+            )
+
+        );
+
+        cartUpdated = true;
+
+        continue;
+    }
+
+    const productData =
+    productSnap.data();
+
+    /*
+    PRODUCT SUSPENDED
+    */
+
+    if(
+        productData.status === "Suspended"
+    ){
+
+        await deleteDoc(
+
+            doc(
+                db,
+                "users",
+                user.uid,
+                "cart",
+                item.firestoreId
+            )
+
+        );
+
+        cartUpdated = true;
+
+        continue;
+    }
+
+    let needsUpdate = false;
+
+    /*
+    TITLE SYNC
+    */
+
+    if(
+        item.title !== productData.title
+    ){
+
+        item.title =
+        productData.title;
+
+        needsUpdate = true;
+    }
+
+    /*
+    PRICE SYNC
+    */
+
+    if(
+        item.price !== productData.price
+    ){
+
+        item.price =
+        productData.price;
+
+        needsUpdate = true;
+    }
+
+    /*
+    IMAGE SYNC
+    */
+
+    if(
+        item.image !== productData.image
+    ){
+
+        item.image =
+        productData.image;
+
+        needsUpdate = true;
+    }
+
+    if(needsUpdate){
+
+        await setDoc(
+
+            doc(
+                db,
+                "users",
+                user.uid,
+                "cart",
+                item.firestoreId
+            ),
+
+            item
+        );
+
+        cartUpdated = true;
+    }
+
+}
+
     if (!cartItemsContainer) return;
+
+    if(cartUpdated){
+
+    showToast(
+        "Cart refreshed with latest product information."
+    );
+
+    return renderTabularCart();
+
+}
 
     if (firestoreCart.length === 0) {
 
@@ -118,6 +318,11 @@ Your shopping bag is empty.
     let calculatedGrossTotal = 0;
 
     firestoreCart.forEach((item,index)=>{
+
+        if(item.isUnavailable){
+
+    return;
+}
 
         const itemLineTotal =
         item.price * item.quantity;
@@ -169,7 +374,7 @@ class="cart-card-image">
     <div class="cart-card-meta">
 
 Quantity:
-
+<br>
 <div class="qty-control">
 
 <button
@@ -355,7 +560,7 @@ function(index){
     // Look at your action button methods inside public/js/cart.js
     
         window.actionUpdateCartRedirect =
-function() {
+async function() {
 
     if(firestoreCart.length === 0){
     return;
@@ -384,6 +589,51 @@ function() {
 
         return;
     }
+
+    const productSnap =
+await getDoc(
+    doc(
+        db,
+        "products",
+        firestoreCart[selectedIndex].productId
+    )
+);
+
+if(
+    !productSnap.exists()
+){
+
+    showToast(
+        "Product no longer exists."
+    );
+
+    return;
+}
+
+if(
+    productSnap.data().status
+    ===
+    "Suspended"
+){
+
+    showToast(
+        "This product is unavailable."
+    );
+
+    return;
+}
+
+const selectedProduct =
+firestoreCart[selectedIndex];
+
+if(selectedProduct.isUnavailable){
+
+    showToast(
+        "This product is no longer available."
+    );
+
+    return;
+}
 
     window.location.href =
 `/decision-page.html?id=${firestoreCart[selectedIndex].productId}&cartDocId=${firestoreCart[selectedIndex].firestoreId}`;
@@ -447,6 +697,21 @@ function(){
 
         return;
     }
+
+    const unavailableItems =
+
+firestoreCart.filter(
+item => item.isUnavailable
+);
+
+if(unavailableItems.length > 0){
+
+    showToast(
+        "Remove unavailable products before checkout."
+    );
+
+    return;
+}
 
     window.location.href = "/checkout";
 };

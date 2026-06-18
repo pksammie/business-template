@@ -33,6 +33,23 @@ async function load() {
 
   product = snap.data();
 
+  /* PRODUCT SUSPENSION CHECK */
+
+if(product.isSuspended){
+
+    showToast(
+        "This product is currently unavailable."
+    );
+
+    setTimeout(()=>{
+
+        location.href = "/";
+
+    },1500);
+
+    return;
+}
+
 const remaining =
 
 (product.quantity || 0)
