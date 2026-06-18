@@ -399,4 +399,5 @@ setTimeout(()=>{
 },1000);
 };
 
+latestProduct();
 load();
