@@ -73,7 +73,20 @@ async function backupCurrentCart(){
 
     async function renderTabularCart() {
 
-    const user = auth.currentUser;
+        console.log(
+    "RENDER CART",
+    Date.now()
+);
+
+    if(renderingCart){
+        return;
+    }
+
+    renderingCart = true;
+
+    try{
+
+            const user = auth.currentUser;
 
     if (!user) return;
 
@@ -458,6 +471,13 @@ cartItemsContainer.appendChild(card);
 
     subtotalLabel.innerText =
     `₦${calculatedGrossTotal.toLocaleString()}`;
+
+    } finally {
+
+        renderingCart = false;
+
+    }
+
 }
 
     window.modifyLineQuantity =

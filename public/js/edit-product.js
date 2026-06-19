@@ -21,6 +21,8 @@ document.getElementById("upload-image-box");
 
 let uploadedImageUrl = "";
 
+let renderingCart = false;
+
 async function loadProduct(){
 
     const snap =
