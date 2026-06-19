@@ -470,6 +470,37 @@ border:1px solid #1f2833;
 color:white;
 }
 
+.luxury-location-select{
+
+height:56px;
+
+padding:0 16px;
+
+font-size:15px;
+
+background:#111;
+
+color:#fff;
+
+border:1px solid rgba(255,255,255,.15);
+
+border-radius:8px;
+
+cursor:pointer;
+
+transition:.25s ease;
+}
+
+.luxury-location-select:focus{
+
+outline:none;
+
+border-color:var(--primary-color);
+
+box-shadow:
+0 0 0 2px rgba(197,168,128,.15);
+}
+
 .admin-form{
     display:flex;
     flex-direction:column;

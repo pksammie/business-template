@@ -282,13 +282,13 @@ ${p.isSuspended ? "Unsuspend" : "Suspend"}
 
 </button>
 
-<button
-onclick="deleteProduct('${p.id}')"
-class="delete-btn">
+    <button
+    onclick="deleteProduct('${p.id}')"
+    class="delete-btn">
 
-Delete
+    Delete
 
-</button>
+    </button>
 
 </div>
 
@@ -513,20 +513,11 @@ filteredOrders.forEach((order)=>{
             `
 
             : `
-                <button
-                    onclick="deleteOrder('${order.id}')"
-                    style="
-                        width:100%;
-                        background:#444;
-                        color:white;
-                        border:none;
-                        padding:12px;
-                        border-radius:8px;
-                        cursor:pointer;
-                    "
-                >
-                    Delete Order
-                </button>
+            if(order.status === "Delivered"){
+
+actionsHTML = "-";
+
+}
             `
         }
 

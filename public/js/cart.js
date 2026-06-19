@@ -137,19 +137,6 @@ async function backupCurrentCart(){
     firestoreCart.push(cartItem);
 
 }
-
-    snap.forEach(docSnap => {
-
-        firestoreCart.push({
-
-            firestoreId: docSnap.id,
-
-            ...docSnap.data()
-
-        });
-
-    });
-
     /* ===================================
    CART AUTO SYNC + SUSPENSION CHECK
 =================================== */
@@ -201,9 +188,7 @@ for(const item of firestoreCart){
     PRODUCT SUSPENDED
     */
 
-    if(
-        productData.status === "Suspended"
-    ){
+    if(productData.isSuspended){
 
         await deleteDoc(
 
@@ -374,6 +359,7 @@ class="cart-card-image">
     <div class="cart-card-meta">
 
 Quantity:
+<br>
 <br>
 <div class="qty-control">
 
@@ -573,10 +559,16 @@ async function() {
     selectedIndex = null;
 
     document.getElementById(
-    "update-mode-message"
+        "update-mode-message"
     ).style.display = "block";
 
-    renderTabularCart();
+    cartItemsContainer
+    .querySelectorAll(".cart-product-card")
+    .forEach(card=>{
+
+        card.classList.add("edit-mode");
+
+    });
 
     return;
 }
@@ -611,9 +603,7 @@ if(
 }
 
 if(
-    productSnap.data().status
-    ===
-    "Suspended"
+    productSnap.data().isSuspended
 ){
 
     showToast(
