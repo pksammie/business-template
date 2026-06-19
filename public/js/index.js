@@ -188,6 +188,8 @@ if (!isSuspended) {
                     ${title}
                 </h3>
 
+                <p id="stock-left" style="color:lime;margin-bottom:10px;"></p>
+                
                 <div class="product-price">
                     ₦${price.toLocaleString()}
                 </div>

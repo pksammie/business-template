@@ -1,6 +1,10 @@
 import { db, auth } from "./firebase.js";
 
-import { locationData }
+import {
+    getCountries,
+    getStates,
+    getCities
+}
 from "./location-service.js";
 
 import {
@@ -136,108 +140,165 @@ cartSnap.forEach(docSnap => {
     orderSummaryWrapper.appendChild(summaryTotalFooterBlock);
 }
 
-function initializeLocationSelectors(){
+function initializeLocationSelectors() {
 
-const countrySelect =
+const countryInput =
 document.getElementById("country");
 
-const stateSelect =
+const stateInput =
 document.getElementById("state");
 
-const citySelect =
+const cityInput =
 document.getElementById("city");
 
-if(
-!countrySelect ||
-!stateSelect ||
-!citySelect
-){
-return;
+const countries =
+getCountries();
+
+createSearchDropdown({
+containerId:"country-search",
+placeholder:"Search Country",
+data:countries,
+labelKey:"name",
+onSelect:(country)=>{
+
+countryInput.value =
+country.name;
+
+loadStates(country);
+
 }
-
-/* COUNTRIES */
-
-Object.keys(locationData)
-.forEach(country=>{
-
-const option =
-document.createElement("option");
-
-option.value = country;
-
-option.textContent = country;
-
-countrySelect.appendChild(option);
-
 });
 
-/* COUNTRY CHANGE */
-
-countrySelect.addEventListener(
-"change",
-()=>{
-
-stateSelect.innerHTML =
-`<option value="">Select State</option>`;
-
-citySelect.innerHTML =
-`<option value="">Select City</option>`;
+function loadStates(country){
 
 const states =
-locationData[
-countrySelect.value
-];
+getStates(country.isoCode);
 
-if(!states) return;
+createSearchDropdown({
+containerId:"state-search",
+placeholder:"Search State",
+data:states,
+labelKey:"name",
+onSelect:(state)=>{
 
-Object.keys(states)
-.forEach(state=>{
+stateInput.value =
+state.name;
 
-const option =
-document.createElement("option");
+loadCities(
+country.isoCode,
+state.isoCode
+);
 
-option.value = state;
-
-option.textContent = state;
-
-stateSelect.appendChild(option);
-
+}
 });
 
-});
+}
 
-/* STATE CHANGE */
-
-stateSelect.addEventListener(
-"change",
-()=>{
-
-citySelect.innerHTML =
-`<option value="">Select City</option>`;
+function loadCities(
+countryCode,
+stateCode
+){
 
 const cities =
-locationData[
-countrySelect.value
-]?.[
-stateSelect.value
-];
+getCities(
+countryCode,
+stateCode
+);
 
-if(!cities) return;
+createSearchDropdown({
+containerId:"city-search",
+placeholder:"Search City",
+data:cities,
+labelKey:"name",
+onSelect:(city)=>{
 
-cities.forEach(city=>{
+cityInput.value =
+city.name;
 
-const option =
-document.createElement("option");
+}
+});
 
-option.value = city;
+}
 
-option.textContent = city;
+}
 
-citySelect.appendChild(option);
+function createSearchDropdown({
+containerId,
+placeholder,
+data,
+labelKey,
+onSelect
+}){
+
+const container =
+document.getElementById(containerId);
+
+container.innerHTML = `
+<div class="search-select">
+<input
+type="text"
+placeholder="${placeholder}"
+class="search-input"
+autocomplete="off"
+/>
+<div class="search-results"></div>
+</div>
+`;
+
+const input =
+container.querySelector(".search-input");
+
+const results =
+container.querySelector(".search-results");
+
+input.addEventListener(
+"input",
+()=>{
+
+const query =
+input.value.toLowerCase();
+
+results.innerHTML = "";
+
+if(!query) return;
+
+data
+.filter(item=>
+
+item[labelKey]
+.toLowerCase()
+.includes(query)
+
+)
+.slice(0,20)
+.forEach(item=>{
+
+const div =
+document.createElement("div");
+
+div.className =
+"search-item";
+
+div.textContent =
+item[labelKey];
+
+div.onclick = ()=>{
+
+input.value =
+item[labelKey];
+
+results.innerHTML = "";
+
+onSelect(item);
+
+};
+
+results.appendChild(div);
 
 });
 
-});
+}
+);
 
 }
 

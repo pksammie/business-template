@@ -501,6 +501,40 @@ box-shadow:
 0 0 0 2px rgba(197,168,128,.15);
 }
 
+.search-select{
+position:relative;
+width:100%;
+}
+
+.search-input{
+width:100%;
+padding:14px;
+background:#111;
+border:1px solid #333;
+color:white;
+}
+
+.search-results{
+position:absolute;
+top:100%;
+left:0;
+right:0;
+background:#111;
+border:1px solid #333;
+max-height:250px;
+overflow-y:auto;
+z-index:999;
+}
+
+.search-item{
+padding:12px;
+cursor:pointer;
+}
+
+.search-item:hover{
+background:#222;
+}
+
 .admin-form{
     display:flex;
     flex-direction:column;
