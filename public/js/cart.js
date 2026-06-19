@@ -8,9 +8,11 @@ import {
     updateDoc,
     addDoc,
     getDoc,
-    setDoc
+    setDoc,
+    onSnapshot
 }
-from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+from
+"https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 import {
     onAuthStateChanged
@@ -705,6 +707,21 @@ if(unavailableItems.length > 0){
     if(user){
 
         renderTabularCart();
+
+        onSnapshot(
+
+            collection(
+                db,
+                "products"
+            ),
+
+            ()=>{
+
+                renderTabularCart();
+
+            }
+
+        );
 
     }
 

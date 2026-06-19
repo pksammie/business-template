@@ -517,11 +517,11 @@ filteredOrders.forEach((order)=>{
         <div style="
             width:100%;
             text-align:center;
-            color:#ff4d4d;
+            color: green;
             font-weight:700;
             padding:12px;
         ">
-            Cancelled
+            Completed
         </div>
     `
 }

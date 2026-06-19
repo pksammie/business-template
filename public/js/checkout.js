@@ -372,40 +372,6 @@ cartSnap.forEach(docSnap => {
 
 for (const item of cart) {
 
-    const productSnap = await getDoc(
-    doc(db,"products",item.productId)
-);
-
-if(!productSnap.exists()){
-
-    showToast(
-        `${item.title} no longer exists.`
-    );
-
-    return;
-}
-
-const productData =
-productSnap.data();
-
-if(productData.isSuspended){
-
-    showToast(
-        `${item.title} is unavailable.`
-    );
-
-    return;
-}
-
-if(productData.price !== item.price){
-
-    showToast(
-        `${item.title} price changed. Refresh cart first.`
-    );
-
-    return;
-}
-
     const productRef =
     doc(
         db,
@@ -416,7 +382,7 @@ if(productData.price !== item.price){
     const productSnap =
     await getDoc(productRef);
 
-    if (!productSnap.exists()) {
+    if(!productSnap.exists()){
 
         showToast(
             `${item.title} no longer exists.`
@@ -432,21 +398,8 @@ if(productData.price !== item.price){
 
     if(productData.isSuspended){
 
-    showToast(
-        `${item.title} is unavailable.`
-    );
-
-    return;
-}
-
-    /*
-    SUSPENDED PRODUCT BLOCK
-    */
-
-    if(productData.isSuspended){
-
         showToast(
-            `${item.title} is no longer available.`
+            `${item.title} is unavailable.`
         );
 
         resetCheckoutState();
@@ -454,48 +407,31 @@ if(productData.price !== item.price){
         return;
     }
 
-    /*
-    AUTO SYNC CART DATA
-    */
-
     let cartNeedsUpdate = false;
 
-    const latestPrice =
-    productData.price;
-
-    const latestTitle =
-    productData.title;
-
-    const latestImage =
-    productData.image;
-
-    if(item.price !== latestPrice){
+    if(item.price !== productData.price){
 
         item.price =
-        latestPrice;
+        productData.price;
 
         cartNeedsUpdate = true;
     }
 
-    if(item.title !== latestTitle){
+    if(item.title !== productData.title){
 
         item.title =
-        latestTitle;
+        productData.title;
 
         cartNeedsUpdate = true;
     }
 
-    if(item.image !== latestImage){
+    if(item.image !== productData.image){
 
         item.image =
-        latestImage;
+        productData.image;
 
         cartNeedsUpdate = true;
     }
-
-    /*
-    UPDATE FIRESTORE CART
-    */
 
     if(cartNeedsUpdate){
 
@@ -513,13 +449,13 @@ if(productData.price !== item.price){
         );
 
         showToast(
-            `${item.title} was updated with latest information.`
+            `${item.title} has been updated.`
         );
-    }
 
-    /*
-    STOCK CHECK
-    */
+        resetCheckoutState();
+
+        return;
+    }
 
     const remaining =
 
@@ -541,7 +477,6 @@ if(productData.price !== item.price){
 
         return;
     }
-
 }
 
     // Save profile to LocalStorage if check option is ticked
