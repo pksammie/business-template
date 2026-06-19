@@ -1,9 +1,8 @@
 import { db, auth } from "./firebase.js";
 
-import { locationData }
-from "./location-service.js";
-
+// Import the country package cleanly from the CDN URL
 import { Country, State, City } from "https://esm.sh";
+
 
 import {
     collection,
@@ -139,109 +138,63 @@ cartSnap.forEach(docSnap => {
 }
 
 function initializeLocationSelectors(){
+    const countrySelect = document.getElementById("country");
+    const stateSelect = document.getElementById("state");
+    const citySelect = document.getElementById("city");
 
-const countrySelect =
-document.getElementById("country");
+    if(!countrySelect || !stateSelect || !citySelect){
+        return;
+    }
 
-const stateSelect =
-document.getElementById("state");
+    /* 1. POPULATE COUNTRIES */
+    // Clear and add placeholder
+    countrySelect.innerHTML = `<option value="">Select Country</option>`;
+    
+    const allCountries = Country.getAllCountries();
+    allCountries.forEach(country => {
+        const option = document.createElement("option");
+        option.value = country.isoCode; // Use ISO code (e.g. NG, US) for backend lookups
+        option.textContent = country.name; // Displays the real country name
+        countrySelect.appendChild(option);
+    });
 
-const citySelect =
-document.getElementById("city");
+    /* 2. COUNTRY CHANGE EVENT */
+    countrySelect.addEventListener("change", () => {
+        stateSelect.innerHTML = `<option value="">Select State</option>`;
+        citySelect.innerHTML = `<option value="">Select City</option>`;
 
-if(
-!countrySelect ||
-!stateSelect ||
-!citySelect
-){
-return;
+        const countryCode = countrySelect.value;
+        if (!countryCode) return;
+
+        // Fetch states belonging to selected country
+        const states = State.getStatesOfCountry(countryCode);
+        states.forEach(state => {
+            const option = document.createElement("option");
+            option.value = state.isoCode; // State code (e.g. LA for Lagos)
+            option.textContent = state.name;
+            stateSelect.appendChild(option);
+        });
+    });
+
+    /* 3. STATE CHANGE EVENT */
+    stateSelect.addEventListener("change", () => {
+        citySelect.innerHTML = `<option value="">Select City</option>`;
+
+        const countryCode = countrySelect.value;
+        const stateCode = stateSelect.value;
+        if (!countryCode || !stateCode) return;
+
+        // Fetch cities belonging to selected state and country
+        const cities = City.getCitiesOfState(countryCode, stateCode);
+        cities.forEach(city => {
+            const option = document.createElement("option");
+            option.value = city.name;
+            option.textContent = city.name;
+            citySelect.appendChild(option);
+        });
+    });
 }
 
-/* COUNTRIES */
-
-Object.keys(locationData)
-.forEach(country=>{
-
-const option =
-document.createElement("option");
-
-option.value = country;
-
-option.textContent = country;
-
-countrySelect.appendChild(option);
-
-});
-
-/* COUNTRY CHANGE */
-
-countrySelect.addEventListener(
-"change",
-()=>{
-
-stateSelect.innerHTML =
-`<option value="">Select State</option>`;
-
-citySelect.innerHTML =
-`<option value="">Select City</option>`;
-
-const states =
-locationData[
-countrySelect.value
-];
-
-if(!states) return;
-
-Object.keys(states)
-.forEach(state=>{
-
-const option =
-document.createElement("option");
-
-option.value = state;
-
-option.textContent = state;
-
-stateSelect.appendChild(option);
-
-});
-
-});
-
-/* STATE CHANGE */
-
-stateSelect.addEventListener(
-"change",
-()=>{
-
-citySelect.innerHTML =
-`<option value="">Select City</option>`;
-
-const cities =
-locationData[
-countrySelect.value
-]?.[
-stateSelect.value
-];
-
-if(!cities) return;
-
-cities.forEach(city=>{
-
-const option =
-document.createElement("option");
-
-option.value = city;
-
-option.textContent = city;
-
-citySelect.appendChild(option);
-
-});
-
-});
-
-}
 
 // Prefill form values if persistence checkbox data was saved from a past session
 function prefillSavedUserAddressMetadata() {
