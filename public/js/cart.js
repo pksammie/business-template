@@ -30,6 +30,8 @@ let editMode = false;
 
 let productsListenerStarted = false;
 
+let renderingCart = false;
+
 let selectedIndex = null;
 
 let firestoreCart = [];
@@ -506,8 +508,6 @@ async function(index,newQty){
 
     );
 
-    renderTabularCart();
-
 };
 
 window.increaseCartQty =
@@ -738,11 +738,16 @@ if(unavailableItems.length > 0){
     productsListenerStarted = true;
 
     onSnapshot(
-        collection(db,"products"),
-        ()=>{
-            renderTabularCart();
-        }
-    );
+    collection(
+        db,
+        "users",
+        user.uid,
+        "cart"
+    ),
+    ()=>{
+        renderTabularCart();
+    }
+);
 
 });
 
