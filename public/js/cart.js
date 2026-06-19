@@ -28,6 +28,8 @@ document.getElementById("summary-subtotal");
 
 let editMode = false;
 
+let productsListenerStarted = false;
+
 let selectedIndex = null;
 
 let firestoreCart = [];
@@ -281,8 +283,11 @@ for(const item of firestoreCart){
         "Cart refreshed with latest product information."
     );
 
-    return renderTabularCart();
+    setTimeout(()=>{
+        renderTabularCart();
+    },100);
 
+    return;
 }
 
     if (firestoreCart.length === 0) {
@@ -704,26 +709,20 @@ if(unavailableItems.length > 0){
 
     onAuthStateChanged(auth,(user)=>{
 
-    if(user){
+    if(!user) return;
 
-        renderTabularCart();
+    renderTabularCart();
 
-        onSnapshot(
+    if(productsListenerStarted) return;
 
-            collection(
-                db,
-                "products"
-            ),
+    productsListenerStarted = true;
 
-            ()=>{
-
-                renderTabularCart();
-
-            }
-
-        );
-
-    }
+    onSnapshot(
+        collection(db,"products"),
+        ()=>{
+            renderTabularCart();
+        }
+    );
 
 });
 

@@ -513,17 +513,32 @@ filteredOrders.forEach((order)=>{
                  </div>
     `
 
-    : `
-        <div style="
-            width:100%;
-            text-align:center;
-            color: green;
-            font-weight:700;
-            padding:12px;
-        ">
-            Completed
-        </div>
-    `
+: order.status === "Delivered"
+
+? `
+<div style="
+    width:100%;
+    text-align:center;
+    color:#17a2b8;
+    font-weight:700;
+    padding:12px;
+">
+    ✓ Delivered
+</div>
+`
+
+: `
+<div style="
+    width:100%;
+    text-align:center;
+    color:#ff4d4d;
+    font-weight:700;
+    padding:12px;
+">
+    ✕ Cancelled
+</div>
+`
+
 }
 
     </div>

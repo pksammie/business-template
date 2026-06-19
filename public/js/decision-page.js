@@ -21,6 +21,8 @@ params.get("cartDocId");
 
 let product;
 
+let addingToCart = false;
+
 const sizeWrapper = document.getElementById("size-options-wrapper");
 const colorWrapper = document.getElementById("color-options-wrapper"); // optional
 const descriptionBox = document.getElementById("decision-description");
@@ -191,10 +193,17 @@ window.decreaseQty = function(){
 };
 
 /* ---------------- CART ---------------- */
-
 window.submitToCartBag = async function () {
 
-  if (!product) {
+    if(addingToCart){
+    return;
+}
+
+addingToCart = true;
+
+try{
+
+          if (!product) {
     showToast("Please wait, product is still loading.");
     return;
   }
@@ -474,6 +483,11 @@ setTimeout(()=>{
 setTimeout(()=>{
     location.href="/cart";
 },1000);
-};
 
+    }finally{
+
+        addingToCart = false;
+
+    }
+}
 load();

@@ -242,7 +242,14 @@ document.getElementById(
 ).value
 ),
 
-sold:0,
+sold:
+(
+    (
+        await getDoc(
+            doc(db,"products",productId)
+        )
+    ).data().sold
+) || 0,
 
         description:
         document.getElementById(
