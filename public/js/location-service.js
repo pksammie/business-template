@@ -3,11 +3,11 @@ Country,
 State,
 City
 }
-from "country-state-city";
+from "https://cdn.jsdelivr.net/npm/country-state-city@3.2.1/+esm";
 
 export function getCountries(){
 
-    return Country.getAllCountries();
+return Country.getAllCountries();
 
 }
 
@@ -15,9 +15,9 @@ export function getStates(
 countryCode
 ){
 
-    return State.getStatesOfCountry(
-        countryCode
-    );
+return State.getStatesOfCountry(
+countryCode
+);
 
 }
 
@@ -26,9 +26,9 @@ countryCode,
 stateCode
 ){
 
-    return City.getCitiesOfState(
-        countryCode,
-        stateCode
-    );
+return City.getCitiesOfState(
+countryCode,
+stateCode
+);
 
 }
