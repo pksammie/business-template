@@ -510,16 +510,21 @@ filteredOrders.forEach((order)=>{
                 >
                     Mark as Delivered
                 </button>
-            `
+                 </div>
+    `
 
-            : `
-            if(order.status === "Delivered"){
-
-actionsHTML = "-";
-
+    : `
+        <div style="
+            width:100%;
+            text-align:center;
+            color:#ff4d4d;
+            font-weight:700;
+            padding:12px;
+        ">
+            Cancelled
+        </div>
+    `
 }
-            `
-        }
 
     </div>
 

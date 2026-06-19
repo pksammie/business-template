@@ -372,6 +372,40 @@ cartSnap.forEach(docSnap => {
 
 for (const item of cart) {
 
+    const productSnap = await getDoc(
+    doc(db,"products",item.productId)
+);
+
+if(!productSnap.exists()){
+
+    showToast(
+        `${item.title} no longer exists.`
+    );
+
+    return;
+}
+
+const productData =
+productSnap.data();
+
+if(productData.isSuspended){
+
+    showToast(
+        `${item.title} is unavailable.`
+    );
+
+    return;
+}
+
+if(productData.price !== item.price){
+
+    showToast(
+        `${item.title} price changed. Refresh cart first.`
+    );
+
+    return;
+}
+
     const productRef =
     doc(
         db,
@@ -409,9 +443,7 @@ for (const item of cart) {
     SUSPENDED PRODUCT BLOCK
     */
 
-    if (
-        productData.status === "Suspended"
-    ) {
+    if(productData.isSuspended){
 
         showToast(
             `${item.title} is no longer available.`

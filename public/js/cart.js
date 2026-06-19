@@ -562,13 +562,7 @@ async function() {
         "update-mode-message"
     ).style.display = "block";
 
-    cartItemsContainer
-    .querySelectorAll(".cart-product-card")
-    .forEach(card=>{
-
-        card.classList.add("edit-mode");
-
-    });
+    renderTabularCart();
 
     return;
 }
