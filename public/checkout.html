@@ -24,12 +24,13 @@
                 <h2 style="font-size: 20px; font-weight: 400; letter-spacing: 1px; margin-bottom: 20px; text-transform: uppercase;">Delivery Address Profile</h2>
                 
                 <form id="shipping-address-capture-form" class="admin-form" style="display: flex; flex-direction: column; gap: 15px;">
-                    <select
+                    <div id="country-search"></div>
+
+<input
+type="hidden"
 id="country"
 name="country"
 required
-style="width:100%;"
-class="luxury-location-select"
 >
 <option value="">Select Country</option>
 </select>
@@ -40,21 +41,23 @@ class="luxury-location-select"
                     </div>
 
                     <input type="text" name="address" placeholder="Residential Address / Street Name" required style="width: 100%;">
-                    <select
+                    <div id="country-search"></div>
+
+<input
+type="hidden"
 id="state"
 name="state"
 required
-style="width:100%;"
-class="luxury-location-select"
 >
 <option value="">Select State</option>
 </select>
-                    <select
+                    <div id="country-search"></div>
+
+<input
+type="hidden"
 id="city"
 name="city"
 required
-style="width:100%;"
-class="luxury-location-select"
 >
 <option value="">Select City</option>
 </select>

@@ -1,7 +1,7 @@
 import { db, auth } from "./firebase.js";
 
 import { locationData }
-from "./location-data.js";
+from "./location-service.js";
 
 import {
     collection,

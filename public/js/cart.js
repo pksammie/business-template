@@ -382,7 +382,6 @@ class="cart-card-image">
 
 Quantity:
 <br>
-<br>
 <div class="qty-control">
 
 <button
@@ -459,11 +458,25 @@ if(editMode){
 
     card.addEventListener("click",()=>{
 
-        selectedIndex = index;
+    document
+    .querySelectorAll(
+        ".cart-product-card"
+    )
+    .forEach(el=>{
 
-        renderTabularCart();
+        el.classList.remove(
+            "selected"
+        );
 
     });
+
+    card.classList.add(
+        "selected"
+    );
+
+    selectedIndex = index;
+
+});
 
 }
 
