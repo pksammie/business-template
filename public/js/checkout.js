@@ -1,9 +1,14 @@
 import { db, auth } from "./firebase.js";
 
 import {
-    getCountries,
-    getStates,
-    getCities
+createSearchSelect
+}
+from "./search-select.js";
+
+import {
+getCountries,
+getStates,
+getCities
 }
 from "./location-service.js";
 
@@ -140,7 +145,7 @@ cartSnap.forEach(docSnap => {
     orderSummaryWrapper.appendChild(summaryTotalFooterBlock);
 }
 
-function initializeLocationSelectors() {
+function initializeLocationSelectors(){
 
 const countryInput =
 document.getElementById("country");
@@ -151,74 +156,142 @@ document.getElementById("state");
 const cityInput =
 document.getElementById("city");
 
-const countries =
-getCountries();
+const countryContainer =
+document.getElementById("country-search");
 
-createSearchDropdown({
-containerId:"country-search",
-placeholder:"Search Country",
-data:countries,
-labelKey:"name",
-onSelect:(country)=>{
+const stateContainer =
+document.getElementById("state-search");
+
+const cityContainer =
+document.getElementById("city-search");
+
+const countries =
+getCountries().map(country => ({
+name: country.name,
+country
+}));
+
+let stateDropdown;
+let cityDropdown;
+
+createSearchSelect({
+
+container: countryContainer,
+
+placeholder: "Select Country",
+
+items: countries,
+
+onSelect: ({ country }) => {
 
 countryInput.value =
 country.name;
 
-loadStates(country);
-
-}
-});
-
-function loadStates(country){
+stateInput.value = "";
+cityInput.value = "";
 
 const states =
-getStates(country.isoCode);
+getStates(
+country.isoCode
+).map(state => ({
+name: state.name,
+state
+}));
 
-createSearchDropdown({
-containerId:"state-search",
-placeholder:"Search State",
-data:states,
-labelKey:"name",
-onSelect:(state)=>{
+if(stateDropdown){
+
+stateDropdown.enable();
+
+stateDropdown.setItems(states);
+
+stateDropdown.setPlaceholder(
+"Select State"
+);
+
+}
+
+if(cityDropdown){
+
+cityDropdown.disable();
+
+cityDropdown.setItems([]);
+
+cityDropdown.setPlaceholder(
+"Select City"
+);
+
+}
+
+}
+
+});
+
+stateDropdown =
+createSearchSelect({
+
+container: stateContainer,
+
+placeholder:
+"Select Country First",
+
+items: [],
+
+disabled: true,
+
+onSelect: ({ state }) => {
 
 stateInput.value =
 state.name;
 
-loadCities(
-country.isoCode,
-state.isoCode
+cityInput.value = "";
+
+const selectedCountry =
+countries.find(
+c => c.name === countryInput.value
 );
 
-}
-});
-
-}
-
-function loadCities(
-countryCode,
-stateCode
-){
+if(!selectedCountry) return;
 
 const cities =
 getCities(
-countryCode,
-stateCode
+selectedCountry.country.isoCode,
+state.isoCode
+).map(city => ({
+name: city.name
+}));
+
+cityDropdown.enable();
+
+cityDropdown.setItems(cities);
+
+cityDropdown.setPlaceholder(
+"Select City"
 );
 
-createSearchDropdown({
-containerId:"city-search",
-placeholder:"Search City",
-data:cities,
-labelKey:"name",
-onSelect:(city)=>{
+}
+
+});
+
+cityDropdown =
+createSearchSelect({
+
+container: cityContainer,
+
+placeholder:
+"Select State First",
+
+items: [],
+
+disabled: true,
+
+onSelect: (city) => {
 
 cityInput.value =
 city.name;
 
 }
-});
 
-}
+});
 
 }
 
@@ -314,35 +387,7 @@ function prefillSavedUserAddressMetadata() {
         checkoutFormInstance.elements['state'].value = cachedAddress.state || '';
         checkoutFormInstance.elements['phone'].value = cachedAddress.phone || '';
         checkoutFormInstance.elements['save_info'].checked = true;
-        checkoutFormInstance
-.elements["country"]
-.dispatchEvent(
-new Event("change")
-);
-
-setTimeout(()=>{
-
-checkoutFormInstance
-.elements["state"]
-.value =
-cachedAddress.state || "";
-
-checkoutFormInstance
-.elements["state"]
-.dispatchEvent(
-new Event("change")
-);
-
-setTimeout(()=>{
-
-checkoutFormInstance
-.elements["city"]
-.value =
-cachedAddress.city || "";
-
-},50);
-
-},50);
+        
     }
 }
 
@@ -417,6 +462,23 @@ cartSnap.forEach(docSnap => {
 }
 
     const f = checkoutFormInstance.elements;
+
+        if(
+!f.country.value ||
+!f.state.value ||
+!f.city.value
+){
+
+showToast(
+"Please select your country, state and city."
+);
+
+resetCheckoutState();
+
+return;
+
+}
+
     const addressProfile = {
         country: f['country'].value,
         first_name: f['first_name'].value,
