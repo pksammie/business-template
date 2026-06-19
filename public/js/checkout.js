@@ -1,6 +1,7 @@
 import { db, auth } from "./firebase.js";
 
-import { Country, State, City } from "https://unpkg.com";
+import { locationData }
+from "./location-service.js";
 
 import {
     collection,
