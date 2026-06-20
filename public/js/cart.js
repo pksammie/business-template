@@ -233,6 +233,10 @@ selectedCheckoutItems.includes(
 item.firestoreId
 );
 
+if(isSelected){
+card.classList.add("selected");
+}
+
       if (editMode) {
         card.classList.add("edit-mode");
       }
@@ -243,17 +247,9 @@ item.firestoreId
 
       card.innerHTML = `
 
-      <div class="cart-select-column">
-
-<button
-class="cart-select-btn
-${isSelected ? "active" : ""}"
-data-id="${item.firestoreId}"
->
+      <div class="cart-selector">
 
 <i class="fa-solid fa-check"></i>
-
-</button>
 
 </div>
 
@@ -373,7 +369,7 @@ ${
 
       const selectBtn =
 card.querySelector(
-".cart-select-btn"
+".cart-selector"
 );
 
 selectBtn?.addEventListener(
