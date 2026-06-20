@@ -28,6 +28,8 @@ let selectedIndex = null;
 
 let firestoreCart = [];
 
+let selectedCheckoutItems = [];
+
 async function backupCurrentCart() {
   const user = auth.currentUser;
 
@@ -224,7 +226,12 @@ Your shopping bag is empty.
 
       const card = document.createElement("div");
 
-      card.className = "cart-product-card";
+card.className = "cart-product-card";
+
+const isSelected =
+selectedCheckoutItems.includes(
+item.firestoreId
+);
 
       if (editMode) {
         card.classList.add("edit-mode");
@@ -235,6 +242,20 @@ Your shopping bag is empty.
       }
 
       card.innerHTML = `
+
+      <div class="cart-select-column">
+
+<button
+class="cart-select-btn
+${isSelected ? "active" : ""}"
+data-id="${item.firestoreId}"
+>
+
+<i class="fa-solid fa-check"></i>
+
+</button>
+
+</div>
 
 <img
 src="${item.image}"
@@ -349,6 +370,42 @@ ${
       }
 
       cartItemsContainer.appendChild(card);
+
+      const selectBtn =
+card.querySelector(
+".cart-select-btn"
+);
+
+selectBtn?.addEventListener(
+"click",
+(event)=>{
+
+event.stopPropagation();
+
+const id =
+item.firestoreId;
+
+if(
+selectedCheckoutItems.includes(id)
+){
+
+selectedCheckoutItems =
+selectedCheckoutItems.filter(
+x => x !== id
+);
+
+}
+else{
+
+selectedCheckoutItems.push(id);
+
+}
+
+renderTabularCart();
+
+}
+);
+
     });
 
     subtotalLabel.innerText = `₦${calculatedGrossTotal.toLocaleString()}`;
@@ -486,29 +543,32 @@ window.clearCart = function () {
 };
 
 window.actionProceedCheckout = function () {
-  if (firestoreCart.length === 0) {
-    showToast("Your shopping bag is empty.");
 
-    return;
-  }
+if (
+selectedCheckoutItems.length === 0
+){
 
-  if (!auth.currentUser) {
-    sessionStorage.setItem("redirectAfterLogin", "/checkout");
+showToast(
+"Select at least one item."
+);
 
-    window.location.href = "/login";
+return;
 
-    return;
-  }
+}
 
-  const unavailableItems = firestoreCart.filter((item) => item.isUnavailable);
+sessionStorage.setItem(
 
-  if (unavailableItems.length > 0) {
-    showToast("Remove unavailable products before checkout.");
+"selectedCheckoutItems",
 
-    return;
-  }
+JSON.stringify(
+selectedCheckoutItems
+)
 
-  window.location.href = "/checkout";
+);
+
+window.location.href =
+"/checkout";
+
 };
 
 onAuthStateChanged(auth, (user) => {

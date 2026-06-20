@@ -69,6 +69,29 @@ async function renderCheckoutOverview() {
       ...docSnap.data(),
     });
   });
+
+    const selectedIds = JSON.parse(
+  sessionStorage.getItem(
+    "selectedCheckoutItems"
+  ) || "[]"
+);
+
+if(selectedIds.length){
+
+  const filteredCart = cart.filter(
+    item =>
+      selectedIds.includes(
+        item.cartDocId
+      )
+  );
+
+  cart.length = 0;
+
+  cart.push(...filteredCart);
+
+}
+
+
   if (!orderSummaryWrapper) return;
 
   if (cart.length === 0) {
@@ -346,6 +369,28 @@ window.executeOrderCompilationPipeline = async function (event) {
         ...docSnap.data(),
       });
     });
+
+    const selectedIds = JSON.parse(
+  sessionStorage.getItem(
+    "selectedCheckoutItems"
+  ) || "[]"
+);
+
+if(selectedIds.length){
+
+  const filteredCart = cart.filter(
+    item =>
+      selectedIds.includes(
+        item.cartDocId
+      )
+  );
+
+  cart.length = 0;
+
+  cart.push(...filteredCart);
+
+}
+
     if (cart.length === 0) {
       showToast("Your cart is empty.");
 
@@ -561,10 +606,16 @@ window.executeOrderCompilationPipeline = async function (event) {
     Popup blocked
     */
 
+    sessionStorage.removeItem(
+  "selectedCheckoutItems"
+);
       location.href = destinationWhatsAppUrlEndpoint;
     } else {
       setTimeout(() => {
         location.href = "/";
+        sessionStorage.removeItem(
+  "selectedCheckoutItems"
+);
       }, 1500);
     }
   } catch (error) {
