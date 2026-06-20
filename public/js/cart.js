@@ -197,7 +197,6 @@ selectedIndex === index
 ){
 
 selectedIndex = null;
-
 editMode = false;
 
 document.getElementById(
@@ -208,10 +207,22 @@ showToast(
   "Update mode closed."
 );
 
-renderTabularCart();
+/*
+remove overlay instantly
+*/
+
+document
+.querySelectorAll(".cart-update-overlay")
+.forEach(el => el.remove());
+
+document
+.querySelectorAll(".cart-product-card")
+.forEach(el=>{
+  el.classList.remove("edit-mode");
+  el.classList.remove("selected");
+});
 
 return;
-
 }
 
 document
@@ -293,16 +304,47 @@ card.classList.add(
 }
 
 /* ── QTY CONTROLS ───────────────────────────────────────── */
-window.modifyLineQuantity = async function (index, newQty) {
+window.modifyLineQuantity = async function(index,newQty)
+{
   const qty = Number(newQty);
-  if (isNaN(qty) || qty < 1) return;
 
-  await updateDoc(
-    doc(db, "users", auth.currentUser.uid, "cart", firestoreCart[index].firestoreId),
-    { quantity: qty }
-  );
+  if(isNaN(qty) || qty < 1) return;
 
-  renderTabularCart();
+  /*
+  update UI immediately
+  */
+
+  firestoreCart[index].quantity = qty;
+
+  const qtyEl =
+  document.querySelectorAll(
+    ".qty-number"
+  )[index];
+
+  if(qtyEl)
+  {
+    qtyEl.textContent = qty;
+  }
+
+  try
+  {
+    await updateDoc(
+      doc(
+        db,
+        "users",
+        auth.currentUser.uid,
+        "cart",
+        firestoreCart[index].firestoreId
+      ),
+      {
+        quantity: qty
+      }
+    );
+  }
+  catch(err)
+  {
+    console.error(err);
+  }
 };
 
 window.increaseCartQty = async function (index) {
@@ -346,12 +388,17 @@ window.actionUpdateCartRedirect = async function () {
   ).style.display = "block";
 
   showToast(
-    "Select a product to update."
-  );
+  "Select a product to update."
+);
 
-  await renderTabularCart();
+/* instant UI update */
+document
+.querySelectorAll(".cart-product-card")
+.forEach(card => {
+  card.classList.add("edit-mode");
+});
 
-  return;
+return;
 }
 
   if (selectedIndex === null) {
@@ -427,9 +474,15 @@ onAuthStateChanged(auth, (user) => {
   if (cartListenerStarted) return;
   cartListenerStarted = true;
 
-  onSnapshot(collection(db, "users", user.uid, "cart"), () => {
+  onSnapshot(
+  collection(db, "users", user.uid, "cart"),
+  () => {
+
+    if(editMode) return;
+
     renderTabularCart();
-  });
+  }
+);
 });
 
 /* ── RESTORE CART ───────────────────────────────────────── */
