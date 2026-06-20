@@ -213,16 +213,35 @@ async function renderTabularCart() {
       if (editMode) {
         const film = card.querySelector(".edit-film-overlay");
         film?.addEventListener("click", e => {
-          e.stopPropagation();
-          if (selectedIndex === index) {
-            /* double-tap same item → exit edit mode */
-            exitEditMode();
-          } else {
-            /* select this item */
-            selectedIndex = index;
-            renderTabularCart();
-          }
-        });
+  e.stopPropagation();
+
+  document
+    .querySelectorAll(".cart-product-card")
+    .forEach(card => card.classList.remove("edit-picked"));
+
+  if (selectedIndex === index) {
+    exitEditMode();
+    return;
+  }
+
+  selectedIndex = index;
+
+  card.classList.add("edit-picked");
+
+  const allIcons =
+    document.querySelectorAll(".edit-film-icon");
+
+  allIcons.forEach(icon => {
+    icon.innerHTML =
+      `<i class="fa-regular fa-circle"></i>`;
+  });
+
+  const currentIcon =
+    film.querySelector(".edit-film-icon");
+
+  currentIcon.innerHTML =
+    `<i class="fa-solid fa-circle-check"></i>`;
+});
       }
 
       cartItemsContainer.appendChild(card);
@@ -240,12 +259,38 @@ async function renderTabularCart() {
    EXIT EDIT MODE HELPER
 ───────────────────────────────────────────────────────── */
 function exitEditMode() {
-  editMode      = false;
+
+  editMode = false;
   selectedIndex = null;
-  const banner  = document.getElementById("update-mode-message");
-  if (banner) banner.style.display = "none";
-  showToast("Update mode closed.");
-  renderTabularCart();
+
+  const banner =
+    document.getElementById(
+      "update-mode-message"
+    );
+
+  if (banner)
+    banner.style.display = "none";
+
+  document
+    .querySelectorAll(".edit-film-overlay")
+    .forEach(el => el.remove());
+
+  document
+    .querySelectorAll(".cart-product-card")
+    .forEach(card => {
+
+      card.classList.remove(
+        "edit-mode"
+      );
+
+      card.classList.remove(
+        "edit-picked"
+      );
+    });
+
+  showToast(
+    "Update mode closed."
+  );
 }
 
 /* ─────────────────────────────────────────────────────────
@@ -302,15 +347,53 @@ window.removeLineItem = function (index) {
    SELECT ALL
 ───────────────────────────────────────────────────────── */
 window.toggleSelectAll = function () {
-  const available = firestoreCart.filter(i => !i.isUnavailable);
-  const allSelected = available.every(i => selectedCheckoutItems.includes(i.firestoreId));
+
+  const available =
+    firestoreCart.filter(i => !i.isUnavailable);
+
+  const allSelected =
+    available.every(i =>
+      selectedCheckoutItems.includes(
+        i.firestoreId
+      )
+    );
 
   if (allSelected) {
+
     selectedCheckoutItems = [];
+
   } else {
-    selectedCheckoutItems = available.map(i => i.firestoreId);
+
+    selectedCheckoutItems =
+      available.map(i => i.firestoreId);
+
   }
-  renderTabularCart();
+
+  document
+    .querySelectorAll(".cart-product-card")
+    .forEach(card => {
+
+      const id =
+        card
+          .querySelector(".cart-selector")
+          ?.dataset.id;
+
+      if (!id) return;
+
+      if (
+        selectedCheckoutItems.includes(id)
+      ) {
+        card.classList.add(
+          "checkout-selected"
+        );
+      } else {
+        card.classList.remove(
+          "checkout-selected"
+        );
+      }
+    });
+
+  updateSelectAllBtn();
 };
 
 /* ─────────────────────────────────────────────────────────
@@ -322,13 +405,67 @@ window.actionUpdateCartRedirect = async function () {
   if (firestoreCart.length === 0) return;
 
   if (!editMode) {
-    editMode      = true;
-    selectedIndex = null;
-    selectedCheckoutItems = [];
-    const banner  = document.getElementById("update-mode-message");
-    if (banner) banner.style.display = "block";
-    showToast("Tap a product film to select it for update. Double-tap to exit.");
-    renderTabularCart();
+    editMode = true;
+
+selectedIndex = null;
+
+selectedCheckoutItems = [];
+
+document.getElementById(
+  "update-mode-message"
+).style.display = "block";
+
+document
+  .querySelectorAll(".cart-product-card")
+  .forEach((card,index)=>{
+
+    card.classList.add("edit-mode");
+
+    const overlay =
+    document.createElement("div");
+
+    overlay.className =
+      "edit-film-overlay";
+
+    overlay.innerHTML = `
+      <div class="edit-film-icon">
+        <i class="fa-regular fa-circle"></i>
+      </div>
+      <p class="edit-film-hint">
+        Tap to select for update
+      </p>
+    `;
+
+    overlay.addEventListener(
+      "click",
+      ()=>{
+        document
+          .querySelectorAll(
+            ".cart-product-card"
+          )
+          .forEach(
+            c=>c.classList.remove(
+              "edit-picked"
+            )
+          );
+
+        card.classList.add(
+          "edit-picked"
+        );
+
+        selectedIndex =
+          index;
+      }
+    );
+
+    card.appendChild(
+      overlay
+    );
+  });
+
+showToast(
+  "Tap a product film to select it."
+);
     return;
   }
 
