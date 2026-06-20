@@ -85,15 +85,20 @@ option.addEventListener(
 "click",
 ()=>{
 
+const label =
 wrapper.querySelector(
-".search-select-placeholder"
-).textContent =
+".search-select-placeholder, .search-select-value"
+);
+
+if(label){
+
+label.textContent =
 item.name;
 
-wrapper.querySelector(
-".search-select-placeholder"
-).className =
+label.className =
 "search-select-value";
+
+}
 
 wrapper.classList.remove(
 "open"
@@ -172,17 +177,22 @@ clear(){
 
 search.value = "";
 
+const placeholderElement =
 wrapper.querySelector(
-".search-select-placeholder"
-).textContent =
+".search-select-placeholder, .search-select-value"
+);
+
+if(placeholderElement){
+
+placeholderElement.textContent =
 placeholder;
 
-wrapper.querySelector(
-".search-select-placeholder"
-).className =
+placeholderElement.className =
 "search-select-placeholder";
 
-options.innerHTML = "";
+}
+
+render(items);
 
 },
 
@@ -206,8 +216,6 @@ wrapper.classList.remove(
 
 search.value = "";
 
-options.innerHTML = "";
-
 const placeholderElement =
 wrapper.querySelector(
 ".search-select-placeholder, .search-select-value"
@@ -227,16 +235,20 @@ placeholderElement.className =
 
 setPlaceholder(text){
 
-const placeholder =
+const placeholderElement =
 wrapper.querySelector(
-".search-select-placeholder"
+".search-select-placeholder, .search-select-value"
 );
 
-placeholder.textContent =
+if(placeholderElement){
+
+placeholderElement.textContent =
 text;
 
-placeholder.className =
+placeholderElement.className =
 "search-select-placeholder";
+
+}
 
 },
 

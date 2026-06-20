@@ -190,39 +190,20 @@ country.name;
 stateInput.value = "";
 cityInput.value = "";
 
+/* Reset State */
 if(stateDropdown){
 
-stateDropdown.disable();
-
-stateDropdown.setPlaceholder(
-"Select State"
-);
-
-}
-
-if(cityDropdown){
-
-cityDropdown.disable();
-
-cityDropdown.setPlaceholder(
-"Select City"
-);
-
-}
+stateDropdown.clear();
 
 const states =
-getStates(
-country.isoCode
-).map(state => ({
+getStates(country.isoCode).map(state => ({
 name: state.name,
 state
 }));
 
-if(stateDropdown){
+stateDropdown.setItems(states);
 
 stateDropdown.enable();
-
-stateDropdown.setItems(states);
 
 stateDropdown.setPlaceholder(
 "Select State"
@@ -230,11 +211,14 @@ stateDropdown.setPlaceholder(
 
 }
 
+/* Reset City */
 if(cityDropdown){
 
-cityDropdown.disable();
+cityDropdown.clear();
 
 cityDropdown.setItems([]);
+
+cityDropdown.disable();
 
 cityDropdown.setPlaceholder(
 "Select City"
