@@ -8,42 +8,65 @@ import {
   updateDoc,
   addDoc,
   getDoc,
-  setDoc,
   onSnapshot,
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
 
 const cartItemsContainer = document.getElementById("cart-items-container");
-const subtotalLabel = document.getElementById("summary-subtotal");
+const subtotalLabel       = document.getElementById("summary-subtotal");
+const selectAllBtn        = document.getElementById("select-all-btn");
+const selectAllCount      = document.getElementById("select-all-count");
 
-let editMode = false;
-let selectedIndex = null;
-let firestoreCart = [];
-let renderingCart = false;
-let cartListenerStarted = false;
+let editMode              = false;
+let selectedIndex         = null;
+let firestoreCart         = [];
+let renderingCart         = false;
+let cartListenerStarted   = false;
 let selectedCheckoutItems = [];
 
-/* ── BACKUP ─────────────────────────────────────────────── */
+/* ─────────────────────────────────────────────────────────
+   HELPERS
+───────────────────────────────────────────────────────── */
+function updateSelectAllBtn() {
+  if (!selectAllBtn) return;
+  const available = firestoreCart.filter(i => !i.isUnavailable);
+  const allSelected = available.length > 0 &&
+    available.every(i => selectedCheckoutItems.includes(i.firestoreId));
+
+  selectAllBtn.textContent = allSelected ? "Deselect All" : "Select All";
+  if (selectAllCount) {
+    selectAllCount.textContent =
+      selectedCheckoutItems.length > 0
+        ? `(${selectedCheckoutItems.length} selected)`
+        : "";
+  }
+}
+
+/* ─────────────────────────────────────────────────────────
+   BACKUP
+───────────────────────────────────────────────────────── */
 async function backupCurrentCart() {
   const user = auth.currentUser;
   if (!user || firestoreCart.length === 0) return;
 
   await addDoc(collection(db, "users", user.uid, "cart_backups"), {
     createdAt: Date.now(),
-    items: firestoreCart.map((item) => ({
+    items: firestoreCart.map(item => ({
       productId: item.productId,
-      title: item.title,
-      image: item.image,
-      price: item.price,
-      quantity: item.quantity,
-      size: item.size,
-      color: item.color,
+      title:     item.title,
+      image:     item.image,
+      price:     item.price,
+      quantity:  item.quantity,
+      size:      item.size,
+      color:     item.color,
     })),
   });
 }
 
-/* ── RENDER ─────────────────────────────────────────────── */
+/* ─────────────────────────────────────────────────────────
+   RENDER
+───────────────────────────────────────────────────────── */
 async function renderTabularCart() {
   if (renderingCart) return;
   renderingCart = true;
@@ -52,59 +75,44 @@ async function renderTabularCart() {
     const user = auth.currentUser;
     if (!user) return;
 
-    const cartRef = collection(db, "users", user.uid, "cart");
-    const snap = await getDocs(cartRef);
-
+    const snap = await getDocs(collection(db, "users", user.uid, "cart"));
     firestoreCart = [];
 
-    // Step 1: load all cart items + check availability
+    /* ── Step 1: load items + availability ── */
     for (const docSnap of snap.docs) {
       const cartItem = { firestoreId: docSnap.id, ...docSnap.data() };
-
       try {
-        const productSnap = await getDoc(doc(db, "products", cartItem.productId));
-        if (!productSnap.exists()) {
+        const pSnap = await getDoc(doc(db, "products", cartItem.productId));
+        if (!pSnap.exists() || pSnap.data().isSuspended) {
           cartItem.isUnavailable = true;
-        } else {
-          if (productSnap.data().isSuspended) cartItem.isUnavailable = true;
         }
-      } catch (err) {
-        console.error(err);
-      }
-
+      } catch (err) { console.error(err); }
       firestoreCart.push(cartItem);
     }
 
-    // Step 2: sync title/price/image + remove deleted/suspended
-    // Uses updateDoc (partial) NOT setDoc (full rewrite) — avoids re-triggering onSnapshot loop
+    /* ── Step 2: sync price / title / image (partial updateDoc only) ── */
     let cartUpdated = false;
-
     for (const item of firestoreCart) {
       if (!item.productId) continue;
+      const pSnap = await getDoc(doc(db, "products", item.productId));
 
-      const productSnap = await getDoc(doc(db, "products", item.productId));
-
-      if (!productSnap.exists()) {
+      if (!pSnap.exists()) {
         await deleteDoc(doc(db, "users", user.uid, "cart", item.firestoreId));
-        cartUpdated = true;
-        continue;
+        cartUpdated = true; continue;
+      }
+      const pd = pSnap.data();
+      if (pd.isSuspended) {
+        await deleteDoc(doc(db, "users", user.uid, "cart", item.firestoreId));
+        cartUpdated = true; continue;
       }
 
-      const productData = productSnap.data();
+      const upd = {};
+      if (item.title !== pd.title)  { upd.title = pd.title;  item.title = pd.title; }
+      if (item.price !== pd.price)  { upd.price = pd.price;  item.price = pd.price; }
+      if (item.image !== pd.image)  { upd.image = pd.image;  item.image = pd.image; }
 
-      if (productData.isSuspended) {
-        await deleteDoc(doc(db, "users", user.uid, "cart", item.firestoreId));
-        cartUpdated = true;
-        continue;
-      }
-
-      const fieldsToUpdate = {};
-      if (item.title !== productData.title) { fieldsToUpdate.title = productData.title; item.title = productData.title; }
-      if (item.price !== productData.price) { fieldsToUpdate.price = productData.price; item.price = productData.price; }
-      if (item.image !== productData.image) { fieldsToUpdate.image = productData.image; item.image = productData.image; }
-
-      if (Object.keys(fieldsToUpdate).length > 0) {
-        await updateDoc(doc(db, "users", user.uid, "cart", item.firestoreId), fieldsToUpdate);
+      if (Object.keys(upd).length) {
+        await updateDoc(doc(db, "users", user.uid, "cart", item.firestoreId), upd);
         cartUpdated = true;
       }
     }
@@ -117,10 +125,11 @@ async function renderTabularCart() {
       return;
     }
 
-    // Step 3: render
+    /* ── Step 3: render ── */
     if (firestoreCart.length === 0) {
       cartItemsContainer.innerHTML = `<div class="empty-cart">Your shopping bag is empty.</div>`;
       subtotalLabel.innerText = "₦0";
+      updateSelectAllBtn();
       return;
     }
 
@@ -130,291 +139,213 @@ async function renderTabularCart() {
     firestoreCart.forEach((item, index) => {
       if (item.isUnavailable) return;
 
-      const lineTotal = item.price * item.quantity;
-      total += lineTotal;
-
-      const isSelected = selectedCheckoutItems.includes(item.firestoreId);
-      const isEditSelected = selectedIndex === index;
+      const lineTotal    = item.price * item.quantity;
+      total             += lineTotal;
+      const isChecked    = selectedCheckoutItems.includes(item.firestoreId);
+      const isEditPicked = editMode && selectedIndex === index;
 
       const card = document.createElement("div");
       card.className = "cart-product-card";
-      if (isSelected) card.classList.add("selected");
-      if (editMode) card.classList.add("edit-mode");
-      if (isEditSelected) card.classList.add("selected");
+      if (isChecked)    card.classList.add("checkout-selected");
+      if (editMode)     card.classList.add("edit-mode");
+      if (isEditPicked) card.classList.add("edit-picked");
 
       card.innerHTML = `
-        <!-- Checkbox -->
-        <div class="cart-selector">
+        <!-- circle checkbox -->
+        <div class="cart-selector" data-id="${item.firestoreId}">
           <i class="fa-solid fa-check"></i>
         </div>
 
-        <!-- Image -->
+        <!-- product image -->
         <img src="${item.image}" class="cart-card-image" alt="${item.title}">
 
-        <!-- Details -->
+        <!-- details -->
         <div class="cart-card-content">
           <div class="cart-card-title">${item.title}</div>
           <div class="cart-card-price">₦${item.price.toLocaleString()}</div>
-          <div class="cart-card-meta">Size: ${item.size}</div>
-          <div class="cart-card-meta">Color: ${item.color}</div>
+          <div class="cart-card-meta">Size: ${item.size} &nbsp;|&nbsp; Color: ${item.color}</div>
 
-          <div class="cart-card-meta">
-            <div class="qty-control">
-              <button onclick="event.stopPropagation(); decreaseCartQty(${index})" class="luxury-qty-btn">−</button>
-              <span class="qty-number">${item.quantity}</span>
-              <button onclick="event.stopPropagation(); increaseCartQty(${index})" class="luxury-qty-btn">+</button>
-            </div>
+          <div class="qty-control">
+            <button onclick="event.stopPropagation(); decreaseCartQty(${index})" class="luxury-qty-btn">−</button>
+            <span class="qty-number">${item.quantity}</span>
+            <button onclick="event.stopPropagation(); increaseCartQty(${index})" class="luxury-qty-btn">+</button>
           </div>
 
-          <div class="cart-card-meta" style="color:var(--primary-color); font-weight:600;">
-            Total: ₦${lineTotal.toLocaleString()}
-          </div>
-
-          ${editMode ? `
-            <div class="cart-update-overlay">
-              <div class="edit-selector">
-                ${isEditSelected
-                  ? `<i class="fa-solid fa-circle-check"></i>`
-                  : `<i class="fa-solid fa-pen-to-square"></i>`}
-              </div>
-            </div>
-          ` : ""}
+          <div class="cart-line-total">Total: ₦${lineTotal.toLocaleString()}</div>
 
           <div class="cart-card-actions">
-            <button class="clear-cart-btn" onclick="removeLineItem(${index})">
+            <button class="cart-remove-btn" onclick="event.stopPropagation(); removeLineItem(${index})">
               <i class="fa-solid fa-trash"></i> Remove
             </button>
           </div>
         </div>
+
+        <!-- edit-mode film overlay (covers entire card, only tappable thing in edit mode) -->
+        ${editMode ? `
+          <div class="edit-film-overlay" data-index="${index}">
+            <div class="edit-film-icon">
+              ${isEditPicked
+                ? `<i class="fa-solid fa-circle-check"></i>`
+                : `<i class="fa-regular fa-circle"></i>`}
+            </div>
+            <p class="edit-film-hint">${isEditPicked ? "Tap again to deselect" : "Tap to select for update"}</p>
+          </div>
+        ` : ""}
       `;
 
-      // Edit mode — click card to select
+      /* ── checkbox click (only active when NOT in edit mode) ── */
+      const selector = card.querySelector(".cart-selector");
+      selector?.addEventListener("click", e => {
+        e.stopPropagation();
+        if (editMode) { showToast("Exit update mode first."); return; }
+        const id = item.firestoreId;
+        if (selectedCheckoutItems.includes(id)) {
+          selectedCheckoutItems = selectedCheckoutItems.filter(x => x !== id);
+          card.classList.remove("checkout-selected");
+        } else {
+          selectedCheckoutItems.push(id);
+          card.classList.add("checkout-selected");
+        }
+        updateSelectAllBtn();
+      });
+
+      /* ── edit film overlay tap logic ── */
       if (editMode) {
-  card.addEventListener("click", () => {
-
-if(
-selectedIndex === index
-){
-
-selectedIndex = null;
-editMode = false;
-
-document.getElementById(
-  "update-mode-message"
-).style.display = "none";
-
-showToast(
-  "Update mode closed."
-);
-
-/*
-remove overlay instantly
-*/
-
-document
-.querySelectorAll(".cart-update-overlay")
-.forEach(el => el.remove());
-
-document
-.querySelectorAll(".cart-product-card")
-.forEach(el=>{
-  el.classList.remove("edit-mode");
-  el.classList.remove("selected");
-});
-
-return;
-}
-
-document
-.querySelectorAll(
-".cart-product-card"
-)
-.forEach(el => {
-
-el.classList.remove(
-"selected"
-);
-
-});
-
-card.classList.add(
-"selected"
-);
-
-selectedIndex = index;
-
-});
-}
-
-      // Checkbox toggle
-      const selectBtn = card.querySelector(".cart-selector");
-      selectBtn?.addEventListener(
-"click",
-(event)=>{
-
-event.stopPropagation();
-
-if(editMode){
-
-showToast(
-"Finish update mode first."
-);
-
-return;
-}
-
-const id =
-item.firestoreId;
-
-if(
-selectedCheckoutItems.includes(id)
-){
-
-selectedCheckoutItems =
-selectedCheckoutItems.filter(
-x => x !== id
-);
-
-card.classList.remove(
-"checkout-selected"
-);
-
-}
-else{
-
-selectedCheckoutItems.push(id);
-
-card.classList.add(
-"checkout-selected"
-);
-
-}
-
-}
-);
+        const film = card.querySelector(".edit-film-overlay");
+        film?.addEventListener("click", e => {
+          e.stopPropagation();
+          if (selectedIndex === index) {
+            /* double-tap same item → exit edit mode */
+            exitEditMode();
+          } else {
+            /* select this item */
+            selectedIndex = index;
+            renderTabularCart();
+          }
+        });
+      }
 
       cartItemsContainer.appendChild(card);
     });
 
     subtotalLabel.innerText = `₦${total.toLocaleString()}`;
+    updateSelectAllBtn();
 
   } finally {
     renderingCart = false;
   }
 }
 
-/* ── QTY CONTROLS ───────────────────────────────────────── */
-window.modifyLineQuantity = async function(index,newQty)
-{
+/* ─────────────────────────────────────────────────────────
+   EXIT EDIT MODE HELPER
+───────────────────────────────────────────────────────── */
+function exitEditMode() {
+  editMode      = false;
+  selectedIndex = null;
+  const banner  = document.getElementById("update-mode-message");
+  if (banner) banner.style.display = "none";
+  showToast("Update mode closed.");
+  renderTabularCart();
+}
+
+/* ─────────────────────────────────────────────────────────
+   QTY CONTROLS  — FIX: guard against undefined index
+───────────────────────────────────────────────────────── */
+window.modifyLineQuantity = async function (index, newQty) {
+  const item = firestoreCart[index];
+  if (!item) return; /* guard — prevents the console error */
+
   const qty = Number(newQty);
+  if (isNaN(qty) || qty < 1) return;
 
-  if(isNaN(qty) || qty < 1) return;
+  /* optimistic UI update */
+  item.quantity = qty;
+  const qtyEls = cartItemsContainer?.querySelectorAll(".qty-number");
+  if (qtyEls && qtyEls[index]) qtyEls[index].textContent = qty;
 
-  /*
-  update UI immediately
-  */
-
-  firestoreCart[index].quantity = qty;
-
-  const qtyEl =
-  document.querySelectorAll(
-    ".qty-number"
-  )[index];
-
-  if(qtyEl)
-  {
-    qtyEl.textContent = qty;
-  }
-
-  try
-  {
+  try {
     await updateDoc(
-      doc(
-        db,
-        "users",
-        auth.currentUser.uid,
-        "cart",
-        firestoreCart[index].firestoreId
-      ),
-      {
-        quantity: qty
-      }
+      doc(db, "users", auth.currentUser.uid, "cart", item.firestoreId),
+      { quantity: qty }
     );
-  }
-  catch(err)
-  {
-    console.error(err);
-  }
+  } catch (err) { console.error(err); }
 };
 
 window.increaseCartQty = async function (index) {
-  await modifyLineQuantity(index, firestoreCart[index].quantity + 1);
+  const item = firestoreCart[index];
+  if (!item) return;
+  await modifyLineQuantity(index, item.quantity + 1);
 };
 
 window.decreaseCartQty = async function (index) {
-  if (firestoreCart[index].quantity <= 1) return;
-  await modifyLineQuantity(index, firestoreCart[index].quantity - 1);
+  const item = firestoreCart[index];
+  if (!item) return;
+  if (item.quantity <= 1) return;
+  await modifyLineQuantity(index, item.quantity - 1);
 };
 
-/* ── REMOVE ITEM ────────────────────────────────────────── */
+/* ─────────────────────────────────────────────────────────
+   REMOVE
+───────────────────────────────────────────────────────── */
 window.removeLineItem = function (index) {
   showConfirmModal("Remove this item from your bag?", async () => {
-    await deleteDoc(
-      doc(db, "users", auth.currentUser.uid, "cart", firestoreCart[index].firestoreId)
-    );
+    const item = firestoreCart[index];
+    if (!item) return;
+    await deleteDoc(doc(db, "users", auth.currentUser.uid, "cart", item.firestoreId));
+    selectedCheckoutItems = selectedCheckoutItems.filter(x => x !== item.firestoreId);
     showToast("Item removed.");
     renderTabularCart();
   });
 };
 
-/* ── NAV ACTIONS ────────────────────────────────────────── */
-window.actionContinueShopping = function () {
-  window.location.href = "/";
+/* ─────────────────────────────────────────────────────────
+   SELECT ALL
+───────────────────────────────────────────────────────── */
+window.toggleSelectAll = function () {
+  const available = firestoreCart.filter(i => !i.isUnavailable);
+  const allSelected = available.every(i => selectedCheckoutItems.includes(i.firestoreId));
+
+  if (allSelected) {
+    selectedCheckoutItems = [];
+  } else {
+    selectedCheckoutItems = available.map(i => i.firestoreId);
+  }
+  renderTabularCart();
 };
+
+/* ─────────────────────────────────────────────────────────
+   NAV ACTIONS
+───────────────────────────────────────────────────────── */
+window.actionContinueShopping = function () { window.location.href = "/"; };
 
 window.actionUpdateCartRedirect = async function () {
   if (firestoreCart.length === 0) return;
 
   if (!editMode) {
-
-  editMode = true;
-
-  selectedIndex = null;
-
-  selectedCheckoutItems = [];
-
-  document.getElementById(
-    "update-mode-message"
-  ).style.display = "block";
-
-  showToast(
-  "Select a product to update."
-);
-
-/* instant UI update */
-document
-.querySelectorAll(".cart-product-card")
-.forEach(card => {
-  card.classList.add("edit-mode");
-});
-
-return;
-}
-
-  if (selectedIndex === null) {
-    showToast("Please select a product to update.");
+    editMode      = true;
+    selectedIndex = null;
+    selectedCheckoutItems = [];
+    const banner  = document.getElementById("update-mode-message");
+    if (banner) banner.style.display = "block";
+    showToast("Tap a product film to select it for update. Double-tap to exit.");
+    renderTabularCart();
     return;
   }
 
-  const productSnap = await getDoc(
-    doc(db, "products", firestoreCart[selectedIndex].productId)
-  );
+  if (selectedIndex === null) {
+    showToast("Tap a product to select it first.");
+    return;
+  }
 
-  if (!productSnap.exists()) { showToast("Product no longer exists."); return; }
-  if (productSnap.data().isSuspended) { showToast("This product is unavailable."); return; }
-  if (firestoreCart[selectedIndex].isUnavailable) { showToast("This product is no longer available."); return; }
+  const selected = firestoreCart[selectedIndex];
+  if (!selected) return;
 
-  window.location.href = `/decision-page.html?id=${firestoreCart[selectedIndex].productId}&cartDocId=${firestoreCart[selectedIndex].firestoreId}`;
+  const pSnap = await getDoc(doc(db, "products", selected.productId));
+  if (!pSnap.exists())            { showToast("Product no longer exists.");        return; }
+  if (pSnap.data().isSuspended)   { showToast("This product is unavailable.");     return; }
+  if (selected.isUnavailable)     { showToast("This product is no longer available."); return; }
+
+  window.location.href = `/decision-page.html?id=${selected.productId}&cartDocId=${selected.firestoreId}`;
 };
 
 window.clearCart = function () {
@@ -430,97 +361,62 @@ window.clearCart = function () {
 };
 
 window.actionProceedCheckout = function () {
-
-if(editMode){
-
-showToast(
-"Finish updating your product first."
-);
-
-return;
-
-}
-
-if (
-selectedCheckoutItems.length === 0
-){
-
-showToast(
-"Select at least one item."
-);
-
-return;
-
-}
-
-sessionStorage.setItem(
-"selectedCheckoutItems",
-JSON.stringify(
-selectedCheckoutItems
-)
-);
-
-window.location.href =
-"/checkout";
-
+  if (editMode) { showToast("Exit update mode before checking out."); return; }
+  if (selectedCheckoutItems.length === 0) { showToast("Select at least one item to checkout."); return; }
+  sessionStorage.setItem("selectedCheckoutItems", JSON.stringify(selectedCheckoutItems));
+  window.location.href = "/checkout";
 };
 
-/* ── AUTH + REALTIME LISTENER ───────────────────────────── */
-// Listens to user's CART (not products collection).
-// Watching products caused the duplicate bug — every sync write
-// would re-fire the listener and re-run renderTabularCart in a loop.
-onAuthStateChanged(auth, (user) => {
+/* ─────────────────────────────────────────────────────────
+   AUTH + REALTIME LISTENER
+   Watches the user's CART — not products — to avoid the
+   setDoc re-fire loop that was duplicating items.
+───────────────────────────────────────────────────────── */
+onAuthStateChanged(auth, user => {
   if (!user) return;
   if (cartListenerStarted) return;
   cartListenerStarted = true;
 
-  onSnapshot(
-  collection(db, "users", user.uid, "cart"),
-  () => {
-
-    if(editMode) return;
-
+  onSnapshot(collection(db, "users", user.uid, "cart"), () => {
+    if (editMode) return; /* don't interrupt edit mode */
     renderTabularCart();
-  }
-);
+  });
 });
 
-/* ── RESTORE CART ───────────────────────────────────────── */
+/* ─────────────────────────────────────────────────────────
+   RESTORE CART
+───────────────────────────────────────────────────────── */
 const restoreBtn = document.getElementById("restore-cart-btn");
-
 if (restoreBtn) {
   restoreBtn.addEventListener("click", async () => {
     const range = document.getElementById("restore-range").value;
-
     const backupsSnap = await getDocs(
       collection(db, "users", auth.currentUser.uid, "cart_backups")
     );
 
     let backups = [];
-    backupsSnap.forEach((d) => backups.push(d.data()));
+    backupsSnap.forEach(d => backups.push(d.data()));
 
     const now = Date.now();
-    backups = backups.filter((b) => {
+    backups = backups.filter(b => {
       if (range === "all") return true;
       return now - b.createdAt <= Number(range) * 60 * 60 * 1000;
     });
 
     if (backups.length === 0) { showToast("No cart backups found."); return; }
-
     backups.sort((a, b) => b.createdAt - a.createdAt);
 
     for (const item of backups[0].items) {
       await addDoc(collection(db, "users", auth.currentUser.uid, "cart"), {
         productId: item.productId,
-        title: item.title,
-        image: item.image,
-        price: item.price,
-        quantity: item.quantity,
-        size: item.size,
-        color: item.color,
+        title:     item.title,
+        image:     item.image,
+        price:     item.price,
+        quantity:  item.quantity,
+        size:      item.size,
+        color:     item.color,
       });
     }
-
     showToast("Cart restored.");
     renderTabularCart();
   });

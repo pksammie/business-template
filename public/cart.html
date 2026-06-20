@@ -20,27 +20,31 @@
 
     <main class="store-mainframe">
 
-      <h1 style="font-size:22px; font-weight:400; letter-spacing:2px; margin-bottom:20px; text-transform:uppercase;">
-        Your Shopping Cart
-      </h1>
+      <h1 class="cart-page-title">Your Shopping Cart</h1>
 
       <!-- Update mode banner -->
       <p id="update-mode-message" class="update-banner" style="display:none;">
-        Select the product you wish to update, then click Update Cart again.
+        <i class="fa-solid fa-pen-to-square"></i>
+        Tap a product to select it for update. Tap the same product again to exit update mode.
       </p>
 
-      <!-- Two-column layout: items left, summary right -->
+      <!-- Select-all bar -->
+      <div class="select-all-bar">
+        <button id="select-all-btn" class="select-all-btn" onclick="toggleSelectAll()">Select All</button>
+        <span id="select-all-count" class="select-all-count"></span>
+      </div>
+
+      <!-- Two-column layout -->
       <div class="cart-layout">
 
-        <!-- LEFT: scrollable item cards -->
+        <!-- LEFT: item cards -->
         <div id="cart-items-container" class="cart-cards-grid"></div>
 
-        <!-- RIGHT: sticky order summary panel -->
+        <!-- RIGHT: sticky summary -->
         <div class="cart-summary-panel">
 
-          <h3>Order Summary</h3>
+          <h3 class="summary-heading">Order Summary</h3>
 
-          <!-- Subtotal -->
           <div class="summary-subtotal-row">
             <span>Subtotal</span>
             <span id="summary-subtotal">₦0.00</span>
@@ -48,30 +52,19 @@
 
           <div class="summary-divider"></div>
 
-          <!-- Action buttons -->
           <div class="cart-control-button-grid">
-
-            <!-- Primary: checkout -->
             <button class="checkout-primary-btn" onclick="actionProceedCheckout()">
-              Proceed to Checkout
+              <i class="fa-solid fa-lock" style="margin-right:8px;"></i>Proceed to Checkout
             </button>
 
-            <!-- Secondary row -->
             <div class="cart-secondary-actions">
-              <button class="btn-continue" onclick="actionContinueShopping()">
-                Continue Shopping
-              </button>
-              <button class="btn-update" onclick="actionUpdateCartRedirect()">
-                Update Cart
-              </button>
+              <button class="btn-continue" onclick="actionContinueShopping()">Continue Shopping</button>
+              <button class="btn-update" onclick="actionUpdateCartRedirect()">Update Cart</button>
             </div>
 
-            <!-- Clear cart -->
             <button class="btn-clear" onclick="clearCart()">
-              <i class="fa-solid fa-trash"></i>
-              Clear Cart
+              <i class="fa-solid fa-trash"></i> Clear Cart
             </button>
-
           </div>
 
           <div class="summary-divider"></div>
@@ -81,8 +74,7 @@
             <p class="restore-cart-title">Recover an old cart?</p>
             <div class="restore-cart-controls">
               <button id="restore-cart-btn">
-                <i class="fa-solid fa-clock-rotate-left"></i>
-                Restore
+                <i class="fa-solid fa-clock-rotate-left"></i> Restore
               </button>
               <select id="restore-range">
                 <option value="1">Last Hour</option>
@@ -95,10 +87,8 @@
           </div>
 
         </div>
-        <!-- end summary panel -->
 
       </div>
-      <!-- end cart-layout -->
 
     </main>
 
