@@ -281,8 +281,6 @@ if(selectedIndex === index){
   showToast(
     "Update mode closed."
   );
-
-  return;
 }
 
 /* ─────────────────────────────────────────────────────────
