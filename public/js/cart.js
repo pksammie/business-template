@@ -205,31 +205,25 @@ document
 "update-mode-message"
 ).style.display = "none";
 
-/*
-REMOVE UPDATE MODE
-FROM EVERY CARD
-*/
+showToast(
+"Update mode closed."
+);
 
 document
 .querySelectorAll(
 ".cart-product-card"
 )
-.forEach(el => {
+.forEach(card => {
 
-el.classList.remove(
-"selected"
-);
-
-el.classList.remove(
+card.classList.remove(
 "edit-mode"
 );
 
-});
+card.classList.remove(
+"selected"
+);
 
-/*
-REMOVE OVERLAYS
-IMMEDIATELY
-*/
+});
 
 document
 .querySelectorAll(
@@ -237,11 +231,8 @@ document
 )
 .forEach(el => el.remove());
 
-showToast(
-"Update mode closed."
-);
-
 return;
+
 }
 
 document
@@ -376,11 +367,6 @@ document
 "update-mode-message"
 ).style.display = "block";
 
-/*
-ENABLE EDIT MODE
-FOR ALL CARDS
-*/
-
 document
 .querySelectorAll(
 ".cart-product-card"
@@ -391,6 +377,25 @@ card.classList.add(
 "edit-mode"
 );
 
+if(
+!card.querySelector(
+".cart-update-overlay"
+)
+){
+
+card.insertAdjacentHTML(
+"beforeend",
+`
+<div class="cart-update-overlay">
+<div class="edit-selector">
+<i class="fa-solid fa-pen-to-square"></i>
+</div>
+</div>
+`
+);
+
+}
+
 });
 
 showToast(
@@ -398,6 +403,7 @@ showToast(
 );
 
 return;
+
 }
 
   if (selectedIndex === null) {
