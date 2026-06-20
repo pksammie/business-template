@@ -258,24 +258,36 @@ async function renderTabularCart() {
 /* ─────────────────────────────────────────────────────────
    EXIT EDIT MODE HELPER
 ───────────────────────────────────────────────────────── */
-if(selectedIndex === index){
+function exitEditMode(){
 
   editMode = false;
   selectedIndex = null;
 
-  document.getElementById(
-    "update-mode-message"
-  ).style.display = "none";
+  const banner =
+    document.getElementById(
+      "update-mode-message"
+    );
+
+  if(banner){
+    banner.style.display = "none";
+  }
 
   document
     .querySelectorAll(".edit-film-overlay")
-    .forEach(el=>el.remove());
+    .forEach(el => el.remove());
 
   document
     .querySelectorAll(".cart-product-card")
-    .forEach(card=>{
-      card.classList.remove("edit-mode");
-      card.classList.remove("edit-picked");
+    .forEach(card => {
+
+      card.classList.remove(
+        "edit-mode"
+      );
+
+      card.classList.remove(
+        "edit-picked"
+      );
+
     });
 
   showToast(
@@ -431,16 +443,10 @@ document
   ()=>{
 
     /*
-    tap same product again
+    tap same card again
     */
 
     if(selectedIndex === index){
-
-      card.classList.remove(
-        "edit-picked"
-      );
-
-      selectedIndex = null;
 
       exitEditMode();
 
@@ -448,20 +454,25 @@ document
     }
 
     /*
-    select new product
+    select another card
     */
 
     document
       .querySelectorAll(".cart-product-card")
-      .forEach(
-        c=>c.classList.remove("edit-picked")
-      );
+      .forEach(c => {
+
+        c.classList.remove(
+          "edit-picked"
+        );
+
+      });
 
     card.classList.add(
       "edit-picked"
     );
 
     selectedIndex = index;
+
   }
 );
 
