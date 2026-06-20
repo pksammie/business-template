@@ -258,39 +258,31 @@ async function renderTabularCart() {
 /* ─────────────────────────────────────────────────────────
    EXIT EDIT MODE HELPER
 ───────────────────────────────────────────────────────── */
-function exitEditMode() {
+if(selectedIndex === index){
 
   editMode = false;
   selectedIndex = null;
 
-  const banner =
-    document.getElementById(
-      "update-mode-message"
-    );
-
-  if (banner)
-    banner.style.display = "none";
+  document.getElementById(
+    "update-mode-message"
+  ).style.display = "none";
 
   document
     .querySelectorAll(".edit-film-overlay")
-    .forEach(el => el.remove());
+    .forEach(el=>el.remove());
 
   document
     .querySelectorAll(".cart-product-card")
-    .forEach(card => {
-
-      card.classList.remove(
-        "edit-mode"
-      );
-
-      card.classList.remove(
-        "edit-picked"
-      );
+    .forEach(card=>{
+      card.classList.remove("edit-mode");
+      card.classList.remove("edit-picked");
     });
 
   showToast(
     "Update mode closed."
   );
+
+  return;
 }
 
 /* ─────────────────────────────────────────────────────────
@@ -437,26 +429,43 @@ document
     `;
 
     overlay.addEventListener(
-      "click",
-      ()=>{
-        document
-          .querySelectorAll(
-            ".cart-product-card"
-          )
-          .forEach(
-            c=>c.classList.remove(
-              "edit-picked"
-            )
-          );
+  "click",
+  ()=>{
 
-        card.classList.add(
-          "edit-picked"
-        );
+    /*
+    tap same product again
+    */
 
-        selectedIndex =
-          index;
-      }
+    if(selectedIndex === index){
+
+      card.classList.remove(
+        "edit-picked"
+      );
+
+      selectedIndex = null;
+
+      exitEditMode();
+
+      return;
+    }
+
+    /*
+    select new product
+    */
+
+    document
+      .querySelectorAll(".cart-product-card")
+      .forEach(
+        c=>c.classList.remove("edit-picked")
+      );
+
+    card.classList.add(
+      "edit-picked"
     );
+
+    selectedIndex = index;
+  }
+);
 
     card.appendChild(
       overlay
