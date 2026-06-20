@@ -190,6 +190,26 @@ country.name;
 stateInput.value = "";
 cityInput.value = "";
 
+if(stateDropdown){
+
+stateDropdown.disable();
+
+stateDropdown.setPlaceholder(
+"Select State"
+);
+
+}
+
+if(cityDropdown){
+
+cityDropdown.disable();
+
+cityDropdown.setPlaceholder(
+"Select City"
+);
+
+}
+
 const states =
 getStates(
 country.isoCode
@@ -463,20 +483,28 @@ cartSnap.forEach(docSnap => {
 
     const f = checkoutFormInstance.elements;
 
-        if(
-!f.country.value ||
-!f.state.value ||
-!f.city.value
+    const countryInput =
+document.getElementById("country");
+
+const stateInput =
+document.getElementById("state");
+
+const cityInput =
+document.getElementById("city");
+
+if(
+!countryInput.value.trim() ||
+!stateInput.value.trim() ||
+!cityInput.value.trim()
 ){
 
 showToast(
-"Please select your country, state and city."
+"Please select your Country, State and City."
 );
 
 resetCheckoutState();
 
 return;
-
 }
 
     const addressProfile = {

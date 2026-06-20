@@ -168,6 +168,24 @@ wrapper.classList.remove(
 
 return {
 
+clear(){
+
+search.value = "";
+
+wrapper.querySelector(
+".search-select-placeholder"
+).textContent =
+placeholder;
+
+wrapper.querySelector(
+".search-select-placeholder"
+).className =
+"search-select-placeholder";
+
+options.innerHTML = "";
+
+},
+
 enable(){
 
 wrapper.classList.remove(
@@ -182,13 +200,43 @@ wrapper.classList.add(
 "search-select-disabled"
 );
 
+wrapper.classList.remove(
+"open"
+);
+
+search.value = "";
+
+options.innerHTML = "";
+
+const placeholderElement =
+wrapper.querySelector(
+".search-select-placeholder, .search-select-value"
+);
+
+if(placeholderElement){
+
+placeholderElement.textContent =
+placeholder;
+
+placeholderElement.className =
+"search-select-placeholder";
+
+}
+
 },
 
 setPlaceholder(text){
 
+const placeholder =
 wrapper.querySelector(
 ".search-select-placeholder"
-).textContent = text;
+);
+
+placeholder.textContent =
+text;
+
+placeholder.className =
+"search-select-placeholder";
 
 },
 
