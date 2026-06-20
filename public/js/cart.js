@@ -192,16 +192,9 @@ async function renderTabularCart() {
       if (editMode) {
   card.addEventListener("click", () => {
 
-const currentSelected =
-selectedIndex === index;
-
-document
-.querySelectorAll(".cart-product-card")
-.forEach(el =>
-el.classList.remove("selected")
-);
-
-if(currentSelected){
+if(
+selectedIndex === index
+){
 
 selectedIndex = null;
 
@@ -212,6 +205,16 @@ document
 "update-mode-message"
 ).style.display = "none";
 
+document
+.querySelectorAll(
+".cart-product-card"
+)
+.forEach(el =>
+el.classList.remove(
+"selected"
+)
+);
+
 showToast(
 "Update mode closed."
 );
@@ -219,7 +222,19 @@ showToast(
 return;
 }
 
-card.classList.add("selected");
+document
+.querySelectorAll(
+".cart-product-card"
+)
+.forEach(el =>
+el.classList.remove(
+"selected"
+)
+);
+
+card.classList.add(
+"selected"
+);
 
 selectedIndex = index;
 
@@ -228,39 +243,50 @@ selectedIndex = index;
 
       // Checkbox toggle
       const selectBtn = card.querySelector(".cart-selector");
-      selectBtn?.addEventListener("click", (event) => {
+      selectBtn?.addEventListener(
+"click",
+(event)=>{
 
-  event.stopPropagation();
+event.stopPropagation();
 
-  if (editMode) {
+if(editMode){
 
-    showToast(
-      "Finish updating your product first."
-    );
+showToast(
+"Finish update mode first."
+);
 
-    return;
-  }
+return;
+}
 
-  const id = item.firestoreId;
+const id =
+item.firestoreId;
 
-  if (
-    selectedCheckoutItems.includes(id)
-  ) {
+if(
+selectedCheckoutItems.includes(id)
+){
 
-    selectedCheckoutItems =
-      selectedCheckoutItems.filter(
-        x => x !== id
-      );
+selectedCheckoutItems =
+selectedCheckoutItems.filter(
+x => x !== id
+);
 
-  } else {
+card.classList.remove(
+"checkout-selected"
+);
 
-    selectedCheckoutItems.push(id);
+}
+else{
 
-  }
+selectedCheckoutItems.push(id);
 
-  renderTabularCart();
+card.classList.add(
+"checkout-selected"
+);
 
-});
+}
+
+}
+);
 
       cartItemsContainer.appendChild(card);
     });
@@ -314,23 +340,30 @@ window.actionUpdateCartRedirect = async function () {
   if (firestoreCart.length === 0) return;
 
   if (!editMode) {
-    editMode = true;
-    selectedIndex = null;
-    document.getElementById("update-mode-message").style.display = "block";
-    document
+
+editMode = true;
+
+selectedIndex = null;
+
+/*
+TURN OFF CHECKOUT SELECTIONS
+*/
+
+selectedCheckoutItems = [];
+
+document
 .getElementById(
 "update-mode-message"
 ).style.display = "block";
 
-document
-.querySelectorAll(
-".cart-product-card"
-)
-.forEach(card =>
-card.classList.add("edit-mode")
+showToast(
+"Select a product to update."
 );
-    return;
-  }
+
+renderTabularCart();
+
+return;
+}
 
   if (selectedIndex === null) {
     showToast("Please select a product to update.");
