@@ -200,36 +200,15 @@ selectedIndex = null;
 
 editMode = false;
 
-document
-.getElementById(
-"update-mode-message"
+document.getElementById(
+  "update-mode-message"
 ).style.display = "none";
 
 showToast(
-"Update mode closed."
+  "Update mode closed."
 );
 
-document
-.querySelectorAll(
-".cart-product-card"
-)
-.forEach(card => {
-
-card.classList.remove(
-"edit-mode"
-);
-
-card.classList.remove(
-"selected"
-);
-
-});
-
-document
-.querySelectorAll(
-".cart-update-overlay"
-)
-.forEach(el => el.remove());
+renderTabularCart();
 
 return;
 
@@ -356,54 +335,23 @@ window.actionUpdateCartRedirect = async function () {
 
   if (!editMode) {
 
-editMode = true;
+  editMode = true;
 
-selectedIndex = null;
+  selectedIndex = null;
 
-selectedCheckoutItems = [];
+  selectedCheckoutItems = [];
 
-document
-.getElementById(
-"update-mode-message"
-).style.display = "block";
+  document.getElementById(
+    "update-mode-message"
+  ).style.display = "block";
 
-document
-.querySelectorAll(
-".cart-product-card"
-)
-.forEach(card => {
+  showToast(
+    "Select a product to update."
+  );
 
-card.classList.add(
-"edit-mode"
-);
+  await renderTabularCart();
 
-if(
-!card.querySelector(
-".cart-update-overlay"
-)
-){
-
-card.insertAdjacentHTML(
-"beforeend",
-`
-<div class="cart-update-overlay">
-<div class="edit-selector">
-<i class="fa-solid fa-pen-to-square"></i>
-</div>
-</div>
-`
-);
-
-}
-
-});
-
-showToast(
-"Select a product to update."
-);
-
-return;
-
+  return;
 }
 
   if (selectedIndex === null) {
