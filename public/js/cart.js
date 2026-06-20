@@ -205,15 +205,37 @@ document
 "update-mode-message"
 ).style.display = "none";
 
+/*
+REMOVE UPDATE MODE
+FROM EVERY CARD
+*/
+
 document
 .querySelectorAll(
 ".cart-product-card"
 )
-.forEach(el =>
+.forEach(el => {
+
 el.classList.remove(
 "selected"
-)
 );
+
+el.classList.remove(
+"edit-mode"
+);
+
+});
+
+/*
+REMOVE OVERLAYS
+IMMEDIATELY
+*/
+
+document
+.querySelectorAll(
+".cart-update-overlay"
+)
+.forEach(el => el.remove());
 
 showToast(
 "Update mode closed."
@@ -226,11 +248,13 @@ document
 .querySelectorAll(
 ".cart-product-card"
 )
-.forEach(el =>
+.forEach(el => {
+
 el.classList.remove(
 "selected"
-)
 );
+
+});
 
 card.classList.add(
 "selected"
@@ -345,10 +369,6 @@ editMode = true;
 
 selectedIndex = null;
 
-/*
-TURN OFF CHECKOUT SELECTIONS
-*/
-
 selectedCheckoutItems = [];
 
 document
@@ -356,11 +376,26 @@ document
 "update-mode-message"
 ).style.display = "block";
 
+/*
+ENABLE EDIT MODE
+FOR ALL CARDS
+*/
+
+document
+.querySelectorAll(
+".cart-product-card"
+)
+.forEach(card => {
+
+card.classList.add(
+"edit-mode"
+);
+
+});
+
 showToast(
 "Select a product to update."
 );
-
-renderTabularCart();
 
 return;
 }
