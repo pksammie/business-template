@@ -89,10 +89,6 @@ const isSuspended =
     product.isSuspended ||
     remainingStock <= 0;
 
-        const remainingStock =
-    (product.quantity || 0) -
-    (product.sold || 0);
-
         const card =
 document.createElement("div");
 
