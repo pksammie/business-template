@@ -190,24 +190,77 @@ async function renderTabularCart() {
 
       // Edit mode — click card to select
       if (editMode) {
-        card.addEventListener("click", () => {
-          selectedIndex = index;
-          renderTabularCart();
-        });
-      }
+  card.addEventListener("click", () => {
+
+const currentSelected =
+selectedIndex === index;
+
+document
+.querySelectorAll(".cart-product-card")
+.forEach(el =>
+el.classList.remove("selected")
+);
+
+if(currentSelected){
+
+selectedIndex = null;
+
+editMode = false;
+
+document
+.getElementById(
+"update-mode-message"
+).style.display = "none";
+
+showToast(
+"Update mode closed."
+);
+
+return;
+}
+
+card.classList.add("selected");
+
+selectedIndex = index;
+
+});
+}
 
       // Checkbox toggle
       const selectBtn = card.querySelector(".cart-selector");
-      selectBtn?.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const id = item.firestoreId;
-        if (selectedCheckoutItems.includes(id)) {
-          selectedCheckoutItems = selectedCheckoutItems.filter((x) => x !== id);
-        } else {
-          selectedCheckoutItems.push(id);
-        }
-        renderTabularCart();
-      });
+      selectBtn?.addEventListener("click", (event) => {
+
+  event.stopPropagation();
+
+  if (editMode) {
+
+    showToast(
+      "Finish updating your product first."
+    );
+
+    return;
+  }
+
+  const id = item.firestoreId;
+
+  if (
+    selectedCheckoutItems.includes(id)
+  ) {
+
+    selectedCheckoutItems =
+      selectedCheckoutItems.filter(
+        x => x !== id
+      );
+
+  } else {
+
+    selectedCheckoutItems.push(id);
+
+  }
+
+  renderTabularCart();
+
+});
 
       cartItemsContainer.appendChild(card);
     });
@@ -264,7 +317,18 @@ window.actionUpdateCartRedirect = async function () {
     editMode = true;
     selectedIndex = null;
     document.getElementById("update-mode-message").style.display = "block";
-    renderTabularCart();
+    document
+.getElementById(
+"update-mode-message"
+).style.display = "block";
+
+document
+.querySelectorAll(
+".cart-product-card"
+)
+.forEach(card =>
+card.classList.add("edit-mode")
+);
     return;
   }
 
@@ -297,13 +361,39 @@ window.clearCart = function () {
 };
 
 window.actionProceedCheckout = function () {
-  if (selectedCheckoutItems.length === 0) {
-    showToast("Select at least one item to checkout.");
-    return;
-  }
 
-  sessionStorage.setItem("selectedCheckoutItems", JSON.stringify(selectedCheckoutItems));
-  window.location.href = "/checkout";
+if(editMode){
+
+showToast(
+"Finish updating your product first."
+);
+
+return;
+
+}
+
+if (
+selectedCheckoutItems.length === 0
+){
+
+showToast(
+"Select at least one item."
+);
+
+return;
+
+}
+
+sessionStorage.setItem(
+"selectedCheckoutItems",
+JSON.stringify(
+selectedCheckoutItems
+)
+);
+
+window.location.href =
+"/checkout";
+
 };
 
 /* ── AUTH + REALTIME LISTENER ───────────────────────────── */
