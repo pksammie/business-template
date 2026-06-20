@@ -178,6 +178,22 @@ if (!isSuspended) {
 
         }
 
+        let stockColor = "lime";
+let stockText = `${remainingStock} left in stock`;
+
+if(remainingStock <= 0){
+
+    stockColor = "#ff4d4d";
+    stockText = "Out of stock";
+
+}
+else if(remainingStock <= 3){
+
+    stockColor = "#ffae00";
+    stockText = `Only ${remainingStock} left`;
+
+}
+
         card.innerHTML = `
             ${suspensionMaskOverlay}
 
@@ -194,12 +210,11 @@ if (!isSuspended) {
                 </h3>
 
                 <p class="stock-left" style="
-    color:${remainingStock > 0 ? 'lime' : '#ff4d4d'};
+    color:${stockColor};
     margin-bottom:10px;
+    font-weight:600;
 ">
-    ${remainingStock > 0
-        ? `${remainingStock} left in stock`
-        : 'Out of stock'}
+    ${stockText}
 </p>
 
                 <div class="product-price">
