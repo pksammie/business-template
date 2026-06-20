@@ -1,19 +1,16 @@
-window.showConfirmModal = function(message, onConfirm) {
+window.showConfirmModal = function (message, onConfirm) {
+  const existing = document.getElementById("vanguard-confirm-modal");
 
-    const existing =
-    document.getElementById("vanguard-confirm-modal");
+  if (existing) {
+    existing.remove();
+  }
 
-    if(existing){
-        existing.remove();
-    }
+  const modal = document.createElement("div");
 
-    const modal =
-    document.createElement("div");
+  modal.id = "vanguard-confirm-modal";
+  modal.className = "vanguard-modal show";
 
-    modal.id = "vanguard-confirm-modal";
-    modal.className = "vanguard-modal show";
-
-    modal.innerHTML = `
+  modal.innerHTML = `
         <div class="vanguard-modal-box">
 
             <h3>Confirm Action</h3>
@@ -35,20 +32,15 @@ window.showConfirmModal = function(message, onConfirm) {
         </div>
     `;
 
-    document.body.appendChild(modal);
+  document.body.appendChild(modal);
 
-    document.getElementById("vanguard-modal-cancel")
-    .onclick = () => {
-        modal.remove();
-    };
+  document.getElementById("vanguard-modal-cancel").onclick = () => {
+    modal.remove();
+  };
 
-    document.getElementById("vanguard-modal-confirm")
-    .onclick = () => {
+  document.getElementById("vanguard-modal-confirm").onclick = () => {
+    modal.remove();
 
-        modal.remove();
-
-        onConfirm();
-
-    };
-
+    onConfirm();
+  };
 };

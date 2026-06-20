@@ -1,65 +1,40 @@
 import { auth, db } from "./firebase.js";
 
 import {
-    collection,
-    query,
-    where,
-    onSnapshot
-}
-from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+  collection,
+  query,
+  where,
+  onSnapshot,
+} from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
-import {
-    onAuthStateChanged
-}
-from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
 
-const container =
-document.getElementById(
-    "orders-container"
-);
+const container = document.getElementById("orders-container");
 
-onAuthStateChanged(auth,(user)=>{
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    sessionStorage.setItem("redirectAfterLogin", "/orders");
 
-    if(!user){
+    location.href = "/login";
 
-        sessionStorage.setItem(
-            "redirectAfterLogin",
-            "/orders"
-        );
+    return;
+  }
 
-        location.href="/login";
-
-        return;
-    }
-
-    loadOrders(user.uid);
-
+  loadOrders(user.uid);
 });
 
-function loadOrders(userId){
+function loadOrders(userId) {
+  const q = query(
+    collection(db, "cart_reservations"),
 
-    const q = query(
+    where("userId", "==", userId),
+  );
 
-        collection(
-            db,
-            "cart_reservations"
-        ),
+  onSnapshot(q, (snapshot) => {
+    container.innerHTML = "";
 
-        where(
-            "userId",
-            "==",
-            userId
-        )
-
-    );
-
-    onSnapshot(q,(snapshot)=>{
-
-        container.innerHTML = "";
-
-        if(snapshot.empty){
-
-            container.innerHTML = `
+    if (snapshot.empty) {
+      container.innerHTML = `
 
             <div class="empty-orders">
 
@@ -81,61 +56,49 @@ function loadOrders(userId){
 
             `;
 
-            return;
-        }
+      return;
+    }
 
-        const docs = [];
+    const docs = [];
 
-        snapshot.forEach(docSnap=>{
+    snapshot.forEach((docSnap) => {
+      docs.push(docSnap.data());
+    });
 
-            docs.push(docSnap.data());
+    docs.sort((a, b) => b.createdAt - a.createdAt);
 
-        });
+    docs.forEach((order) => {
+      const card = document.createElement("div");
 
-        docs.sort(
-            (a,b)=>
-            b.createdAt - a.createdAt
-        );
+      card.className = "order-card";
 
-        docs.forEach(order=>{
+      let statusText;
+      let statusClass;
 
-            const card =
-            document.createElement("div");
+      switch (order.status) {
+        case "Approved":
+          statusText = "Approved";
+          statusClass = "status-approved";
+          break;
 
-            card.className =
-            "order-card";
+        case "Delivered":
+          statusText = "Delivered";
+          statusClass = "status-delivered";
+          break;
 
-            let statusText;
-            let statusClass;
+        case "Cancelled":
+          statusText = "Cancelled";
+          statusClass = "status-cancelled";
+          break;
 
-            switch(order.status){
+        default:
+          statusText = "Pending";
+          statusClass = "status-pending";
+      }
 
-    case "Approved":
-        statusText = "Approved";
-        statusClass = "status-approved";
-        break;
+      const date = new Date(order.createdAt);
 
-    case "Delivered":
-        statusText = "Delivered";
-        statusClass = "status-delivered";
-        break;
-
-    case "Cancelled":
-        statusText = "Cancelled";
-        statusClass = "status-cancelled";
-        break;
-
-    default:
-        statusText = "Pending";
-        statusClass = "status-pending";
-}
-
-            const date =
-            new Date(
-                order.createdAt
-            );
-
-            card.innerHTML = `
+      card.innerHTML = `
 
             <div class="order-header">
 
@@ -175,14 +138,11 @@ function loadOrders(userId){
 
                     <small>
 
-                        ${date.toLocaleDateString(
-                            "en-NG",
-                            {
-                                day:"numeric",
-                                month:"short",
-                                year:"numeric"
-                            }
-                        )}
+                        ${date.toLocaleDateString("en-NG", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })}
 
                     </small>
 
@@ -213,10 +173,7 @@ function loadOrders(userId){
 
             `;
 
-            container.appendChild(card);
-
-        });
-
+      container.appendChild(card);
     });
-
+  });
 }

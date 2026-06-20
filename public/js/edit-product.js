@@ -1,73 +1,48 @@
 import { db } from "./firebase.js";
 
 import {
-    doc,
-    getDoc,
-    updateDoc
-}
-from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+  doc,
+  getDoc,
+  updateDoc,
+} from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
-const params =
-new URLSearchParams(location.search);
+const params = new URLSearchParams(location.search);
 
-const productId =
-params.get("id");
+const productId = params.get("id");
 
-const form =
-document.getElementById("edit-product-form");
+const form = document.getElementById("edit-product-form");
 
-const uploadBox =
-document.getElementById("upload-image-box");
+const uploadBox = document.getElementById("upload-image-box");
 
 let uploadedImageUrl = "";
 
 let renderingCart = false;
 
-async function loadProduct(){
+async function loadProduct() {
+  const snap = await getDoc(doc(db, "products", productId));
 
-    const snap =
-    await getDoc(
-        doc(db,"products",productId)
-    );
+  if (!snap.exists()) {
+    showToast("Product not found.");
 
-    if(!snap.exists()){
+    location.href = "/admin";
 
-        showToast("Product not found.");
+    return;
+  }
 
-        location.href="/admin";
+  const product = snap.data();
 
-        return;
-    }
+  document.getElementById("prod-title").value = product.title;
 
-    const product =
-    snap.data();
+  document.getElementById("prod-price").value = product.price;
 
-    document.getElementById(
-        "prod-title"
-    ).value =
-    product.title;
+  document.getElementById("prod-quantity").value =
+    (product.quantity || 0) - (product.sold || 0);
 
-    document.getElementById(
-        "prod-price"
-    ).value =
-    product.price;
+  document.getElementById("prod-desc").value = product.description;
 
-    document.getElementById(
-"prod-quantity"
-).value =
-(product.quantity || 0)
--
-(product.sold || 0);
+  uploadedImageUrl = product.image;
 
-    document.getElementById(
-        "prod-desc"
-    ).value =
-    product.description;
-
-    uploadedImageUrl =
-    product.image;
-
-    uploadBox.innerHTML = `
+  uploadBox.innerHTML = `
     <img
     src="${product.image}"
     style="
@@ -78,60 +53,32 @@ async function loadProduct(){
     ">
     `;
 
-    document
-    .querySelectorAll(
-        'input[name="prod_sizes"]'
-    )
-    .forEach(box=>{
+  document.querySelectorAll('input[name="prod_sizes"]').forEach((box) => {
+    box.checked = product.sizes.includes(box.value);
+  });
 
-        box.checked =
-        product.sizes.includes(
-            box.value
-        );
-
-    });
-
-    document
-    .querySelectorAll(
-        'input[name="prod_colors"]'
-    )
-    .forEach(box=>{
-
-        box.checked =
-        product.colors.includes(
-            box.value
-        );
-
-    });
-
+  document.querySelectorAll('input[name="prod_colors"]').forEach((box) => {
+    box.checked = product.colors.includes(box.value);
+  });
 }
 
 loadProduct();
 
-uploadBox.onclick = ()=>{
+uploadBox.onclick = () => {
+  cloudinary.openUploadWidget(
+    {
+      cloudName: "dzkyhxdy9",
 
-    cloudinary.openUploadWidget(
+      uploadPreset: "transformations",
 
-        {
-            cloudName:"dzkyhxdy9",
+      multiple: false,
+    },
 
-            uploadPreset:"transformations",
+    (error, result) => {
+      if (!error && result && result.event === "success") {
+        uploadedImageUrl = result.info.secure_url;
 
-            multiple:false
-        },
-
-        (error,result)=>{
-
-            if(
-                !error &&
-                result &&
-                result.event==="success"
-            ){
-
-                uploadedImageUrl =
-                result.info.secure_url;
-
-                uploadBox.innerHTML = `
+        uploadBox.innerHTML = `
                 <img
                 src="${uploadedImageUrl}"
                 style="
@@ -141,147 +88,79 @@ uploadBox.onclick = ()=>{
                 border-radius:8px;
                 ">
                 `;
-            }
-
-        }
-
-    );
-
+      }
+    },
+  );
 };
 
-window.addEventListener(
-"beforeunload",
-async ()=>{
+window.addEventListener("beforeunload", async () => {
+  if (!productId) return;
 
-    if(!productId) return;
+  try {
+    await updateDoc(
+      doc(db, "products", productId),
 
-    try{
-
-        await updateDoc(
-
-            doc(
-                db,
-                "products",
-                productId
-            ),
-
-            {
-                isEditing:false
-            }
-
-        );
-
-    }catch(err){
-
-        console.log(err);
-
-    }
-
+      {
+        isEditing: false,
+      },
+    );
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 document
-.getElementById("back-admin-btn")
-.addEventListener("click", async (e) => {
-
+  .getElementById("back-admin-btn")
+  .addEventListener("click", async (e) => {
     e.preventDefault();
 
-    await updateDoc(
-        doc(db, "products", productId),
-        {
-            isEditing: false
-        }
-    );
+    await updateDoc(doc(db, "products", productId), {
+      isEditing: false,
+    });
 
     location.href = "/admin";
-});
+  });
 
-form.addEventListener(
-"submit",
-async(e)=>{
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-e.preventDefault();
+  const colors = [
+    ...document.querySelectorAll("input[name='prod_colors']:checked"),
+  ].map((el) => el.value);
 
-const colors = [
+  const sizes = [
+    ...document.querySelectorAll("input[name='prod_sizes']:checked"),
+  ].map((el) => el.value);
 
-...document.querySelectorAll(
-"input[name='prod_colors']:checked"
-)
-
-].map(el=>el.value);
-
-const sizes = [
-
-...document.querySelectorAll(
-"input[name='prod_sizes']:checked"
-)
-
-].map(el=>el.value);
-
-await updateDoc(
-
-    doc(
-        db,
-        "products",
-        productId
-    ),
+  await updateDoc(
+    doc(db, "products", productId),
 
     {
+      title: document.getElementById("prod-title").value,
 
-        title:
-        document.getElementById(
-            "prod-title"
-        ).value,
+      price: Number(document.getElementById("prod-price").value),
 
-        price:Number(
-            document.getElementById(
-                "prod-price"
-            ).value
-        ),
+      quantity: Number(document.getElementById("prod-quantity").value),
 
-        quantity:Number(
-document.getElementById(
-"prod-quantity"
-).value
-),
+      sold: (await getDoc(doc(db, "products", productId))).data().sold || 0,
 
-sold:
-(
-    (
-        await getDoc(
-            doc(db,"products",productId)
-        )
-    ).data().sold
-) || 0,
+      description: document.getElementById("prod-desc").value,
 
-        description:
-        document.getElementById(
-            "prod-desc"
-        ).value,
+      image: uploadedImageUrl,
 
-        image:
-        uploadedImageUrl,
+      sizes,
 
-        sizes,
+      colors,
 
-        colors,
+      isEditing: false,
+    },
+  );
 
-        isEditing:false
+  showToast("Product updated successfully.");
 
-    }
+  await updateDoc(doc(db, "products", productId), {
+    isEditing: false,
+  });
 
-);
-
-showToast(
-    "Product updated successfully."
-);
-
-await updateDoc(
-    doc(db,"products",productId),
-    {
-        isEditing:false
-    }
-);
-
-location.href="/admin";
-
+  location.href = "/admin";
 });

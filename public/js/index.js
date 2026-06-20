@@ -81,8 +81,17 @@ function renderProducts(products) {
             product.image ||
             "https://via.placeholder.com/600x600?text=No+Image";
 
-        const isSuspended =
-            product.isSuspended || false;
+        const remainingStock =
+    (product.quantity || 0) -
+    (product.sold || 0);
+
+const isSuspended =
+    product.isSuspended ||
+    remainingStock <= 0;
+
+        const remainingStock =
+    (product.quantity || 0) -
+    (product.sold || 0);
 
         const card =
 document.createElement("div");
@@ -188,8 +197,15 @@ if (!isSuspended) {
                     ${title}
                 </h3>
 
-                <p id="stock-left" style="color:lime;margin-bottom:10px;"></p>
-                
+                <p class="stock-left" style="
+    color:${remainingStock > 0 ? 'lime' : '#ff4d4d'};
+    margin-bottom:10px;
+">
+    ${remainingStock > 0
+        ? `${remainingStock} left in stock`
+        : 'Out of stock'}
+</p>
+
                 <div class="product-price">
                     ₦${price.toLocaleString()}
                 </div>

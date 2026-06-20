@@ -1,74 +1,48 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<title>Register</title>
+    <title>Register</title>
 
-<link rel="stylesheet" href="/css/auth.css">
-<link rel="stylesheet" href="/css/index.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-</head>
-<body>
+    <link rel="stylesheet" href="/css/auth.css" />
+    <link rel="stylesheet" href="/css/index.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="auth-container">
+      <div class="auth-logo">BRAND<span>NAME</span></div>
 
-<div class="auth-container">
+      <h2 class="auth-title">Create Account</h2>
 
-    <div class="auth-logo">
-        BRAND<span>NAME</span>
+      <form id="registerForm" class="auth-form">
+        <input type="email" id="email" placeholder="Email" required />
+
+        <input type="password" id="password" placeholder="Password" required />
+
+        <input
+          type="password"
+          id="confirmPassword"
+          placeholder="Confirm Password"
+          required
+        />
+
+        <button type="submit">Register</button>
+      </form>
+
+      <button id="googleSignup" class="google-btn">Continue With Google</button>
+
+      <div class="auth-links">
+        <a href="/login"> Already have an account? </a>
+      </div>
     </div>
 
-    <h2 class="auth-title">
-        Create Account
-    </h2>
-
-    <form id="registerForm" class="auth-form">
-
-        <input
-            type="email"
-            id="email"
-            placeholder="Email"
-            required
-        >
-
-        <input
-            type="password"
-            id="password"
-            placeholder="Password"
-            required
-        >
-
-        <input
-            type="password"
-            id="confirmPassword"
-            placeholder="Confirm Password"
-            required
-        >
-
-        <button type="submit">
-            Register
-        </button>
-
-    </form>
-
-    <button
-        id="googleSignup"
-        class="google-btn"
-    >
-        Continue With Google
-    </button>
-
-    <div class="auth-links">
-        <a href="/login">
-            Already have an account?
-        </a>
-    </div>
-
-</div>
-
-<script type="module" src="/js/register.js"></script>
-<script type="module" src="/js/guard.js"></script>
-<script src="/js/toast.js"></script>
-
-</body>
+    <script type="module" src="/js/register.js"></script>
+    <script type="module" src="/js/guard.js"></script>
+    <script src="/js/toast.js"></script>
+  </body>
 </html>

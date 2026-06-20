@@ -1,26 +1,19 @@
 export function createSearchSelect({
+  container,
+  placeholder,
+  items,
+  onSelect,
+  disabled = false,
+}) {
+  container.innerHTML = "";
 
-container,
-placeholder,
-items,
-onSelect,
-disabled = false
+  const wrapper = document.createElement("div");
 
-}){
+  wrapper.className = `search-select ${
+    disabled ? "search-select-disabled" : ""
+  }`;
 
-container.innerHTML = "";
-
-const wrapper =
-document.createElement("div");
-
-wrapper.className =
-`search-select ${
-disabled
-? "search-select-disabled"
-: ""
-}`;
-
-wrapper.innerHTML = `
+  wrapper.innerHTML = `
 <div class="search-select-trigger">
 
 <span class="search-select-placeholder">
@@ -44,222 +37,121 @@ placeholder="Search..."
 </div>
 `;
 
-container.appendChild(wrapper);
+  container.appendChild(wrapper);
 
-const trigger =
-wrapper.querySelector(
-".search-select-trigger"
-);
+  const trigger = wrapper.querySelector(".search-select-trigger");
 
-const dropdown =
-wrapper.querySelector(
-".search-select-dropdown"
-);
+  const dropdown = wrapper.querySelector(".search-select-dropdown");
 
-const search =
-wrapper.querySelector(
-".search-select-search"
-);
+  const search = wrapper.querySelector(".search-select-search");
 
-const options =
-wrapper.querySelector(
-".search-select-options"
-);
+  const options = wrapper.querySelector(".search-select-options");
 
-function render(list){
+  function render(list) {
+    options.innerHTML = "";
 
-options.innerHTML = "";
+    list.forEach((item) => {
+      const option = document.createElement("div");
 
-list.forEach(item=>{
+      option.className = "search-select-option";
 
-const option =
-document.createElement("div");
+      option.textContent = item.name;
 
-option.className =
-"search-select-option";
+      option.addEventListener("click", () => {
+        const label = wrapper.querySelector(
+          ".search-select-placeholder, .search-select-value",
+        );
 
-option.textContent =
-item.name;
+        if (label) {
+          label.textContent = item.name;
 
-option.addEventListener(
-"click",
-()=>{
+          label.className = "search-select-value";
+        }
 
-const label =
-wrapper.querySelector(
-".search-select-placeholder, .search-select-value"
-);
+        wrapper.classList.remove("open");
 
-if(label){
+        onSelect(item);
+      });
 
-label.textContent =
-item.name;
+      options.appendChild(option);
+    });
+  }
 
-label.className =
-"search-select-value";
+  render(items);
 
-}
+  trigger.addEventListener("click", () => {
+    if (wrapper.classList.contains("search-select-disabled")) return;
 
-wrapper.classList.remove(
-"open"
-);
+    wrapper.classList.toggle("open");
+  });
 
-onSelect(item);
+  search.addEventListener("input", () => {
+    const value = search.value.toLowerCase();
 
-}
-);
+    render(items.filter((item) => item.name.toLowerCase().includes(value)));
+  });
 
-options.appendChild(option);
+  document.addEventListener("click", (e) => {
+    if (!wrapper.contains(e.target)) {
+      wrapper.classList.remove("open");
+    }
+  });
 
-});
+  return {
+    clear() {
+      search.value = "";
 
-}
+      const placeholderElement = wrapper.querySelector(
+        ".search-select-placeholder, .search-select-value",
+      );
 
-render(items);
+      if (placeholderElement) {
+        placeholderElement.textContent = placeholder;
 
-trigger.addEventListener(
-"click",
-()=>{
+        placeholderElement.className = "search-select-placeholder";
+      }
 
-if(wrapper.classList.contains(
-"search-select-disabled"
-)) return;
+      render(items);
+    },
 
-wrapper.classList.toggle(
-"open"
-);
+    enable() {
+      wrapper.classList.remove("search-select-disabled");
+    },
 
-}
-);
+    disable() {
+      wrapper.classList.add("search-select-disabled");
 
-search.addEventListener(
-"input",
-()=>{
+      wrapper.classList.remove("open");
 
-const value =
-search.value.toLowerCase();
+      search.value = "";
 
-render(
+      const placeholderElement = wrapper.querySelector(
+        ".search-select-placeholder, .search-select-value",
+      );
 
-items.filter(item=>
+      if (placeholderElement) {
+        placeholderElement.textContent = placeholder;
 
-item.name
-.toLowerCase()
-.includes(value)
+        placeholderElement.className = "search-select-placeholder";
+      }
+    },
 
-)
-
-);
-
-}
-);
-
-document.addEventListener(
-"click",
-e=>{
-
-if(
-!wrapper.contains(e.target)
-){
-
-wrapper.classList.remove(
-"open"
-);
-
-}
-
-}
-);
-
-return {
-
-clear(){
-
-search.value = "";
-
-const placeholderElement =
-wrapper.querySelector(
-".search-select-placeholder, .search-select-value"
-);
-
-if(placeholderElement){
-
-placeholderElement.textContent =
-placeholder;
-
-placeholderElement.className =
-"search-select-placeholder";
-
-}
-
-render(items);
-
-},
-
-enable(){
-
-wrapper.classList.remove(
-"search-select-disabled"
-);
-
-},
-
-disable(){
-
-wrapper.classList.add(
-"search-select-disabled"
-);
-
-wrapper.classList.remove(
-"open"
-);
-
-search.value = "";
-
-const placeholderElement =
-wrapper.querySelector(
-".search-select-placeholder, .search-select-value"
-);
-
-if(placeholderElement){
-
-placeholderElement.textContent =
-placeholder;
-
-placeholderElement.className =
-"search-select-placeholder";
-
-}
-
-},
-
-setPlaceholder(text){
-
-const placeholderElement =
-wrapper.querySelector(
-".search-select-placeholder, .search-select-value"
-);
-
-if(placeholderElement){
-
-placeholderElement.textContent =
-text;
-
-placeholderElement.className =
-"search-select-placeholder";
-
-}
-
-},
-
-setItems(newItems){
-
-items = newItems;
-
-render(items);
-
-}
-
-};
-
+    setPlaceholder(text) {
+      const placeholderElement = wrapper.querySelector(
+        ".search-select-placeholder, .search-select-value",
+      );
+
+      if (placeholderElement) {
+        placeholderElement.textContent = text;
+
+        placeholderElement.className = "search-select-placeholder";
+      }
+    },
+
+    setItems(newItems) {
+      items = newItems;
+
+      render(items);
+    },
+  };
 }

@@ -1,148 +1,129 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Product Options - Vanguard</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product Options - Vanguard</title>
 
-<link rel="stylesheet" href="/css/index.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/index.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
 
-<style>
-.decision-split-container{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:50px;
-}
+    <style>
+      .decision-split-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 50px;
+      }
 
-@media(max-width:768px){
-    .decision-split-container{
-        grid-template-columns:1fr;
-    }
-    .decision-media-pane img{
-        height:300px !important;
-    }
-}
-</style>
+      @media (max-width: 768px) {
+        .decision-split-container {
+          grid-template-columns: 1fr;
+        }
+        .decision-media-pane img {
+          height: 300px !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="luxury-nav">
+      <div class="nav-left-menu"><a href="/">Catalog</a></div>
 
-</head>
-<body>
-
-<header class="luxury-nav">
-    <div class="nav-left-menu"><a href="/">Catalog</a></div>
-
-    <div class="main-signature-logo">
-        <a href="/" style="text-decoration:none;color:inherit;">
-            VAN<span>GUARD</span>
+      <div class="main-signature-logo">
+        <a href="/" style="text-decoration: none; color: inherit">
+          VAN<span>GUARD</span>
         </a>
-    </div>
+      </div>
 
-    <div class="nav-right-actions">
+      <div class="nav-right-actions">
         <a href="/cart" class="custom-cart-anchor">
-            <span class="cart-label-word">Cart</span>
-            <div class="cart-icon-wrapper">
-                <i class="fa-solid fa-bag-shopping"></i>
-                <span id="cart-count">0</span>
-            </div>
+          <span class="cart-label-word">Cart</span>
+          <div class="cart-icon-wrapper">
+            <i class="fa-solid fa-bag-shopping"></i>
+            <span id="cart-count">0</span>
+          </div>
         </a>
-    </div>
-</header>
+      </div>
+    </header>
 
-<main class="store-mainframe">
+    <main class="store-mainframe">
+      <span class="sold-out-badge" id="sold-out-badge" style="display: none">
+        SOLD OUT
+      </span>
 
-<span
-    class="sold-out-badge"
-    id="sold-out-badge"
-    style="display:none;"
->
-    SOLD OUT
-</span>
+      <div class="decision-split-container">
+        <!-- IMAGE -->
+        <div class="decision-media-pane">
+          <img id="decision-product-img" class="decision-product-image" />
+        </div>
 
-<div class="decision-split-container">
+        <!-- DETAILS -->
+        <div class="decision-meta-pane">
+          <h1 id="decision-title">Loading...</h1>
+          <div id="decision-price"></div>
 
-    <!-- IMAGE -->
-    <div class="decision-media-pane">
-        <img
-id="decision-product-img"
-class="decision-product-image"
->
-    </div>
+          <p id="stock-left" style="color: lime; margin-bottom: 10px"></p>
 
-    <!-- DETAILS -->
-    <div class="decision-meta-pane">
+          <hr />
 
-        <h1 id="decision-title">Loading...</h1>
-        <div id="decision-price"></div>
-
-        <p id="stock-left" style="color:lime;margin-bottom:10px;"></p>
-
-        <hr>
-
-        <!-- SIZE -->
-        <div>
+          <!-- SIZE -->
+          <div>
             <h4>Size</h4>
             <div id="size-options-wrapper"></div>
-        </div>
+          </div>
 
-        <!-- COLOR -->
-        <div style="margin-top:15px;">
+          <!-- COLOR -->
+          <div style="margin-top: 15px">
             <h4>Color</h4>
             <div id="color-options-wrapper"></div>
-        </div>
+          </div>
 
-        <!-- QTY -->
-        <div style="margin-top:15px;">
+          <!-- QTY -->
+          <div style="margin-top: 15px">
             <h4>Quantity</h4>
             <div class="luxury-qty-box">
+              <button
+                type="button"
+                onclick="decreaseQty()"
+                class="luxury-qty-btn"
+              >
+                −
+              </button>
 
-<button
-type="button"
-onclick="decreaseQty()"
-class="luxury-qty-btn"
->
+              <input
+                type="number"
+                id="item-quantity"
+                value="1"
+                min="1"
+                readonly
+              />
 
-−
+              <button
+                type="button"
+                onclick="increaseQty()"
+                class="luxury-qty-btn"
+              >
+                +
+              </button>
+            </div>
+          </div>
 
-</button>
+          <p id="decision-description"></p>
 
-<input
-type="number"
-id="item-quantity"
-value="1"
-min="1"
-readonly
->
-
-<button
-type="button"
-onclick="increaseQty()"
-class="luxury-qty-btn"
->
-
-+
-
-</button>
-
-</div>
-        </div>
-
-        <p id="decision-description"></p>
-
-        <button onclick="submitToCartBag()" class="add-to-cart-btn">
+          <button onclick="submitToCartBag()" class="add-to-cart-btn">
             Add To Bag
-        </button>
+          </button>
+        </div>
+      </div>
+    </main>
 
-    </div>
-
-</div>
-
-</main>
-
-<script type="module" src="/js/decision-page.js"></script>
-<script type="module" src="/js/guard.js"></script>
-<script type="module" src="/js/route-guard.js"></script>
-<script type="module" src="/js/cart-count.js"></script>
-<script src="/js/toast.js"></script>
-
-</body>
+    <script type="module" src="/js/decision-page.js"></script>
+    <script type="module" src="/js/guard.js"></script>
+    <script type="module" src="/js/route-guard.js"></script>
+    <script type="module" src="/js/cart-count.js"></script>
+    <script src="/js/toast.js"></script>
+  </body>
 </html>

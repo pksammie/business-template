@@ -1,142 +1,151 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Edit Product</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Product</title>
 
-<link rel="stylesheet" href="/css/index.css">
-<link rel="stylesheet" href="/css/admin.css">
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/index.css" />
+    <link rel="stylesheet" href="/css/admin.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+  </head>
 
-</head>
+  <body>
+    <header class="luxury-nav">
+      <div class="nav-left-menu">
+        <a href="#" id="back-admin-btn"> ← Back to Admin </a>
+      </div>
 
-<body>
+      <div class="main-signature-logo">EDIT<span>PRODUCT</span></div>
+    </header>
+    <br />
+    <main class="store-mainframe">
+      <section class="admin-section">
+        <h2>Edit Product</h2>
+        <br />
+        <form id="edit-product-form" class="admin-form">
+          <input
+            type="text"
+            id="prod-title"
+            placeholder="Product Title"
+            required
+          />
 
-<header class="luxury-nav">
+          <input type="number" id="prod-price" placeholder="Price" required />
 
-    <div class="nav-left-menu">
-    <a href="#" id="back-admin-btn">
-        ← Back to Admin
-    </a>
-</div>
+          <input
+            type="number"
+            id="prod-quantity"
+            placeholder="Stock Quantity"
+            required
+          />
 
-    <div class="main-signature-logo">
-        EDIT<span>PRODUCT</span>
-    </div>
-</header>
-<br>
-<main class="store-mainframe">
+          <div id="upload-image-box" class="upload-box">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
 
-<section class="admin-section">
+            <p>Change Product Image</p>
+          </div>
 
-<h2>Edit Product</h2>
-<br>
-<form id="edit-product-form" class="admin-form">
+          <!-- SIZES -->
 
-<input
-type="text"
-id="prod-title"
-placeholder="Product Title"
-required>
+          <div class="admin-option-box">
+            <h4>Sizes</h4>
 
-<input
-type="number"
-id="prod-price"
-placeholder="Price"
-required>
+            <div class="checkbox-grid">
+              <label
+                ><input type="checkbox" name="prod_sizes" value="S" /> S</label
+              >
 
-<input
-type="number"
-id="prod-quantity"
-placeholder="Stock Quantity"
-required>
+              <label
+                ><input type="checkbox" name="prod_sizes" value="M" /> M</label
+              >
 
-<div
-id="upload-image-box"
-class="upload-box">
+              <label
+                ><input type="checkbox" name="prod_sizes" value="L" /> L</label
+              >
 
-<i class="fa-solid fa-cloud-arrow-up"></i>
+              <label
+                ><input type="checkbox" name="prod_sizes" value="XL" />
+                XL</label
+              >
 
-<p>Change Product Image</p>
+              <label
+                ><input type="checkbox" name="prod_sizes" value="None" />
+                None</label
+              >
+            </div>
+          </div>
 
-</div>
+          <!-- COLORS -->
 
-<!-- SIZES -->
+          <div class="admin-option-box">
+            <h4>Colors</h4>
 
-<div class="admin-option-box">
+            <div class="checkbox-grid">
+              <label
+                ><input type="checkbox" name="prod_colors" value="None" />
+                None</label
+              >
 
-<h4>Sizes</h4>
+              <label
+                ><input type="checkbox" name="prod_colors" value="Black" />
+                Black</label
+              >
 
-<div class="checkbox-grid">
+              <label
+                ><input type="checkbox" name="prod_colors" value="White" />
+                White</label
+              >
 
-<label><input type="checkbox" name="prod_sizes" value="S"> S</label>
+              <label
+                ><input type="checkbox" name="prod_colors" value="Red" />
+                Red</label
+              >
 
-<label><input type="checkbox" name="prod_sizes" value="M"> M</label>
+              <label
+                ><input type="checkbox" name="prod_colors" value="Blue" />
+                Blue</label
+              >
 
-<label><input type="checkbox" name="prod_sizes" value="L"> L</label>
+              <label
+                ><input type="checkbox" name="prod_colors" value="Green" />
+                Green</label
+              >
 
-<label><input type="checkbox" name="prod_sizes" value="XL"> XL</label>
+              <label
+                ><input type="checkbox" name="prod_colors" value="Orange" />
+                Orange</label
+              >
 
-<label><input type="checkbox" name="prod_sizes" value="None"> None</label>
+              <label
+                ><input type="checkbox" name="prod_colors" value="Yellow" />
+                Yellow</label
+              >
 
-</div>
+              <label
+                ><input type="checkbox" name="prod_colors" value="Gold" />
+                Gold</label
+              >
+            </div>
+          </div>
 
-</div>
+          <textarea
+            id="prod-desc"
+            placeholder="Description"
+            required
+          ></textarea>
 
-<!-- COLORS -->
+          <button type="submit">Save Changes</button>
+        </form>
+      </section>
+    </main>
 
-<div class="admin-option-box">
+    <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
 
-<h4>Colors</h4>
-
-<div class="checkbox-grid">
-
-<label><input type="checkbox" name="prod_colors" value="None"> None</label>
-
-<label><input type="checkbox" name="prod_colors" value="Black"> Black</label>
-
-<label><input type="checkbox" name="prod_colors" value="White"> White</label>
-
-<label><input type="checkbox" name="prod_colors" value="Red"> Red</label>
-
-<label><input type="checkbox" name="prod_colors" value="Blue"> Blue</label>
-
-<label><input type="checkbox" name="prod_colors" value="Green"> Green</label>
-
-<label><input type="checkbox" name="prod_colors" value="Orange"> Orange</label>
-
-<label><input type="checkbox" name="prod_colors" value="Yellow"> Yellow</label>
-
-<label><input type="checkbox" name="prod_colors" value="Gold"> Gold</label>
-
-</div>
-
-</div>
-
-<textarea
-id="prod-desc"
-placeholder="Description"
-required></textarea>
-
-<button type="submit">
-
-Save Changes
-
-</button>
-
-</form>
-
-</section>
-
-</main>
-
-<script src="https://upload-widget.cloudinary.com/global/all.js"></script>
-
-<script type="module"
-src="/js/edit-product.js"></script>
-<script src="/js/toast.js"></script>
-
-</body>
+    <script type="module" src="/js/edit-product.js"></script>
+    <script src="/js/toast.js"></script>
+  </body>
 </html>

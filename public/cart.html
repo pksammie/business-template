@@ -1,96 +1,165 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Your Bag - Vanguard</title>
-    <link rel="stylesheet" href="/css/index.css">
-    <link rel="stylesheet" href="/css/cart.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-</head>
-<body>
-
+    <link rel="stylesheet" href="/css/index.css" />
+    <link rel="stylesheet" href="/css/cart.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+  </head>
+  <body>
     <header class="luxury-nav">
-        <div class="nav-left-menu"><a href="/">Catalog</a></div>
-        <div class="main-signature-logo"><a href="/" style="text-decoration:none; color:inherit;">VAN<span>GUARD</span></a></div>
-        <div class="nav-right-actions"></div>
+      <div class="nav-left-menu"><a href="/">Catalog</a></div>
+      <div class="main-signature-logo">
+        <a href="/" style="text-decoration: none; color: inherit"
+          >VAN<span>GUARD</span></a
+        >
+      </div>
+      <div class="nav-right-actions"></div>
     </header>
-    
+
     <main class="store-mainframe">
-        <h1 style="font-size: 26px; font-weight: 400; letter-spacing: 2px; margin-bottom: 30px; text-transform: uppercase;">Your Shopping Cart</h1>
-        <p
-id="update-mode-message"
-class="update-banner"
-style="
-display:none;
-margin-bottom:20px;
-color:var(--primary-color);
-font-weight:600;
-">
-Select the product you wish to update.
-</p>
-        <!-- Tabular Grid System Matching Reference Image Layout -->
-        <div id="cart-items-container" class="cart-cards-grid"></div>
-        <br>
-        <!-- Summary Subtotal Block Footer -->
-        <div style="display: flex; flex-direction: column; align-items: flex-end; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 30px;">
-            <div style="display: flex; gap: 40px; font-size: 18px; margin-bottom: 25px;">
-                <span style="color: var(--text-muted);">Sub-Total Amount:</span>
-                <span id="summary-subtotal" style="font-weight: 700; color: var(--primary-color);">₦0.00</span>
-            </div>
-
-            <div class="restore-cart-section">
-
-    <p class="restore-cart-title">
-        Need to recover an old cart?
-    </p>
-
-    <div class="restore-cart-controls">
-
-        <button id="restore-cart-btn">
-
-            <i class="fa-solid fa-clock-rotate-left"></i>
-
-            Restore Cart
-
-        </button>
-
-        <select id="restore-range">
-
-            <option value="1">Last Hour</option>
-
-            <option value="24">Last 24 Hours</option>
-
-            <option value="168">Last 7 Days</option>
-
-            <option value="720">Last Month</option>
-
-            <option value="all">All Time</option>
-
-        </select>
-
-    </div>
-
-</div>
-            
-            <!-- Three Control Interaction Action Buttons Row -->
-            <div class="cart-control-button-grid">
-                <button class="cart-action-btn clear-cart-btn" onclick="clearCart()"><i class="fa-solid fa-trash"></i>Clear Cart</button>
-                <button onclick="actionContinueShopping()" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 12px 25px; font-weight: 600; cursor: pointer; border-radius: 4px; text-transform: uppercase; font-size: 13px; letter-spacing: 1px;">Continue Shopping</button>
-                <button onclick="actionUpdateCartRedirect()" style="background: transparent; border: 1px solid var(--primary-color); color: var(--primary-color); padding: 12px 25px; font-weight: 600; cursor: pointer; border-radius: 4px; text-transform: uppercase; font-size: 13px; letter-spacing: 1px;">Update Cart</button>
-                <button onclick="actionProceedCheckout()" style="background: var(--primary-color); border: none; color: #000; padding: 12px 35px; font-weight: bold; cursor: pointer; border-radius: 4px; text-transform: uppercase; font-size: 13px; letter-spacing: 1px;">Check Out</button>
-            </div>
+      <h1
+        style="
+          font-size: 26px;
+          font-weight: 400;
+          letter-spacing: 2px;
+          margin-bottom: 30px;
+          text-transform: uppercase;
+        "
+      >
+        Your Shopping Cart
+      </h1>
+      <p
+        id="update-mode-message"
+        class="update-banner"
+        style="
+          display: none;
+          margin-bottom: 20px;
+          color: var(--primary-color);
+          font-weight: 600;
+        "
+      >
+        Select the product you wish to update.
+      </p>
+      <!-- Tabular Grid System Matching Reference Image Layout -->
+      <div id="cart-items-container" class="cart-cards-grid"></div>
+      <br />
+      <!-- Summary Subtotal Block Footer -->
+      <div
+        style="
+          display: flex;
+          flex-direction: column;
+          align-items: flex-end;
+          border-top: 1px solid rgba(255, 255, 255, 0.1);
+          padding-top: 30px;
+        "
+      >
+        <div
+          style="display: flex; gap: 40px; font-size: 18px; margin-bottom: 25px"
+        >
+          <span style="color: var(--text-muted)">Sub-Total Amount:</span>
+          <span
+            id="summary-subtotal"
+            style="font-weight: 700; color: var(--primary-color)"
+            >₦0.00</span
+          >
         </div>
+
+        <div class="restore-cart-section">
+          <p class="restore-cart-title">Need to recover an old cart?</p>
+
+          <div class="restore-cart-controls">
+            <button id="restore-cart-btn">
+              <i class="fa-solid fa-clock-rotate-left"></i>
+
+              Restore Cart
+            </button>
+
+            <select id="restore-range">
+              <option value="1">Last Hour</option>
+
+              <option value="24">Last 24 Hours</option>
+
+              <option value="168">Last 7 Days</option>
+
+              <option value="720">Last Month</option>
+
+              <option value="all">All Time</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Three Control Interaction Action Buttons Row -->
+        <div class="cart-control-button-grid">
+          <button class="cart-action-btn clear-cart-btn" onclick="clearCart()">
+            <i class="fa-solid fa-trash"></i>Clear Cart
+          </button>
+          <button
+            onclick="actionContinueShopping()"
+            style="
+              background: transparent;
+              border: 1px solid rgba(255, 255, 255, 0.2);
+              color: #fff;
+              padding: 12px 25px;
+              font-weight: 600;
+              cursor: pointer;
+              border-radius: 4px;
+              text-transform: uppercase;
+              font-size: 13px;
+              letter-spacing: 1px;
+            "
+          >
+            Continue Shopping
+          </button>
+          <button
+            onclick="actionUpdateCartRedirect()"
+            style="
+              background: transparent;
+              border: 1px solid var(--primary-color);
+              color: var(--primary-color);
+              padding: 12px 25px;
+              font-weight: 600;
+              cursor: pointer;
+              border-radius: 4px;
+              text-transform: uppercase;
+              font-size: 13px;
+              letter-spacing: 1px;
+            "
+          >
+            Update Cart
+          </button>
+          <button
+            onclick="actionProceedCheckout()"
+            style="
+              background: var(--primary-color);
+              border: none;
+              color: #000;
+              padding: 12px 35px;
+              font-weight: bold;
+              cursor: pointer;
+              border-radius: 4px;
+              text-transform: uppercase;
+              font-size: 13px;
+              letter-spacing: 1px;
+            "
+          >
+            Check Out
+          </button>
+        </div>
+      </div>
     </main>
 
     <script src="/js/modal.js"></script>
     <script src="/js/toast.js"></script>
-    
+
     <script type="module" src="/js/cart.js"></script>
     <script type="module" src="/js/route-guard.js"></script>
     <script type="module" src="/js/guard.js"></script>
     <script type="module" src="/js/cart-count.js"></script>
-    
-    
-</body>
+  </body>
 </html>

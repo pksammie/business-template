@@ -1,393 +1,359 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<title>About The Developer | Vanguard</title>
+    <title>About The Developer | Vanguard</title>
 
-<link rel="stylesheet" href="/css/index.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/index.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
 
-<style>
-.developer-hero{
-    text-align:center;
-    padding:80px 20px;
-}
+    <style>
+      .developer-hero {
+        text-align: center;
+        padding: 80px 20px;
+      }
 
-.developer-tag{
-    color: var(--primary-color);
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    font-size: 13px;
-    margin-bottom: 15px;
-}
+      .developer-tag {
+        color: var(--primary-color);
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        font-size: 13px;
+        margin-bottom: 15px;
+      }
 
-.developer-hero h1{
-    font-size: 50px;
-    margin-bottom: 15px;
-}
+      .developer-hero h1 {
+        font-size: 50px;
+        margin-bottom: 15px;
+      }
 
-.developer-hero p{
-    max-width: 700px;
-    margin: auto;
-    color: var(--text-muted);
-    line-height: 1.8;
-}
+      .developer-hero p {
+        max-width: 700px;
+        margin: auto;
+        color: var(--text-muted);
+        line-height: 1.8;
+      }
 
-.developer-btn{
-    display:inline-block;
-    margin-top:30px;
-    padding:14px 30px;
-    background: var(--primary-color);
-    color:#000;
-    text-decoration:none;
-    font-weight:700;
-    border-radius:5px;
-    transition:.3s;
-}
+      .developer-btn {
+        display: inline-block;
+        margin-top: 30px;
+        padding: 14px 30px;
+        background: var(--primary-color);
+        color: #000;
+        text-decoration: none;
+        font-weight: 700;
+        border-radius: 5px;
+        transition: 0.3s;
+      }
 
-.developer-btn:hover{
-    transform:translateY(-3px);
-}
+      .developer-btn:hover {
+        transform: translateY(-3px);
+      }
 
-.section-title{
-    text-align:center;
-    margin-bottom:40px;
-    font-size:32px;
-}
+      .section-title {
+        text-align: center;
+        margin-bottom: 40px;
+        font-size: 32px;
+      }
 
-.about-section{
-    max-width:900px;
-    margin:80px auto;
-    text-align:center;
-    line-height:1.9;
-    color:var(--text-muted);
-}
+      .about-section {
+        max-width: 900px;
+        margin: 80px auto;
+        text-align: center;
+        line-height: 1.9;
+        color: var(--text-muted);
+      }
 
-.services-grid{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:25px;
-}
+      .services-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 25px;
+      }
 
-.service-card{
-    background:var(--card-bg);
-    padding:35px 25px;
-    border-radius:10px;
-    text-align:center;
-    border:1px solid rgba(255,255,255,0.08);
-    transition:.3s;
-}
+      .service-card {
+        background: var(--card-bg);
+        padding: 35px 25px;
+        border-radius: 10px;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        transition: 0.3s;
+      }
 
-.service-card:hover{
-    transform:translateY(-5px);
-}
+      .service-card:hover {
+        transform: translateY(-5px);
+      }
 
-.service-card i{
-    font-size:40px;
-    color:var(--primary-color);
-    margin-bottom:20px;
-}
+      .service-card i {
+        font-size: 40px;
+        color: var(--primary-color);
+        margin-bottom: 20px;
+      }
 
-.service-card h3{
-    margin-bottom:15px;
-}
+      .service-card h3 {
+        margin-bottom: 15px;
+      }
 
-.service-card p{
-    color:var(--text-muted);
-    line-height:1.7;
-}
+      .service-card p {
+        color: var(--text-muted);
+        line-height: 1.7;
+      }
 
-.why-section{
-    margin-top:90px;
-}
+      .why-section {
+        margin-top: 90px;
+      }
 
-.why-grid{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:20px;
-    max-width:700px;
-    margin:auto;
-}
+      .why-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        max-width: 700px;
+        margin: auto;
+      }
 
-.why-item{
-    background:var(--card-bg);
-    padding:18px;
-    border-radius:8px;
-}
+      .why-item {
+        background: var(--card-bg);
+        padding: 18px;
+        border-radius: 8px;
+      }
 
-.why-item i{
-    color:var(--primary-color);
-    margin-right:10px;
-}
+      .why-item i {
+        color: var(--primary-color);
+        margin-right: 10px;
+      }
 
-.contact-section{
-    margin-top:100px;
-    text-align:center;
-    background:var(--card-bg);
-    padding:60px 30px;
-    border-radius:12px;
-}
+      .contact-section {
+        margin-top: 100px;
+        text-align: center;
+        background: var(--card-bg);
+        padding: 60px 30px;
+        border-radius: 12px;
+      }
 
-.contact-section h2{
-    margin-bottom:20px;
-}
+      .contact-section h2 {
+        margin-bottom: 20px;
+      }
 
-.contact-info{
-    margin:30px 0;
-    color:var(--text-muted);
-}
+      .contact-info {
+        margin: 30px 0;
+        color: var(--text-muted);
+      }
 
-.contact-info p{
-    margin:12px 0;
-}
+      .contact-info p {
+        margin: 12px 0;
+      }
 
-.contact-info i{
-    color:var(--primary-color);
-    margin-right:10px;
-}
+      .contact-info i {
+        color: var(--primary-color);
+        margin-right: 10px;
+      }
 
-.footer-note{
-    text-align:center;
-    margin:70px 0 30px;
-    color:var(--text-muted);
-    line-height:1.8;
-}
+      .footer-note {
+        text-align: center;
+        margin: 70px 0 30px;
+        color: var(--text-muted);
+        line-height: 1.8;
+      }
 
-@media(max-width:768px){
+      @media (max-width: 768px) {
+        .developer-hero h1 {
+          font-size: 36px;
+        }
 
-    .developer-hero h1{
-        font-size:36px;
-    }
+        .services-grid {
+          grid-template-columns: 1fr;
+        }
 
-    .services-grid{
-        grid-template-columns:1fr;
-    }
+        .why-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
 
-    .why-grid{
-        grid-template-columns:1fr;
-    }
-}
-</style>
+  <body>
+    <div class="top-bar">
+      <span>Creative Portfolio</span>
 
-</head>
-
-<body>
-
-<div class="top-bar">
-    <span>Creative Portfolio</span>
-
-    <a href="/" class="dev-link-badge">
+      <a href="/" class="dev-link-badge">
         <i class="fa-solid fa-store"></i>
         Back To Store
-    </a>
-</div>
+      </a>
+    </div>
 
-<header class="luxury-nav">
-
-    <div class="nav-left-menu">
+    <header class="luxury-nav">
+      <div class="nav-left-menu">
         <a href="/">Home</a>
-    </div>
+      </div>
 
-    <div class="main-signature-logo">
-        PK_<span>SAMMIE</span>
-    </div>
+      <div class="main-signature-logo">PK_<span>SAMMIE</span></div>
 
-    <div class="nav-right-actions"></div>
+      <div class="nav-right-actions"></div>
+    </header>
 
-</header>
-
-<main class="store-mainframe">
-
-    <section class="developer-hero">
-
+    <main class="store-mainframe">
+      <section class="developer-hero">
         <div class="developer-tag">
-            Web Designer • E-Commerce Developer • Video Editor
+          Web Designer • E-Commerce Developer • Video Editor
         </div>
 
         <h1>Hi, I'm PK_Sammie.</h1>
 
         <p>
-            I help businesses and individuals bring their ideas to life through
-            modern websites, elegant online stores, and professional video editing.
-            My focus is creating digital experiences that are visually impressive,
-            functional, and designed to leave a lasting impression.
+          I help businesses and individuals bring their ideas to life through
+          modern websites, elegant online stores, and professional video
+          editing. My focus is creating digital experiences that are visually
+          impressive, functional, and designed to leave a lasting impression.
         </p>
 
-        <a href="https://wa.me/2348109007611" target="_blank" class="developer-btn">
-            Let's Work Together
+        <a
+          href="https://wa.me/2348109007611"
+          target="_blank"
+          class="developer-btn"
+        >
+          Let's Work Together
         </a>
+      </section>
 
-    </section>
-
-    <section class="about-section">
-
-        <h2 class="section-title">
-            About Me
-        </h2>
+      <section class="about-section">
+        <h2 class="section-title">About Me</h2>
 
         <p>
-            I'm PK_Sammie, a creative professional passionate about building
-            beautiful and responsive websites that help businesses grow online.
-            From sleek landing pages to complete e-commerce platforms, I enjoy
-            turning ideas into polished digital products.
+          I'm PK_Sammie, a creative professional passionate about building
+          beautiful and responsive websites that help businesses grow online.
+          From sleek landing pages to complete e-commerce platforms, I enjoy
+          turning ideas into polished digital products.
         </p>
 
-        <br>
+        <br />
 
         <p>
-            Beyond web development, I also specialize in video editing,
-            creating engaging visual content that captures attention and tells
-            compelling stories. I believe every project deserves creativity,
-            attention to detail, and a commitment to excellence.
+          Beyond web development, I also specialize in video editing, creating
+          engaging visual content that captures attention and tells compelling
+          stories. I believe every project deserves creativity, attention to
+          detail, and a commitment to excellence.
         </p>
+      </section>
 
-    </section>
-
-    <section>
-
-        <h2 class="section-title">
-            What I Do
-        </h2>
+      <section>
+        <h2 class="section-title">What I Do</h2>
 
         <div class="services-grid">
+          <div class="service-card">
+            <i class="fa-solid fa-laptop-code"></i>
 
-            <div class="service-card">
+            <h3>Web Design</h3>
 
-                <i class="fa-solid fa-laptop-code"></i>
+            <p>
+              Modern, responsive websites designed with user experience, speed,
+              and elegance in mind.
+            </p>
+          </div>
 
-                <h3>Web Design</h3>
+          <div class="service-card">
+            <i class="fa-solid fa-cart-shopping"></i>
 
-                <p>
-                    Modern, responsive websites designed with user experience,
-                    speed, and elegance in mind.
-                </p>
+            <h3>E-Commerce Development</h3>
 
-            </div>
+            <p>
+              Professional online stores that showcase products beautifully and
+              provide seamless shopping experiences.
+            </p>
+          </div>
 
-            <div class="service-card">
+          <div class="service-card">
+            <i class="fa-solid fa-film"></i>
 
-                <i class="fa-solid fa-cart-shopping"></i>
+            <h3>Video Editing</h3>
 
-                <h3>E-Commerce Development</h3>
-
-                <p>
-                    Professional online stores that showcase products beautifully
-                    and provide seamless shopping experiences.
-                </p>
-
-            </div>
-
-            <div class="service-card">
-
-                <i class="fa-solid fa-film"></i>
-
-                <h3>Video Editing</h3>
-
-                <p>
-                    Creative editing for promotional videos, social media content,
-                    business advertisements, and storytelling projects.
-                </p>
-
-            </div>
-
+            <p>
+              Creative editing for promotional videos, social media content,
+              business advertisements, and storytelling projects.
+            </p>
+          </div>
         </div>
+      </section>
 
-    </section>
-
-    <section class="why-section">
-
-        <h2 class="section-title">
-            Why Work With Me?
-        </h2>
+      <section class="why-section">
+        <h2 class="section-title">Why Work With Me?</h2>
 
         <div class="why-grid">
+          <div class="why-item">
+            <i class="fa-solid fa-check"></i>
+            Attention To Detail
+          </div>
 
-            <div class="why-item">
-                <i class="fa-solid fa-check"></i>
-                Attention To Detail
-            </div>
+          <div class="why-item">
+            <i class="fa-solid fa-check"></i>
+            Mobile-First Design
+          </div>
 
-            <div class="why-item">
-                <i class="fa-solid fa-check"></i>
-                Mobile-First Design
-            </div>
+          <div class="why-item">
+            <i class="fa-solid fa-check"></i>
+            Fast Communication
+          </div>
 
-            <div class="why-item">
-                <i class="fa-solid fa-check"></i>
-                Fast Communication
-            </div>
+          <div class="why-item">
+            <i class="fa-solid fa-check"></i>
+            Professional Delivery
+          </div>
 
-            <div class="why-item">
-                <i class="fa-solid fa-check"></i>
-                Professional Delivery
-            </div>
+          <div class="why-item">
+            <i class="fa-solid fa-check"></i>
+            Creative Problem Solving
+          </div>
 
-            <div class="why-item">
-                <i class="fa-solid fa-check"></i>
-                Creative Problem Solving
-            </div>
-
-            <div class="why-item">
-                <i class="fa-solid fa-check"></i>
-                Reliable Support
-            </div>
-
+          <div class="why-item">
+            <i class="fa-solid fa-check"></i>
+            Reliable Support
+          </div>
         </div>
+      </section>
 
-    </section>
-
-    <section class="contact-section">
-
-        <h2>
-            Let's Build Something Exceptional
-        </h2>
+      <section class="contact-section">
+        <h2>Let's Build Something Exceptional</h2>
 
         <p>
-            Have a project in mind? I'd love to hear about it.
-            Let's work together to create something amazing.
+          Have a project in mind? I'd love to hear about it. Let's work together
+          to create something amazing.
         </p>
 
         <div class="contact-info">
+          <p>
+            <i class="fa-solid fa-phone"></i>
+            08109007611
+          </p>
 
-            <p>
-                <i class="fa-solid fa-phone"></i>
-                08109007611
-            </p>
+          <p>
+            <i class="fa-brands fa-whatsapp"></i>
+            WhatsApp Available
+          </p>
 
-            <p>
-                <i class="fa-brands fa-whatsapp"></i>
-                WhatsApp Available
-            </p>
-
-            <p>
-                <i class="fa-solid fa-location-dot"></i>
-                Nigeria
-            </p>
-
+          <p>
+            <i class="fa-solid fa-location-dot"></i>
+            Nigeria
+          </p>
         </div>
 
-        <a href="https://wa.me/2348109007611" target="_blank" class="developer-btn">
-            Chat On WhatsApp
+        <a
+          href="https://wa.me/2348109007611"
+          target="_blank"
+          class="developer-btn"
+        >
+          Chat On WhatsApp
         </a>
+      </section>
 
-    </section>
-
-    <div class="footer-note">
-
-        <p>
-            Designed and developed by <strong>PK_Sammie</strong>.
-        </p>
+      <div class="footer-note">
+        <p>Designed and developed by <strong>PK_Sammie</strong>.</p>
 
         <p>
-            Crafting digital experiences with creativity,
-            precision, and passion.
+          Crafting digital experiences with creativity, precision, and passion.
         </p>
-
-    </div>
-
-</main>
-
-</body>
+      </div>
+    </main>
+  </body>
 </html>

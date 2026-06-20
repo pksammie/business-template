@@ -1,23 +1,19 @@
 import { db, auth } from "./firebase.js";
 
 import {
-    doc,
-    getDoc,
-    collection,
-    getDocs,
-    addDoc,
-    updateDoc
-}
-from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+  doc,
+  getDoc,
+  collection,
+  getDocs,
+  addDoc,
+  updateDoc,
+} from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
-const params =
-new URLSearchParams(location.search);
+const params = new URLSearchParams(location.search);
 
-const id =
-params.get("id");
+const id = params.get("id");
 
-const cartDocId =
-params.get("cartDocId");
+const cartDocId = params.get("cartDocId");
 
 let product;
 
@@ -37,99 +33,65 @@ async function load() {
 
   /* PRODUCT SUSPENSION CHECK */
 
-if(product.isSuspended){
+  if (product.isSuspended) {
+    showToast("This product is currently unavailable.");
 
-    showToast(
-        "This product is currently unavailable."
-    );
-
-    setTimeout(()=>{
-
-        location.href = "/";
-
-    },1500);
+    setTimeout(() => {
+      location.href = "/";
+    }, 1500);
 
     return;
-}
+  }
 
-const remaining =
+  const remaining = (product.quantity || 0) - (product.sold || 0);
 
-(product.quantity || 0)
+  const stockText = document.getElementById("stock-left");
 
--
+  stockText.textContent = `${remaining} available`;
 
-(product.sold || 0);
-
-const stockText =
-document.getElementById("stock-left");
-
-stockText.textContent =
-`${remaining} available`;
-
-if (remaining <= 0) {
-
+  if (remaining <= 0) {
     stockText.style.color = "#ff4d4d";
-
-} else if (remaining < 4) {
-
+  } else if (remaining < 4) {
     stockText.style.color = "orange";
-
-} else {
-
+  } else {
     stockText.style.color = "lime";
+  }
 
-}
+  const soldBadge = document.getElementById("sold-out-badge");
 
-const soldBadge =
-document.getElementById(
-"sold-out-badge"
-);
+  const addBtn = document.querySelector(".add-to-cart-btn");
 
-const addBtn =
-document.querySelector(
-".add-to-cart-btn"
-);
-
-if(remaining <= 0){
-
-    soldBadge.style.display =
-    "inline-block";
+  if (remaining <= 0) {
+    soldBadge.style.display = "inline-block";
 
     addBtn.disabled = true;
 
-    addBtn.textContent =
-    "Sold Out";
-
-}else{
-
-    soldBadge.style.display =
-    "none";
+    addBtn.textContent = "Sold Out";
+  } else {
+    soldBadge.style.display = "none";
 
     addBtn.disabled = false;
 
-    addBtn.textContent =
-    "Add To Cart";
-}
+    addBtn.textContent = "Add To Cart";
+  }
 
   document.getElementById("decision-title").textContent = product.title;
   document.getElementById("decision-price").textContent = "₦" + product.price;
-  document.getElementById("decision-product-img").src = product.image || "https://via.placeholder.com/600x600?text=No+Image";
+  document.getElementById("decision-product-img").src =
+    product.image || "https://via.placeholder.com/600x600?text=No+Image";
   descriptionBox.textContent = product.description;
 
   /* ---------------- SIZES ---------------- */
   sizeWrapper.innerHTML = "";
 
-  const sizes =
-Array.isArray(product.sizes)
-? product.sizes
-: [];
+  const sizes = Array.isArray(product.sizes) ? product.sizes : [];
 
   if (sizes.includes("None")) {
     sizeWrapper.style.display = "none";
   } else {
     sizeWrapper.style.display = "flex";
 
-    sizes.forEach(size => {
+    sizes.forEach((size) => {
       sizeWrapper.innerHTML += `
         <label class="size-radio-chip">
           <input type="radio" name="size" value="${size}">
@@ -143,17 +105,14 @@ Array.isArray(product.sizes)
   if (colorWrapper) {
     colorWrapper.innerHTML = "";
 
-    const colors =
-Array.isArray(product.colors)
-? product.colors
-: [];
+    const colors = Array.isArray(product.colors) ? product.colors : [];
 
     if (colors.includes("None")) {
       colorWrapper.style.display = "none";
     } else {
       colorWrapper.style.display = "flex";
 
-      colors.forEach(color => {
+      colors.forEach((color) => {
         colorWrapper.innerHTML += `
           <label class="size-radio-chip">
             <input type="radio" name="color" value="${color}">
@@ -165,329 +124,210 @@ Array.isArray(product.colors)
   }
 }
 
-window.increaseQty = function(){
+window.increaseQty = function () {
+  const qty = document.getElementById("item-quantity");
 
-    const qty =
-    document.getElementById(
-        "item-quantity"
-    );
-
-    qty.value =
-    Number(qty.value) + 1;
+  qty.value = Number(qty.value) + 1;
 };
 
-window.decreaseQty = function(){
+window.decreaseQty = function () {
+  const qty = document.getElementById("item-quantity");
 
-    const qty =
-    document.getElementById(
-        "item-quantity"
-    );
-
-    if(Number(qty.value) > 1){
-
-        qty.value =
-        Number(qty.value) - 1;
-
-    }
-
+  if (Number(qty.value) > 1) {
+    qty.value = Number(qty.value) - 1;
+  }
 };
 
 /* ---------------- CART ---------------- */
 window.submitToCartBag = async function () {
-
-    if(addingToCart){
-    return;
-}
-
-addingToCart = true;
-
-try{
-
-          if (!product) {
-    showToast("Please wait, product is still loading.");
+  if (addingToCart) {
     return;
   }
 
-  const latestSnap = await getDoc(
-    doc(db, "products", id)
-);
+  addingToCart = true;
 
-if (!latestSnap.exists()) {
+  try {
+    if (!product) {
+      showToast("Please wait, product is still loading.");
+      return;
+    }
 
-    showToast(
-        "This product is no longer available."
-    );
+    const latestSnap = await getDoc(doc(db, "products", id));
 
-    setTimeout(() => {
+    if (!latestSnap.exists()) {
+      showToast("This product is no longer available.");
+
+      setTimeout(() => {
         location.href = "/";
-    }, 1500);
+      }, 1500);
 
-    return;
-}
+      return;
+    }
 
-const latestProduct = latestSnap.data();
+    const latestProduct = latestSnap.data();
 
-const latestRemaining =
+    const latestRemaining =
+      (latestProduct.quantity || 0) - (latestProduct.sold || 0);
 
-(latestProduct.quantity || 0)
+    if (latestRemaining <= 0) {
+      showToast("This product is sold out.");
 
--
+      return;
+    }
 
-(latestProduct.sold || 0);
+    product = latestProduct;
 
-if(latestRemaining <= 0){
+    if (latestProduct.isEditing) {
+      const started = latestProduct.editingStartedAt || 0;
 
-    showToast(
-        "This product is sold out."
-    );
+      const age = Date.now() - started;
 
-    return;
-}
-
-product = latestProduct;
-
-if(latestProduct.isEditing){
-
-    const started =
-
-    latestProduct.editingStartedAt || 0;
-
-    const age =
-
-    Date.now() - started;
-
-    /*
+      /*
     10 minutes
     */
 
-    if(age < 600000){
-
+      if (age < 600000) {
         showToast(
-            "This product is currently being updated by the administrator. Please try again shortly."
+          "This product is currently being updated by the administrator. Please try again shortly.",
         );
 
         return;
-
-    }else{
-
+      } else {
         /*
         stale lock
         auto release
         */
 
         await updateDoc(
+          doc(db, "products", id),
 
-            doc(
-                db,
-                "products",
-                id
-            ),
-
-            {
-                isEditing:false
-            }
-
+          {
+            isEditing: false,
+          },
         );
-
+      }
     }
 
-}
+    if (latestProduct.isSuspended) {
+      showToast("This product is unavailable.");
 
-if(latestProduct.isSuspended){
+      return;
+    }
 
-    showToast(
-        "This product is unavailable."
-    );
+    const sizes = Array.isArray(product.sizes) ? product.sizes : [];
 
-    return;
-}
+    const colors = Array.isArray(product.colors) ? product.colors : [];
 
-  const sizes = Array.isArray(product.sizes)
-    ? product.sizes
-    : [];
+    const selectedSize = document.querySelector('input[name="size"]:checked');
 
-  const colors = Array.isArray(product.colors)
-    ? product.colors
-    : [];
+    const selectedColor = document.querySelector('input[name="color"]:checked');
 
-  const selectedSize =
-    document.querySelector(
-      'input[name="size"]:checked'
-    );
+    /* REQUIRE SIZE */
+    if (!sizes.includes("None") && !selectedSize) {
+      showToast("Please select a size.");
+      return;
+    }
 
-  const selectedColor =
-    document.querySelector(
-      'input[name="color"]:checked'
-    );
+    /* REQUIRE COLOR */
+    if (!colors.includes("None") && !selectedColor) {
+      showToast("Please select a color.");
+      return;
+    }
 
-  /* REQUIRE SIZE */
-  if (
-    !sizes.includes("None") &&
-    !selectedSize
-  ) {
-    showToast("Please select a size.");
-    return;
-  }
+    const qty = Number(document.getElementById("item-quantity").value);
 
-  /* REQUIRE COLOR */
-  if (
-    !colors.includes("None") &&
-    !selectedColor
-  ) {
-    showToast("Please select a color.");
-    return;
-  }
+    const remaining = (product.quantity || 0) - (product.sold || 0);
 
-  const qty = Number(
-    document.getElementById("item-quantity").value
-  );
+    const addBtn = document.querySelector(".add-to-cart-btn");
 
-  const remaining =
-    (product.quantity || 0) -
-    (product.sold || 0);
+    if (remaining <= 0) {
+      addBtn.disabled = true;
+      addBtn.textContent = "Sold Out";
 
-    const addBtn =
-document.querySelector(
-    ".add-to-cart-btn"
-);
+      return;
+    }
 
-  if (remaining <= 0) {
+    if (qty > remaining) {
+      showToast("Only " + remaining + " left in stock");
+      return;
+    }
 
-    addBtn.disabled = true;
-addBtn.textContent = "Sold Out";
+    const user = auth.currentUser;
 
-    return;
-}
+    if (!user) {
+      showToast("Please login first.");
 
-  if (qty > remaining) {
-    showToast(
-      "Only " +
-      remaining +
-      " left in stock"
-    );
-    return;
-  }
+      location.href = "/login";
 
-  const user = auth.currentUser;
+      return;
+    }
 
-if (!user) {
+    const updatedItem = {
+      productId: id,
 
-    showToast("Please login first.");
+      title: latestProduct.title,
 
-    location.href = "/login";
+      price: latestProduct.price,
 
-    return;
-}
+      image: latestProduct.image,
 
-const updatedItem = {
+      size: selectedSize ? selectedSize.value : "None",
 
-    productId: id,
+      color: selectedColor ? selectedColor.value : "None",
 
-    title: latestProduct.title,
+      quantity: qty,
+    };
 
-price: latestProduct.price,
+    const cartRef = collection(db, "users", user.uid, "cart");
 
-image: latestProduct.image,
+    const cartSnap = await getDocs(cartRef);
 
-    size: selectedSize
-        ? selectedSize.value
-        : "None",
+    let existingDoc = null;
 
-    color: selectedColor
-        ? selectedColor.value
-        : "None",
+    cartSnap.forEach((docSnap) => {
+      const item = docSnap.data();
 
-    quantity: qty
-};
-
-const cartRef =
-collection(
-    db,
-    "users",
-    user.uid,
-    "cart"
-);
-
-const cartSnap =
-await getDocs(cartRef);
-
-let existingDoc = null;
-
-cartSnap.forEach(docSnap => {
-
-    const item = docSnap.data();
-
-    if (
-
+      if (
         item.productId === updatedItem.productId &&
-
         item.size === updatedItem.size &&
-
         item.color === updatedItem.color
-
-    ) {
-
+      ) {
         existingDoc = docSnap;
+      }
+    });
 
-    }
-
-});
-
-if (cartDocId) {
-
-    await updateDoc(
-        doc(
-            db,
-            "users",
-            user.uid,
-            "cart",
-            cartDocId
-        ),
-        updatedItem
-    );
-
-} else {
-
-    if (existingDoc) {
-
-        await updateDoc(
-            existingDoc.ref,
-            {
-                quantity:
-                    existingDoc.data().quantity +
-                    updatedItem.quantity
-            }
-        );
-
+    if (cartDocId) {
+      await updateDoc(
+        doc(db, "users", user.uid, "cart", cartDocId),
+        updatedItem,
+      );
     } else {
-
-        await addDoc(
-            cartRef,
-            updatedItem
-        );
+      if (existingDoc) {
+        await updateDoc(existingDoc.ref, {
+          quantity: existingDoc.data().quantity + updatedItem.quantity,
+        });
+      } else {
+        await addDoc(cartRef, updatedItem);
+      }
     }
-}
 
-  const toast = document.createElement("div");
+    const toast = document.createElement("div");
 
-toast.className = "toast";
+    toast.className = "toast";
 
-toast.textContent = "✓ Added to cart";
+    toast.textContent = "✓ Added to cart";
 
-document.body.appendChild(toast);
+    document.body.appendChild(toast);
 
-setTimeout(()=>{
-    toast.remove();
-},2500);
+    setTimeout(() => {
+      toast.remove();
+    }, 2500);
 
-setTimeout(()=>{
-    location.href="/cart";
-},1000);
-
-    }finally{
-
-        addingToCart = false;
-
-    }
-}
+    setTimeout(() => {
+      location.href = "/cart";
+    }, 1000);
+  } finally {
+    addingToCart = false;
+  }
+};
 load();

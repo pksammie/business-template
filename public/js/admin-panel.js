@@ -8,54 +8,40 @@ import {
   getDoc,
   updateDoc,
   increment,
-  onSnapshot
-}
-from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+  onSnapshot,
+} from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
 
 let confirmCallback = null;
 
-function showVanguardConfirm(message, callback){
+function showVanguardConfirm(message, callback) {
+  confirmCallback = callback;
 
-    confirmCallback = callback;
+  document.getElementById("vanguard-modal-message").textContent = message;
 
-    document.getElementById(
-        "vanguard-modal-message"
-    ).textContent = message;
-
-    document.getElementById(
-        "vanguard-confirm-modal"
-    ).classList.add("show");
+  document.getElementById("vanguard-confirm-modal").classList.add("show");
 }
 
-document.getElementById(
-    "vanguard-modal-cancel"
-).addEventListener("click",()=>{
-
-    document.getElementById(
-        "vanguard-confirm-modal"
-    ).classList.remove("show");
+document
+  .getElementById("vanguard-modal-cancel")
+  .addEventListener("click", () => {
+    document.getElementById("vanguard-confirm-modal").classList.remove("show");
 
     confirmCallback = null;
-});
+  });
 
-document.getElementById(
-    "vanguard-modal-confirm"
-).addEventListener("click",()=>{
+document
+  .getElementById("vanguard-modal-confirm")
+  .addEventListener("click", () => {
+    document.getElementById("vanguard-confirm-modal").classList.remove("show");
 
-    document.getElementById(
-        "vanguard-confirm-modal"
-    ).classList.remove("show");
-
-    if(confirmCallback){
-
-        confirmCallback();
-
+    if (confirmCallback) {
+      confirmCallback();
     }
 
     confirmCallback = null;
-});
+  });
 
 /* ---------------- AUTH ---------------- */
 
@@ -151,104 +137,71 @@ colorBoxes.forEach((box) => {
   });
 });
 
-function loadDashboardStats(){
+function loadDashboardStats() {
+  onSnapshot(
+    collection(db, "products"),
 
-    onSnapshot(
+    (productsSnap) => {
+      document.getElementById("products-count").innerText = productsSnap.size;
+    },
+  );
 
-        collection(db,"products"),
+  onSnapshot(
+    collection(db, "cart_reservations"),
 
-        (productsSnap)=>{
+    (ordersSnap) => {
+      let revenue = 0;
 
-            document.getElementById(
-                "products-count"
-            ).innerText =
-            productsSnap.size;
+      let pending = 0;
 
+      ordersSnap.forEach((docSnap) => {
+        const order = docSnap.data();
+
+        if (order.status === "Delivered") {
+          revenue += order.total || 0;
         }
 
-    );
-
-    onSnapshot(
-
-        collection(db,"cart_reservations"),
-
-        (ordersSnap)=>{
-
-            let revenue = 0;
-
-            let pending = 0;
-
-            ordersSnap.forEach(docSnap=>{
-
-                const order =
-                docSnap.data();
-
-                if(order.status === "Delivered"){
-
-    revenue +=
-    (order.total || 0);
-
-}
-
-if(order.status === "Pending"){
-
-    pending++;
-
-}
-
-            });
-
-            document.getElementById(
-                "orders-count"
-            ).innerText =
-            ordersSnap.size;
-
-            document.getElementById(
-                "pending-count"
-            ).innerText =
-            pending;
-
-            document.getElementById(
-                "revenue-count"
-            ).innerText =
-            `₦${revenue.toLocaleString()}`;
-
+        if (order.status === "Pending") {
+          pending++;
         }
+      });
 
-    );
+      document.getElementById("orders-count").innerText = ordersSnap.size;
 
+      document.getElementById("pending-count").innerText = pending;
+
+      document.getElementById("revenue-count").innerText =
+        `₦${revenue.toLocaleString()}`;
+    },
+  );
 }
 
 /* ---------------- LOAD INVENTORY ---------------- */
 
 function loadInventory() {
   onSnapshot(
-    collection(db,"products"),
+    collection(db, "products"),
 
-    (snap)=>{
+    (snap) => {
+      tableBody.innerHTML = "";
 
-        tableBody.innerHTML = "";
+      const products = [];
 
-const products = [];
+      snap.forEach((docSnap) => {
+        products.push({
+          id: docSnap.id,
+          ...docSnap.data(),
+        });
+      });
 
-snap.forEach((docSnap)=>{
-    products.push({
-        id: docSnap.id,
-        ...docSnap.data()
-    });
-});
+      products.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
-products.sort(
-    (a,b) => (b.createdAt || 0) - (a.createdAt || 0)
-);
+      products.forEach((p) => {
+        const card = document.createElement("div");
 
-products.forEach((p)=>{
+        card.className = "product-admin-card";
 
-            const card = document.createElement("div");
-
-card.className = "product-admin-card";
-
-card.innerHTML = `
+        card.innerHTML = `
     <img src="${p.image}" class="admin-card-image">
 
     <div class="admin-card-content">
@@ -259,7 +212,7 @@ card.innerHTML = `
 
         <small>
             Stock:
-            ${(p.quantity||0)-(p.sold||0)}
+            ${(p.quantity || 0) - (p.sold || 0)}
         </small>
 
         <div class="admin-card-actions">
@@ -295,80 +248,48 @@ ${p.isSuspended ? "Unsuspend" : "Suspend"}
     </div>
 `;
 
-tableBody.appendChild(card);
-
-        });
-
-    }
-);
-
+        tableBody.appendChild(card);
+      });
+    },
+  );
 }
 
 function loadOrders() {
+  const body = document.getElementById("orders-body");
 
-    const body =
-    document.getElementById("orders-body");
+  if (!body) return;
 
-    if(!body) return;
+  onSnapshot(
+    collection(db, "cart_reservations"),
 
-    onSnapshot(
+    (snap) => {
+      body.innerHTML = "";
 
-        collection(db,"cart_reservations"),
+      const orders = [];
 
-        (snap)=>{
+      snap.forEach((docSnap) => {
+        orders.push({
+          id: docSnap.id,
+          ...docSnap.data(),
+        });
+      });
 
-            body.innerHTML = "";
+      orders.sort((a, b) => b.createdAt - a.createdAt);
 
-            const orders = [];
+      const filteredOrders = orders.filter((order) => {
+        if (!ordersSearchTerm) {
+          return true;
+        }
 
-snap.forEach((docSnap)=>{
+        return (
+          (order.customerName || "").toLowerCase().includes(ordersSearchTerm) ||
+          (order.phone || "").toLowerCase().includes(ordersSearchTerm) ||
+          (order.productTitle || "").toLowerCase().includes(ordersSearchTerm)
+        );
+      });
 
-    orders.push({
-        id: docSnap.id,
-        ...docSnap.data()
-    });
-
-});
-
-orders.sort(
-    (a,b)=>
-    b.createdAt - a.createdAt
-);
-
-const filteredOrders =
-orders.filter(order=>{
-
-    if(!ordersSearchTerm){
-
-        return true;
-
-    }
-
-    return (
-
-        (order.customerName || "")
-        .toLowerCase()
-        .includes(ordersSearchTerm)
-
-        ||
-
-        (order.phone || "")
-        .toLowerCase()
-        .includes(ordersSearchTerm)
-
-        ||
-
-        (order.productTitle || "")
-        .toLowerCase()
-        .includes(ordersSearchTerm)
-
-    );
-
-});
-
-filteredOrders.forEach((order)=>{
-
-    body.innerHTML += `
+      filteredOrders.forEach((order) => {
+        body.innerHTML += `
 <div class="order-admin-card">
 
     <div class="order-status">
@@ -380,20 +301,16 @@ filteredOrders.forEach((order)=>{
             font-weight:700;
             background:
             ${
-                order.status === "Pending"
+              order.status === "Pending"
                 ? "#c5a880"
                 : order.status === "Approved"
-                ? "#28a745"
-                : order.status === "Delivered"
-                ? "#17a2b8"
-                : "#ff4d4d"
+                  ? "#28a745"
+                  : order.status === "Delivered"
+                    ? "#17a2b8"
+                    : "#ff4d4d"
             };
             color:
-            ${
-                order.status === "Pending"
-                ? "#000"
-                : "#fff"
-            };
+            ${order.status === "Pending" ? "#000" : "#fff"};
         ">
             ${order.status || "Pending"}
         </span>
@@ -457,8 +374,7 @@ filteredOrders.forEach((order)=>{
     ">
 
         ${
-            order.status === "Pending"
-
+          order.status === "Pending"
             ? `
                 <button
                     onclick="approveOrder('${order.id}')"
@@ -492,10 +408,8 @@ filteredOrders.forEach((order)=>{
                     Cancel
                 </button>
             `
-
             : order.status === "Approved"
-
-            ? `
+              ? `
                 <button
                     onclick="deliverOrder('${order.id}')"
                     style="
@@ -512,10 +426,8 @@ filteredOrders.forEach((order)=>{
                 </button>
                  </div>
     `
-
-: order.status === "Delivered"
-
-? `
+              : order.status === "Delivered"
+                ? `
 <div style="
     width:100%;
     text-align:center;
@@ -526,8 +438,7 @@ filteredOrders.forEach((order)=>{
     ✓ Delivered
 </div>
 `
-
-: `
+                : `
 <div style="
     width:100%;
     text-align:center;
@@ -538,257 +449,148 @@ filteredOrders.forEach((order)=>{
     ✕ Cancelled
 </div>
 `
-
-}
+        }
 
     </div>
 
 </div>
 `;
-
-            });
-
-        }
-
-    );
-
+      });
+    },
+  );
 }
 
-window.approveOrder = async function(id){
+window.approveOrder = async function (id) {
+  const reservationRef = doc(db, "cart_reservations", id);
 
-    const reservationRef =
-    doc(db,"cart_reservations",id);
+  const reservationSnap = await getDoc(reservationRef);
 
-    const reservationSnap =
-    await getDoc(reservationRef);
+  if (!reservationSnap.exists()) return;
 
-    if(!reservationSnap.exists()) return;
+  const reservation = reservationSnap.data();
 
-    const reservation =
-    reservationSnap.data();
+  const productRef = doc(db, "products", reservation.productId);
 
-    const productRef =
-    doc(db,"products",reservation.productId);
+  const productSnap = await getDoc(productRef);
 
-    const productSnap =
-    await getDoc(productRef);
+  if (!productSnap.exists()) return;
 
-    if(!productSnap.exists()) return;
+  const product = productSnap.data();
 
-    const product =
-    productSnap.data();
+  const remaining = (product.quantity || 0) - (product.sold || 0);
 
-    const remaining =
+  if (remaining < reservation.quantity) {
+    showToast("Not enough stock left.");
 
-    (product.quantity || 0)
+    return;
+  }
 
-    -
+  await updateDoc(productRef, {
+    sold: increment(reservation.quantity),
+  });
 
-    (product.sold || 0);
+  await updateDoc(reservationRef, {
+    status: "Approved",
 
-    if(remaining < reservation.quantity){
+    stockDeducted: true,
+  });
 
-        showToast("Not enough stock left.");
+  showToast("Order approved.");
+};
 
+window.deliverOrder = async function (id) {
+  await updateDoc(
+    doc(db, "cart_reservations", id),
+
+    {
+      status: "Delivered",
+    },
+  );
+
+  showToast("Order delivered.");
+};
+
+window.cancelOrder = async function (id) {
+  showVanguardConfirm(
+    "Cancel this order?",
+
+    async () => {
+      const reservationRef = doc(db, "cart_reservations", id);
+
+      const reservationSnap = await getDoc(reservationRef);
+
+      if (!reservationSnap.exists()) {
         return;
-    }
+      }
 
-    await updateDoc(productRef,{
+      const reservation = reservationSnap.data();
 
-        sold: increment(
-                reservation.quantity
-        )
+      if (reservation.stockDeducted) {
+        const productRef = doc(db, "products", reservation.productId);
 
-    });
+        const productSnap = await getDoc(productRef);
 
-    await updateDoc(reservationRef,{
-
-        status:"Approved",
-
-        stockDeducted:true
-
-    });
-
-    showToast(
-        "Order approved."
-    );
-
-};
-
-window.deliverOrder = async function(id){
-
-    await updateDoc(
-
-        doc(
-            db,
-            "cart_reservations",
-            id
-        ),
-
-        {
-
-            status:"Delivered"
-
-        }
-
-    );
-
-    showToast(
-        "Order delivered."
-    );
-
-};
-
-window.cancelOrder = async function(id){
-
-    showVanguardConfirm(
-
-        "Cancel this order?",
-
-        async()=>{
-
-            const reservationRef =
-            doc(
-                db,
-                "cart_reservations",
-                id
-            );
-
-            const reservationSnap =
-            await getDoc(
-                reservationRef
-            );
-
-            if(!reservationSnap.exists()){
-
-                return;
-
-            }
-
-            const reservation =
-            reservationSnap.data();
-
-            if(reservation.stockDeducted){
-
-    const productRef =
-    doc(
-        db,
-        "products",
-        reservation.productId
-    );
-
-    const productSnap =
-    await getDoc(productRef);
-
-    if(productSnap.exists()){
-
-        await updateDoc(
-
+        if (productSnap.exists()) {
+          await updateDoc(
             productRef,
 
             {
-                sold: increment(
-                    -reservation.quantity
-                )
-            }
-
-        );
-
-    }
-
-}
-
-            await updateDoc(
-
-                reservationRef,
-
-                {
-
-                    status:"Cancelled",
-
-                    stockDeducted:false
-
-                }
-
-            );
-
-            showToast(
-                "Order cancelled."
-            );
-
+              sold: increment(-reservation.quantity),
+            },
+          );
         }
+      }
 
-    );
+      await updateDoc(
+        reservationRef,
 
+        {
+          status: "Cancelled",
+
+          stockDeducted: false,
+        },
+      );
+
+      showToast("Order cancelled.");
+    },
+  );
 };
 
-window.deleteOrder = function(id){
+window.deleteOrder = function (id) {
+  showVanguardConfirm("Delete this order?", async () => {
+    const reservationRef = doc(db, "cart_reservations", id);
 
-    showVanguardConfirm(
-        "Delete this order?",
-        async ()=>{
+    const reservationSnap = await getDoc(reservationRef);
 
-            const reservationRef =
-            doc(db, "cart_reservations", id);
+    if (!reservationSnap.exists()) {
+      showToast("Order not found.");
 
-            const reservationSnap =
-            await getDoc(reservationRef);
+      return;
+    }
 
-            if(!reservationSnap.exists()){
+    const reservation = reservationSnap.data();
 
-                showToast("Order not found.");
-
-                return;
-
-            }
-
-            const reservation =
-            reservationSnap.data();
-
-            /*
+    /*
             If this order was approved,
             restore the stock first.
             */
 
-            if(
-    reservation.status === "Approved"
-){
+    if (reservation.status === "Approved") {
+      const productRef = doc(db, "products", reservation.productId);
 
-                const productRef =
-                doc(
-                    db,
-                    "products",
-                    reservation.productId
-                );
+      const productSnap = await getDoc(productRef);
 
-                const productSnap =
-                await getDoc(productRef);
+      if (productSnap.exists()) {
+        await updateDoc(productRef, {
+          sold: increment(-reservation.quantity),
+        });
+      }
+    }
 
-                if(productSnap.exists()){
+    await deleteDoc(reservationRef);
 
-                    await updateDoc(
-                        productRef,
-                        {
-                            sold: increment(
-                                -reservation.quantity
-                            )
-                        }
-                    );
-
-                }
-
-            }
-
-            await deleteDoc(
-                reservationRef
-            );
-
-            showToast(
-                "Order deleted."
-            );
-        }
-    );
-
+    showToast("Order deleted.");
+  });
 };
 
 /* ---------------- ADD PRODUCT ---------------- */
@@ -815,7 +617,7 @@ adminForm.addEventListener("submit", async (e) => {
   if (!uploadedImageUrl) {
     showToast("Please upload a product image.");
     return;
-}
+  }
 
   await addDoc(collection(db, "products"), {
     title,
@@ -829,16 +631,16 @@ adminForm.addEventListener("submit", async (e) => {
     isSuspended: false,
     isEditing: false,
     createdAt: Date.now(),
-});
+  });
 
   showToast("Product added!");
 
-adminForm.reset();
+  adminForm.reset();
 
-uploadedImageUrl = "";
+  uploadedImageUrl = "";
 
-/* Reset upload box */
-uploadBox.innerHTML = `
+  /* Reset upload box */
+  uploadBox.innerHTML = `
     <i class="fa-solid fa-cloud-arrow-up"></i>
     <p>Upload Product Image</p>
 `;
@@ -846,75 +648,37 @@ uploadBox.innerHTML = `
 
 /* ---------------- DELETE ---------------- */
 
-window.toggleSuspension =
-async function(
-id,
-status
-){
-
-  await updateDoc(
-    doc(
-      db,
-      "products",
-      id
-    ),
-    {
-      isSuspended: status
-    }
-  );
-
+window.toggleSuspension = async function (id, status) {
+  await updateDoc(doc(db, "products", id), {
+    isSuspended: status,
+  });
 };
 
-window.deleteProduct = function(id){
+window.deleteProduct = function (id) {
+  showVanguardConfirm("Delete this product?", async () => {
+    await deleteDoc(doc(db, "products", id));
 
-    showVanguardConfirm(
-        "Delete this product?",
-        async ()=>{
-
-            await deleteDoc(
-                doc(db,"products",id)
-            );
-
-            showToast("Product deleted.");
-
-        }
-    );
-
+    showToast("Product deleted.");
+  });
 };
 
-window.editProduct = async function(id){
+window.editProduct = async function (id) {
+  await updateDoc(doc(db, "products", id), {
+    isEditing: true,
+    editingStartedAt: Date.now(),
+  });
 
-    await updateDoc(
-    doc(db, "products", id),
-    {
-        isEditing: true,
-        editingStartedAt: Date.now()
-    }
-);
-
-    location.href =
-    `/edit-product.html?id=${id}`;
+  location.href = `/edit-product.html?id=${id}`;
 };
 
-const ordersSearchInput =
-document.getElementById("orders-search");
+const ordersSearchInput = document.getElementById("orders-search");
 
-if(ordersSearchInput){
+if (ordersSearchInput) {
+  ordersSearchInput.addEventListener("input", () => {
+    ordersSearchTerm = ordersSearchInput.value.toLowerCase().trim();
 
-    ordersSearchInput.addEventListener(
-        "input",
-        ()=>{
-
-            ordersSearchTerm =
-            ordersSearchInput.value
-            .toLowerCase()
-            .trim();
-
-            loadOrders();
-
-        }
-    );
-
+    loadOrders();
+  });
 }
 
 loadInventory();

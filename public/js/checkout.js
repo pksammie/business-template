@@ -1,122 +1,91 @@
 import { db, auth } from "./firebase.js";
 
-import {
-createSearchSelect
-}
-from "./search-select.js";
+import { createSearchSelect } from "./search-select.js";
+
+import { getCountries, getStates, getCities } from "./location-service.js";
 
 import {
-getCountries,
-getStates,
-getCities
-}
-from "./location-service.js";
+  collection,
+  addDoc,
+  doc,
+  getDoc,
+  getDocs,
+  deleteDoc,
+  setDoc,
+} from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
-import {
-    collection,
-    addDoc,
-    doc,
-    getDoc,
-    getDocs,
-    deleteDoc,
-    setDoc
-}
-from
-"https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
-
-const orderSummaryWrapper = document.getElementById('checkout-summary-target');
-const checkoutFormInstance = document.getElementById('shipping-address-capture-form');
+const orderSummaryWrapper = document.getElementById("checkout-summary-target");
+const checkoutFormInstance = document.getElementById(
+  "shipping-address-capture-form",
+);
 let isProcessingCheckout = false;
 
-function resetCheckoutState(){
+function resetCheckoutState() {
+  isProcessingCheckout = false;
 
-    isProcessingCheckout = false;
+  const submitBtn = checkoutFormInstance?.querySelector(
+    'button[type="submit"]',
+  );
 
-    const submitBtn =
-    checkoutFormInstance?.querySelector(
-        'button[type="submit"]'
-    );
+  if (submitBtn) {
+    submitBtn.disabled = false;
 
-    if(submitBtn){
-
-        submitBtn.disabled = false;
-
-        submitBtn.textContent =
-        "Complete Order";
-    }
+    submitBtn.textContent = "Complete Order";
+  }
 }
 
 // Admin Phone Variable Setup (Format: Country code first, no spaces or special symbols)
 const ADMIN_WHATSAPP_NUMBER = "2348109007611";
 
-async function backupCart(userId, cartItems){
+async function backupCart(userId, cartItems) {
+  if (cartItems.length === 0) return;
 
-    if(cartItems.length === 0) return;
+  await addDoc(
+    collection(db, "users", userId, "cart_backups"),
 
-    await addDoc(
+    {
+      createdAt: Date.now(),
 
-        collection(
-            db,
-            "users",
-            userId,
-            "cart_backups"
-        ),
-
-        {
-            createdAt: Date.now(),
-
-            items: cartItems
-        }
-
-    );
-
+      items: cartItems,
+    },
+  );
 }
 
 async function renderCheckoutOverview() {
-    const user = auth.currentUser;
+  const user = auth.currentUser;
 
-if (!user) {
-    orderSummaryWrapper.innerHTML =
-    "<p>Please login first.</p>";
+  if (!user) {
+    orderSummaryWrapper.innerHTML = "<p>Please login first.</p>";
     return;
-}
+  }
 
-const cartSnap = await getDocs(
-    collection(
-        db,
-        "users",
-        user.uid,
-        "cart"
-    )
-);
+  const cartSnap = await getDocs(collection(db, "users", user.uid, "cart"));
 
-const cart = [];
+  const cart = [];
 
-cartSnap.forEach(docSnap => {
-
+  cartSnap.forEach((docSnap) => {
     cart.push({
-        cartDocId: docSnap.id,
-        ...docSnap.data()
+      cartDocId: docSnap.id,
+      ...docSnap.data(),
     });
+  });
+  if (!orderSummaryWrapper) return;
 
-});
-    if (!orderSummaryWrapper) return;
+  if (cart.length === 0) {
+    orderSummaryWrapper.innerHTML = `<p>No inventory instances queued for parsing.</p>`;
+    return;
+  }
 
-    if (cart.length === 0) {
-        orderSummaryWrapper.innerHTML = `<p>No inventory instances queued for parsing.</p>`;
-        return;
-    }
+  orderSummaryWrapper.innerHTML = "";
+  let overallCostSum = 0;
 
-    orderSummaryWrapper.innerHTML = "";
-    let overallCostSum = 0;
+  cart.forEach((item) => {
+    const subSum = item.price * item.quantity;
+    overallCostSum += subSum;
 
-    cart.forEach(item => {
-        const subSum = item.price * item.quantity;
-        overallCostSum += subSum;
-
-        const blockSummaryRow = document.createElement('div');
-        blockSummaryRow.className = 'checkout-summary-item-row';
-        blockSummaryRow.innerHTML = `
+    const blockSummaryRow = document.createElement("div");
+    blockSummaryRow.className = "checkout-summary-item-row";
+    blockSummaryRow.innerHTML = `
             <div style="display:flex; gap:15px; margin-bottom:15px; align-items:center;">
                 <div style="position:relative;">
                     <img src="${item.image}" style="width:65px; height:75px; object-fit:cover; border-radius:4px;">
@@ -131,186 +100,144 @@ cartSnap.forEach(docSnap => {
             </div>
             <div style="font-weight:600;">₦${subSum.toLocaleString()}</div>
         `;
-        orderSummaryWrapper.appendChild(blockSummaryRow);
-    });
+    orderSummaryWrapper.appendChild(blockSummaryRow);
+  });
 
-    // Subtotal output layer creation block
-    const summaryTotalFooterBlock = document.createElement('div');
-    summaryTotalFooterBlock.className = 'summary-total-footer';
-    summaryTotalFooterBlock.style = "border-top:1px solid #1f2833; padding-top:20px; margin-top:20px; display:flex; justify-content:space-between; align-items:center;";
-    summaryTotalFooterBlock.innerHTML = `
+  // Subtotal output layer creation block
+  const summaryTotalFooterBlock = document.createElement("div");
+  summaryTotalFooterBlock.className = "summary-total-footer";
+  summaryTotalFooterBlock.style =
+    "border-top:1px solid #1f2833; padding-top:20px; margin-top:20px; display:flex; justify-content:space-between; align-items:center;";
+  summaryTotalFooterBlock.innerHTML = `
         <span style="font-size:18px;">Subtotal Amount Due</span>
         <span style="font-size:22px; font-weight:700; color:#c5a880;">₦${overallCostSum.toLocaleString()}</span>
     `;
-    orderSummaryWrapper.appendChild(summaryTotalFooterBlock);
+  orderSummaryWrapper.appendChild(summaryTotalFooterBlock);
 }
 
-function initializeLocationSelectors(){
+function initializeLocationSelectors() {
+  const countryInput = document.getElementById("country");
 
-const countryInput =
-document.getElementById("country");
+  const stateInput = document.getElementById("state");
 
-const stateInput =
-document.getElementById("state");
+  const cityInput = document.getElementById("city");
 
-const cityInput =
-document.getElementById("city");
+  const countryContainer = document.getElementById("country-search");
 
-const countryContainer =
-document.getElementById("country-search");
+  const stateContainer = document.getElementById("state-search");
 
-const stateContainer =
-document.getElementById("state-search");
+  const cityContainer = document.getElementById("city-search");
 
-const cityContainer =
-document.getElementById("city-search");
+  const countries = getCountries().map((country) => ({
+    name: country.name,
+    country,
+  }));
 
-const countries =
-getCountries().map(country => ({
-name: country.name,
-country
-}));
+  let stateDropdown;
+  let cityDropdown;
 
-let stateDropdown;
-let cityDropdown;
+  createSearchSelect({
+    container: countryContainer,
 
-createSearchSelect({
+    placeholder: "Select Country",
 
-container: countryContainer,
+    items: countries,
 
-placeholder: "Select Country",
+    onSelect: ({ country }) => {
+      countryInput.value = country.name;
 
-items: countries,
+      stateInput.value = "";
+      cityInput.value = "";
 
-onSelect: ({ country }) => {
+      /* Reset State */
+      if (stateDropdown) {
+        stateDropdown.clear();
 
-countryInput.value =
-country.name;
+        const states = getStates(country.isoCode).map((state) => ({
+          name: state.name,
+          state,
+        }));
 
-stateInput.value = "";
-cityInput.value = "";
+        stateDropdown.setItems(states);
 
-/* Reset State */
-if(stateDropdown){
+        stateDropdown.enable();
 
-stateDropdown.clear();
+        stateDropdown.setPlaceholder("Select State");
+      }
 
-const states =
-getStates(country.isoCode).map(state => ({
-name: state.name,
-state
-}));
+      /* Reset City */
+      if (cityDropdown) {
+        cityDropdown.clear();
 
-stateDropdown.setItems(states);
+        cityDropdown.setItems([]);
 
-stateDropdown.enable();
+        cityDropdown.disable();
 
-stateDropdown.setPlaceholder(
-"Select State"
-);
+        cityDropdown.setPlaceholder("Select City");
+      }
+    },
+  });
 
-}
+  stateDropdown = createSearchSelect({
+    container: stateContainer,
 
-/* Reset City */
-if(cityDropdown){
+    placeholder: "Select Country First",
 
-cityDropdown.clear();
+    items: [],
 
-cityDropdown.setItems([]);
+    disabled: true,
 
-cityDropdown.disable();
+    onSelect: ({ state }) => {
+      stateInput.value = state.name;
 
-cityDropdown.setPlaceholder(
-"Select City"
-);
+      cityInput.value = "";
 
-}
+      const selectedCountry = countries.find(
+        (c) => c.name === countryInput.value,
+      );
 
-}
+      if (!selectedCountry) return;
 
-});
+      const cities = getCities(
+        selectedCountry.country.isoCode,
+        state.isoCode,
+      ).map((city) => ({
+        name: city.name,
+      }));
 
-stateDropdown =
-createSearchSelect({
+      cityDropdown.enable();
 
-container: stateContainer,
+      cityDropdown.setItems(cities);
 
-placeholder:
-"Select Country First",
+      cityDropdown.setPlaceholder("Select City");
+    },
+  });
 
-items: [],
+  cityDropdown = createSearchSelect({
+    container: cityContainer,
 
-disabled: true,
+    placeholder: "Select State First",
 
-onSelect: ({ state }) => {
+    items: [],
 
-stateInput.value =
-state.name;
+    disabled: true,
 
-cityInput.value = "";
-
-const selectedCountry =
-countries.find(
-c => c.name === countryInput.value
-);
-
-if(!selectedCountry) return;
-
-const cities =
-getCities(
-selectedCountry.country.isoCode,
-state.isoCode
-).map(city => ({
-name: city.name
-}));
-
-cityDropdown.enable();
-
-cityDropdown.setItems(cities);
-
-cityDropdown.setPlaceholder(
-"Select City"
-);
-
-}
-
-});
-
-cityDropdown =
-createSearchSelect({
-
-container: cityContainer,
-
-placeholder:
-"Select State First",
-
-items: [],
-
-disabled: true,
-
-onSelect: (city) => {
-
-cityInput.value =
-city.name;
-
-}
-
-});
-
+    onSelect: (city) => {
+      cityInput.value = city.name;
+    },
+  });
 }
 
 function createSearchDropdown({
-containerId,
-placeholder,
-data,
-labelKey,
-onSelect
-}){
+  containerId,
+  placeholder,
+  data,
+  labelKey,
+  onSelect,
+}) {
+  const container = document.getElementById(containerId);
 
-const container =
-document.getElementById(containerId);
-
-container.innerHTML = `
+  container.innerHTML = `
 <div class="search-select">
 <input
 type="text"
@@ -322,328 +249,236 @@ autocomplete="off"
 </div>
 `;
 
-const input =
-container.querySelector(".search-input");
+  const input = container.querySelector(".search-input");
 
-const results =
-container.querySelector(".search-results");
+  const results = container.querySelector(".search-results");
 
-input.addEventListener(
-"input",
-()=>{
+  input.addEventListener("input", () => {
+    const query = input.value.toLowerCase();
 
-const query =
-input.value.toLowerCase();
+    results.innerHTML = "";
 
-results.innerHTML = "";
+    if (!query) return;
 
-if(!query) return;
+    data
+      .filter((item) => item[labelKey].toLowerCase().includes(query))
+      .slice(0, 20)
+      .forEach((item) => {
+        const div = document.createElement("div");
 
-data
-.filter(item=>
+        div.className = "search-item";
 
-item[labelKey]
-.toLowerCase()
-.includes(query)
+        div.textContent = item[labelKey];
 
-)
-.slice(0,20)
-.forEach(item=>{
+        div.onclick = () => {
+          input.value = item[labelKey];
 
-const div =
-document.createElement("div");
+          results.innerHTML = "";
 
-div.className =
-"search-item";
+          onSelect(item);
+        };
 
-div.textContent =
-item[labelKey];
-
-div.onclick = ()=>{
-
-input.value =
-item[labelKey];
-
-results.innerHTML = "";
-
-onSelect(item);
-
-};
-
-results.appendChild(div);
-
-});
-
-}
-);
-
+        results.appendChild(div);
+      });
+  });
 }
 
 // Prefill form values if persistence checkbox data was saved from a past session
 function prefillSavedUserAddressMetadata() {
-    const cachedAddress = JSON.parse(localStorage.getItem('vanguard_saved_customer_profile'));
-    if (cachedAddress && checkoutFormInstance) {
-        checkoutFormInstance.elements['country'].value = cachedAddress.country || '';
-        checkoutFormInstance.elements['first_name'].value = cachedAddress.first_name || '';
-        checkoutFormInstance.elements['last_name'].value = cachedAddress.last_name || '';
-        checkoutFormInstance.elements['address'].value = cachedAddress.address || '';
-        checkoutFormInstance.elements['city'].value = cachedAddress.city || '';
-        checkoutFormInstance.elements['state'].value = cachedAddress.state || '';
-        checkoutFormInstance.elements['phone'].value = cachedAddress.phone || '';
-        checkoutFormInstance.elements['save_info'].checked = true;
-        
-    }
+  const cachedAddress = JSON.parse(
+    localStorage.getItem("vanguard_saved_customer_profile"),
+  );
+  if (cachedAddress && checkoutFormInstance) {
+    checkoutFormInstance.elements["country"].value =
+      cachedAddress.country || "";
+    checkoutFormInstance.elements["first_name"].value =
+      cachedAddress.first_name || "";
+    checkoutFormInstance.elements["last_name"].value =
+      cachedAddress.last_name || "";
+    checkoutFormInstance.elements["address"].value =
+      cachedAddress.address || "";
+    checkoutFormInstance.elements["city"].value = cachedAddress.city || "";
+    checkoutFormInstance.elements["state"].value = cachedAddress.state || "";
+    checkoutFormInstance.elements["phone"].value = cachedAddress.phone || "";
+    checkoutFormInstance.elements["save_info"].checked = true;
+  }
 }
 
 // Compile all user info and launch the formatted WhatsApp message
-window.executeOrderCompilationPipeline = async function(event) {
-    event.preventDefault();
+window.executeOrderCompilationPipeline = async function (event) {
+  event.preventDefault();
 
-    try{
-    
-    if(isProcessingCheckout){
+  try {
+    if (isProcessingCheckout) {
+      return;
+    }
 
-    return;
+    isProcessingCheckout = true;
+    const submitBtn = checkoutFormInstance.querySelector(
+      'button[type="submit"]',
+    );
 
-}
+    if (submitBtn) {
+      submitBtn.disabled = true;
 
-isProcessingCheckout = true;
-const submitBtn =
-
-checkoutFormInstance.querySelector(
-'button[type="submit"]'
-);
-
-if(submitBtn){
-
-    submitBtn.disabled = true;
-
-    submitBtn.textContent =
-    "Processing...";
-}
+      submitBtn.textContent = "Processing...";
+    }
 
     const user = auth.currentUser;
 
     console.log(user);
 
-if (!user) {
+    if (!user) {
+      showToast("Please login.");
 
-    showToast("Please login.");
+      resetCheckoutState();
 
-    resetCheckoutState();
+      return;
+    }
 
-    return;
-}
+    const cartSnap = await getDocs(collection(db, "users", user.uid, "cart"));
 
-const cartSnap = await getDocs(
-    collection(
-        db,
-        "users",
-        user.uid,
-        "cart"
-    )
-);
+    const cart = [];
 
-const cart = [];
-
-cartSnap.forEach(docSnap => {
-
-    cart.push({
+    cartSnap.forEach((docSnap) => {
+      cart.push({
         cartDocId: docSnap.id,
-        ...docSnap.data()
+        ...docSnap.data(),
+      });
     });
-
-});
     if (cart.length === 0) {
+      showToast("Your cart is empty.");
 
-    showToast(
-        "Your cart is empty."
-    );
+      resetCheckoutState();
 
-    resetCheckoutState();
-
-    return;
-}
+      return;
+    }
 
     const f = checkoutFormInstance.elements;
 
-    const countryInput =
-document.getElementById("country");
+    const countryInput = document.getElementById("country");
 
-const stateInput =
-document.getElementById("state");
+    const stateInput = document.getElementById("state");
 
-const cityInput =
-document.getElementById("city");
+    const cityInput = document.getElementById("city");
 
-if(
-!countryInput.value.trim() ||
-!stateInput.value.trim() ||
-!cityInput.value.trim()
-){
+    if (
+      !countryInput.value.trim() ||
+      !stateInput.value.trim() ||
+      !cityInput.value.trim()
+    ) {
+      showToast("Please select your Country, State and City.");
 
-showToast(
-"Please select your Country, State and City."
-);
+      resetCheckoutState();
 
-resetCheckoutState();
-
-return;
-}
+      return;
+    }
 
     const addressProfile = {
-        country: f['country'].value,
-        first_name: f['first_name'].value,
-        last_name: f['last_name'].value,
-        address: f['address'].value,
-        city: f['city'].value,
-        state: f['state'].value,
-        phone: f['phone'].value
+      country: f["country"].value,
+      first_name: f["first_name"].value,
+      last_name: f["last_name"].value,
+      address: f["address"].value,
+      city: f["city"].value,
+      state: f["state"].value,
+      phone: f["phone"].value,
     };
 
     /* VERIFY STOCK BEFORE CHECKOUT */
 
-/* PRODUCT REVALIDATION + STOCK CHECK */
+    /* PRODUCT REVALIDATION + STOCK CHECK */
 
-for (const item of cart) {
+    for (const item of cart) {
+      const productRef = doc(db, "products", item.productId);
 
-    const productRef =
-    doc(
-        db,
-        "products",
-        item.productId
-    );
+      const productSnap = await getDoc(productRef);
 
-    const productSnap =
-    await getDoc(productRef);
-
-    if(!productSnap.exists()){
-
-        showToast(
-            `${item.title} no longer exists.`
-        );
+      if (!productSnap.exists()) {
+        showToast(`${item.title} no longer exists.`);
 
         resetCheckoutState();
 
         return;
-    }
+      }
 
-    const productData =
-    productSnap.data();
+      const productData = productSnap.data();
 
-    if(productData.isSuspended){
-
-        showToast(
-            `${item.title} is unavailable.`
-        );
+      if (productData.isSuspended) {
+        showToast(`${item.title} is unavailable.`);
 
         resetCheckoutState();
 
         return;
-    }
+      }
 
-    let cartNeedsUpdate = false;
+      let cartNeedsUpdate = false;
 
-    if(item.price !== productData.price){
-
-        item.price =
-        productData.price;
+      if (item.price !== productData.price) {
+        item.price = productData.price;
 
         cartNeedsUpdate = true;
-    }
+      }
 
-    if(item.title !== productData.title){
-
-        item.title =
-        productData.title;
+      if (item.title !== productData.title) {
+        item.title = productData.title;
 
         cartNeedsUpdate = true;
-    }
+      }
 
-    if(item.image !== productData.image){
-
-        item.image =
-        productData.image;
+      if (item.image !== productData.image) {
+        item.image = productData.image;
 
         cartNeedsUpdate = true;
-    }
+      }
 
-    if(cartNeedsUpdate){
-
+      if (cartNeedsUpdate) {
         await setDoc(
+          doc(db, "users", user.uid, "cart", item.cartDocId),
 
-            doc(
-                db,
-                "users",
-                user.uid,
-                "cart",
-                item.cartDocId
-            ),
-
-            item
+          item,
         );
 
-        showToast(
-            `${item.title} has been updated.`
-        );
+        showToast(`${item.title} has been updated.`);
 
         resetCheckoutState();
 
         return;
-    }
+      }
 
-    const remaining =
+      const remaining = (productData.quantity || 0) - (productData.sold || 0);
 
-        (productData.quantity || 0)
-
-        -
-
-        (productData.sold || 0);
-
-    if(item.quantity > remaining){
-
-        showToast(
-
-            `Only ${remaining} of ${item.title} remain in stock.`
-
-        );
+      if (item.quantity > remaining) {
+        showToast(`Only ${remaining} of ${item.title} remain in stock.`);
 
         resetCheckoutState();
 
         return;
+      }
     }
-}
 
     // Save profile to LocalStorage if check option is ticked
-    if (f['save_info'].checked) {
+    if (f["save_info"].checked) {
+      localStorage.setItem(
+        "vanguard_saved_customer_profile",
+        JSON.stringify(addressProfile),
+      );
+    }
 
-    localStorage.setItem(
-      'vanguard_saved_customer_profile',
-      JSON.stringify(addressProfile)
-    );
-
-}
-
-for (const item of cart) {
-
-    await addDoc(
-    collection(db, "cart_reservations"),
-    {
-
+    for (const item of cart) {
+      await addDoc(collection(db, "cart_reservations"), {
         /* CUSTOMER */
 
         userId: user.uid,
 
-        customerName:
-        `${addressProfile.first_name} ${addressProfile.last_name}`,
+        customerName: `${addressProfile.first_name} ${addressProfile.last_name}`,
 
         phone: addressProfile.phone,
 
         address: {
-            country: addressProfile.country,
-            state: addressProfile.state,
-            city: addressProfile.city,
-            address: addressProfile.address
+          country: addressProfile.country,
+          state: addressProfile.state,
+          city: addressProfile.city,
+          address: addressProfile.address,
         },
 
         /* PRODUCT SNAPSHOT */
@@ -670,136 +505,96 @@ for (const item of cart) {
 
         stockDeducted: false,
 
-        createdAt: Date.now()
+        createdAt: Date.now(),
+      });
     }
-);
-
-}
     // --- WHATSAPP ORDER COMPILER STRING BUILDER ---
     let messageText = `*NEW INCOMING ORDER - TIME-LESS* \n\n`;
     messageText += `*CUSTOMER DETAILS:*\n\n`;
     messageText += `*Name:* ${addressProfile.first_name} ${addressProfile.last_name}\n`;
     messageText += `*Phone:* ${addressProfile.phone}\n`;
     messageText += `*Address:* ${addressProfile.address}, ${addressProfile.city}, ${addressProfile.state}, ${addressProfile.country}\n\n`;
-    
+
     messageText += `*ORDER ITEMS RECAP:* \n\n`;
-    
+
     let subtotalValueAmount = 0;
     cart.forEach((item, index) => {
-        const itemCost = item.price * item.quantity;
-        subtotalValueAmount += itemCost;
-        messageText +=`${index + 1}. *${item.title}*\n`;
-        messageText +=`[Size: ${item.size}  |  Qty: ${item.quantity}  |  Colour: ${item.color}  |  Price: ₦${itemCost.toLocaleString()}]\n\n`;
-        messageText += `  _Image Link:_ ${item.image}\n\n`;
+      const itemCost = item.price * item.quantity;
+      subtotalValueAmount += itemCost;
+      messageText += `${index + 1}. *${item.title}*\n`;
+      messageText += `[Size: ${item.size}  |  Qty: ${item.quantity}  |  Colour: ${item.color}  |  Price: ₦${itemCost.toLocaleString()}]\n\n`;
+      messageText += `  _Image Link:_ ${item.image}\n\n`;
     });
 
     messageText += `───────────────────\n`;
     messageText += `*ORDER ITEM TOTAL:* ₦${subtotalValueAmount.toLocaleString()}\n`;
     messageText += `_Shipping fee will be calculated based on the address above._\n\n`;
 
-messageText += `⚠️ Please do not edit or cancel this message so your order can be processed faster.`;
+    messageText += `⚠️ Please do not edit or cancel this message so your order can be processed faster.`;
 
     // URI encode the compiled text block safely
     const customEncodedUriString = encodeURIComponent(messageText);
-    const destinationWhatsAppUrlEndpoint =`https://wa.me/${ADMIN_WHATSAPP_NUMBER}?text=${customEncodedUriString}`;
+    const destinationWhatsAppUrlEndpoint = `https://wa.me/${ADMIN_WHATSAPP_NUMBER}?text=${customEncodedUriString}`;
 
     await backupCart(user.uid, cart);
 
     // Clear out cart bag arrays to complete transaction safely
     for (const item of cart) {
+      await deleteDoc(doc(db, "users", user.uid, "cart", item.cartDocId));
+    }
 
-    await deleteDoc(
-        doc(
-            db,
-            "users",
-            user.uid,
-            "cart",
-            item.cartDocId
-        )
+    resetCheckoutState();
+
+    showToast("WhatsApp is opening. Please tap SEND to complete your order.");
+
+    const whatsappWindow = window.open(
+      destinationWhatsAppUrlEndpoint,
+      "_blank",
     );
 
-}
-
-resetCheckoutState();
-
-showToast(
-    "WhatsApp is opening. Please tap SEND to complete your order."
-);
-
-const whatsappWindow =
-window.open(
-    destinationWhatsAppUrlEndpoint,
-    "_blank"
-);
-
-if(
-
-    !whatsappWindow ||
-
-    whatsappWindow.closed ||
-
-    typeof whatsappWindow.closed === "undefined"
-
-){
-
-    /*
+    if (
+      !whatsappWindow ||
+      whatsappWindow.closed ||
+      typeof whatsappWindow.closed === "undefined"
+    ) {
+      /*
     Popup blocked
     */
 
-    location.href =
-    destinationWhatsAppUrlEndpoint;
-
-}else{
-
-    setTimeout(()=>{
-
+      location.href = destinationWhatsAppUrlEndpoint;
+    } else {
+      setTimeout(() => {
         location.href = "/";
-
-    },1500);
-
-}
-
-}
-catch(error){
-
+      }, 1500);
+    }
+  } catch (error) {
     console.error(error);
 
-    showToast(
-        "Something went wrong. Please try again."
-    );
+    showToast("Something went wrong. Please try again.");
 
     resetCheckoutState();
-}
-
+  }
 };
 
-import {
-    onAuthStateChanged
-}
-from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
 
 document.addEventListener("DOMContentLoaded", () => {
+  initializeLocationSelectors();
 
-    initializeLocationSelectors();
+  prefillSavedUserAddressMetadata();
 
-    prefillSavedUserAddressMetadata();
+  if (checkoutFormInstance) {
+    checkoutFormInstance.addEventListener(
+      "submit",
+      executeOrderCompilationPipeline,
+    );
+  }
 
-    if (checkoutFormInstance) {
-
-        checkoutFormInstance.addEventListener(
-            "submit",
-            executeOrderCompilationPipeline
-        );
-    }
-
-    onAuthStateChanged(auth, async (user) => {
-
+  onAuthStateChanged(auth, async (user) => {
     if (!user) {
-        return;
+      return;
     }
 
     await renderCheckoutOverview();
-
-});
-
+  });
 });

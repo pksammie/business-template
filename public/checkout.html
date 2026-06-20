@@ -1,267 +1,233 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Checkout - Vanguard</title>
 
-    <link rel="stylesheet" href="/css/index.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-</head>
-<body>
-
-<header class="luxury-nav checkout-nav">
-    <div class="nav-left-menu">
+    <link rel="stylesheet" href="/css/index.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+  </head>
+  <body>
+    <header class="luxury-nav checkout-nav">
+      <div class="nav-left-menu">
         <a href="/cart">Back to Bag</a>
-    </div>
+      </div>
 
-    <div class="main-signature-logo">
-        CHECKOUT<span>SYSTEM</span>
-    </div>
+      <div class="main-signature-logo">CHECKOUT<span>SYSTEM</span></div>
 
-    <div class="nav-right-actions"></div>
-</header>
+      <div class="nav-right-actions"></div>
+    </header>
 
-<main class="store-mainframe">
-
-    <div
+    <main class="store-mainframe">
+      <div
         class="checkout-split-wrapper"
-        style="
-            display:grid;
-            grid-template-columns:1.2fr 1fr;
-            gap:50px;
-        "
-    >
-
+        style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 50px"
+      >
         <!-- LEFT SIDE -->
 
         <div class="checkout-form-pane">
+          <h2
+            style="
+              font-size: 20px;
+              font-weight: 400;
+              letter-spacing: 1px;
+              margin-bottom: 20px;
+              text-transform: uppercase;
+            "
+          >
+            Delivery Address Profile
+          </h2>
 
-            <h2
-                style="
-                    font-size:20px;
-                    font-weight:400;
-                    letter-spacing:1px;
-                    margin-bottom:20px;
-                    text-transform:uppercase;
-                "
+          <form
+            id="shipping-address-capture-form"
+            class="admin-form"
+            style="display: flex; flex-direction: column; gap: 15px"
+          >
+            <!-- COUNTRY -->
+
+            <div id="country-search" class="luxury-search-select"></div>
+            <input type="hidden" id="country" name="country" required />
+
+            <!-- NAME -->
+
+            <div
+              style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px"
             >
-                Delivery Address Profile
-            </h2>
+              <input
+                type="text"
+                name="first_name"
+                placeholder="First Name"
+                required
+              />
 
-            <form
-                id="shipping-address-capture-form"
-                class="admin-form"
-                style="
-                    display:flex;
-                    flex-direction:column;
-                    gap:15px;
-                "
+              <input
+                type="text"
+                name="last_name"
+                placeholder="Last Name"
+                required
+              />
+            </div>
+
+            <!-- ADDRESS -->
+
+            <input
+              type="text"
+              name="address"
+              placeholder="Residential Address / Street Name"
+              required
+              style="width: 100%"
+            />
+
+            <!-- STATE -->
+
+            <div id="state-search" class="luxury-search-select"></div>
+            <input type="hidden" id="state" name="state" required />
+
+            <!-- CITY -->
+
+            <div id="city-search" class="luxury-search-select"></div>
+            <input type="hidden" id="city" name="city" required />
+
+            <!-- PHONE -->
+
+            <input
+              type="tel"
+              name="phone"
+              placeholder="Active WhatsApp Phone Number"
+              required
+              style="width: 100%"
+            />
+
+            <!-- SAVE INFO -->
+
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-top: 5px;
+              "
             >
+              <input
+                type="checkbox"
+                id="save_info"
+                name="save_info"
+                style="width: auto; cursor: pointer"
+              />
 
-                <!-- COUNTRY -->
+              <label
+                for="save_info"
+                style="
+                  font-size: 14px;
+                  color: rgba(255, 255, 255, 0.7);
+                  cursor: pointer;
+                "
+              >
+                Save this information for next time
+              </label>
+            </div>
 
-                <div id="country-search" class="luxury-search-select"></div>
-<input type="hidden" id="country" name="country" required>
+            <!-- WHATSAPP NOTICE -->
 
-                <!-- NAME -->
+            <div class="checkout-whatsapp-notice">
+              <i class="fa-brands fa-whatsapp"></i>
 
-                <div
-                    style="
-                        display:grid;
-                        grid-template-columns:1fr 1fr;
-                        gap:15px;
-                    "
-                >
-                    <input
-                        type="text"
-                        name="first_name"
-                        placeholder="First Name"
-                        required
-                    >
+              <div>
+                <strong> Complete Your Order on WhatsApp </strong>
 
-                    <input
-                        type="text"
-                        name="last_name"
-                        placeholder="Last Name"
-                        required
-                    >
-                </div>
+                <p>
+                  After checkout, WhatsApp will open with your order details.
+                  Please tap <strong>SEND</strong> to complete your request.
+                  Your order will then appear in My Orders where you can track
+                  its
+                  <strong>Status</strong>
+                </p>
+              </div>
+            </div>
 
-                <!-- ADDRESS -->
+            <!-- BUTTON -->
 
-                <input
-                    type="text"
-                    name="address"
-                    placeholder="Residential Address / Street Name"
-                    required
-                    style="width:100%;"
-                >
-
-                <!-- STATE -->
-
-                <div id="state-search" class="luxury-search-select"></div>
-<input type="hidden" id="state" name="state" required>
-
-                <!-- CITY -->
-
-                <div id="city-search" class="luxury-search-select"></div>
-<input type="hidden" id="city" name="city" required>
-
-                <!-- PHONE -->
-
-                <input
-                    type="tel"
-                    name="phone"
-                    placeholder="Active WhatsApp Phone Number"
-                    required
-                    style="width:100%;"
-                >
-
-                <!-- SAVE INFO -->
-
-                <div
-                    style="
-                        display:flex;
-                        align-items:center;
-                        gap:10px;
-                        margin-top:5px;
-                    "
-                >
-                    <input
-                        type="checkbox"
-                        id="save_info"
-                        name="save_info"
-                        style="
-                            width:auto;
-                            cursor:pointer;
-                        "
-                    >
-
-                    <label
-                        for="save_info"
-                        style="
-                            font-size:14px;
-                            color:rgba(255,255,255,0.7);
-                            cursor:pointer;
-                        "
-                    >
-                        Save this information for next time
-                    </label>
-                </div>
-
-                <!-- WHATSAPP NOTICE -->
-
-                <div class="checkout-whatsapp-notice">
-
-                    <i class="fa-brands fa-whatsapp"></i>
-
-                    <div>
-
-                        <strong>
-                            Complete Your Order on WhatsApp
-                        </strong>
-
-                        <p>
-                            After checkout, WhatsApp will open with your order details.
-
-                            Please tap <strong>SEND</strong> to complete your request.
-
-                            Your order will then appear in My Orders where you can track its
-                            <strong>Status</strong>
-                        </p>
-
-                    </div>
-
-                </div>
-
-                <!-- BUTTON -->
-
-                <button
-                    type="submit"
-                    class="checkout-btn"
-                    style="
-                        width:100%;
-                        margin-top:15px;
-                        background:var(--primary-color);
-                        color:#000;
-                        font-weight:bold;
-                        border:none;
-                        padding:15px;
-                        cursor:pointer;
-                        border-radius:4px;
-                        text-transform:uppercase;
-                        letter-spacing:1px;
-                    "
-                >
-                    Pay Now / Compile to WhatsApp
-                </button>
-
-            </form>
-
+            <button
+              type="submit"
+              class="checkout-btn"
+              style="
+                width: 100%;
+                margin-top: 15px;
+                background: var(--primary-color);
+                color: #000;
+                font-weight: bold;
+                border: none;
+                padding: 15px;
+                cursor: pointer;
+                border-radius: 4px;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+              "
+            >
+              Pay Now / Compile to WhatsApp
+            </button>
+          </form>
         </div>
 
         <!-- RIGHT SIDE -->
 
         <div
-            class="checkout-summary-pane"
-            style="
-                background:var(--card-bg);
-                padding:30px;
-                border-radius:8px;
-                height:fit-content;
-            "
+          class="checkout-summary-pane"
+          style="
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 8px;
+            height: fit-content;
+          "
         >
+          <h2
+            style="
+              font-size: 18px;
+              font-weight: 500;
+              margin-bottom: 20px;
+              letter-spacing: 1px;
+            "
+          >
+            Bag Overview Recap
+          </h2>
 
-            <h2
-                style="
-                    font-size:18px;
-                    font-weight:500;
-                    margin-bottom:20px;
-                    letter-spacing:1px;
-                "
+          <div id="checkout-summary-target"></div>
+
+          <div
+            style="
+              margin-top: 25px;
+              padding: 15px;
+              background: #0b0c10;
+              border-left: 2px solid var(--primary-color);
+              border-radius: 4px;
+            "
+          >
+            <p
+              style="
+                margin: 0;
+                font-size: 13px;
+                color: rgba(255, 255, 255, 0.6);
+                line-height: 1.5;
+              "
             >
-                Bag Overview Recap
-            </h2>
+              💡 <strong>Notice:</strong>
 
-            <div id="checkout-summary-target"></div>
-
-            <div
-                style="
-                    margin-top:25px;
-                    padding:15px;
-                    background:#0b0c10;
-                    border-left:2px solid var(--primary-color);
-                    border-radius:4px;
-                "
-            >
-                <p
-                    style="
-                        margin:0;
-                        font-size:13px;
-                        color:rgba(255,255,255,0.6);
-                        line-height:1.5;
-                    "
-                >
-                    💡 <strong>Notice:</strong>
-
-                    This is an initial base catalog price structure compilation summary.
-
-                    Logistics distribution and final delivery shipping fee parameters
-                    will be finalized over WhatsApp discussion.
-                </p>
-            </div>
-
+              This is an initial base catalog price structure compilation
+              summary. Logistics distribution and final delivery shipping fee
+              parameters will be finalized over WhatsApp discussion.
+            </p>
+          </div>
         </div>
+      </div>
+    </main>
 
-    </div>
-
-</main>
-
-<script type="module" src="./js/checkout.js"></script>
-<script type="module" src="/js/route-guard.js"></script>
-<script type="module" src="/js/guard.js"></script>
-<script src="/js/toast.js"></script>
-
-</body>
+    <script type="module" src="./js/checkout.js"></script>
+    <script type="module" src="/js/route-guard.js"></script>
+    <script type="module" src="/js/guard.js"></script>
+    <script src="/js/toast.js"></script>
+  </body>
 </html>

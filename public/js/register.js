@@ -3,7 +3,7 @@ import { auth, googleProvider } from "./firebase.js";
 import {
   createUserWithEmailAndPassword,
   signInWithPopup,
-  sendEmailVerification
+  sendEmailVerification,
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
 
 const registerForm = document.getElementById("registerForm");
@@ -22,34 +22,27 @@ registerForm.addEventListener("submit", async (e) => {
   }
 
   try {
-
-    const userCredential =
-      await createUserWithEmailAndPassword(
-        auth,
-        email.value,
-        password.value
-      );
-
-    await sendEmailVerification(
-      userCredential.user
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email.value,
+      password.value,
     );
 
+    await sendEmailVerification(userCredential.user);
+
     await auth.signOut();
-    
+
     showToast(
-      "Account created. Please check your Inbox and Spam folder and verify your account before logging in."
+      "Account created. Please check your Inbox and Spam folder and verify your account before logging in.",
     );
 
     await auth.signOut();
 
     location.href = "/login";
-
   } catch (err) {
-
     let message = "Registration failed.";
 
     switch (err.code) {
-
       case "auth/email-already-in-use":
         message = "Email already in use.";
         break;
@@ -61,7 +54,6 @@ registerForm.addEventListener("submit", async (e) => {
       case "auth/weak-password":
         message = "Password should be at least 6 characters.";
         break;
-
     }
 
     showToast(message);
@@ -70,14 +62,9 @@ registerForm.addEventListener("submit", async (e) => {
 
 googleSignup.addEventListener("click", async () => {
   try {
-
-    await signInWithPopup(
-      auth,
-      googleProvider
-    );
+    await signInWithPopup(auth, googleProvider);
 
     location.href = "/";
-
   } catch (err) {
     showToast(err.message);
   }
