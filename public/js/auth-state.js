@@ -1,120 +1,122 @@
 import { auth, db } from "./firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
-import {
-  doc,
-  getDoc,
-} from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
-
-/**
- * GLOBAL AUTH UI CONTROLLER
- * - login/register buttons
- * - admin visibility
- * - cart behavior
- * - user dropdown
- */
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 const savedTheme = localStorage.getItem("theme");
-if (savedTheme) {
-  document.body.dataset.theme = savedTheme;
-}
+if (savedTheme) document.body.dataset.theme = savedTheme;
 
 const adminLinkContainer = document.getElementById("adminLinkContainer");
-const authLinks = document.querySelector(".account-auth-links");
-const cartBadge = document.getElementById("cart-count");
+const authLinks          = document.querySelector(".account-auth-links");
 
 function hideAdminUI() {
-  if (adminLinkContainer) {
-    adminLinkContainer.innerHTML = ""; // remove completely
-  }
+  if (adminLinkContainer) adminLinkContainer.innerHTML = "";
 }
 
 function showUserDropdown(user, isAdmin) {
   if (!authLinks) return;
 
   authLinks.innerHTML = `
-        <div class="user-dropdown">
-            <button id="userMenuBtn" class="user-btn">
-                <i class="fa-solid fa-user"></i>
-            </button>
+    <div class="user-dropdown">
+      <button id="userMenuBtn" class="user-btn">
+        <i class="fa-solid fa-user"></i>
+      </button>
 
-            <div class="dropdown-menu" id="dropdownMenu">
-                ${
-                  isAdmin
-                    ? `
-<div class="dropdown-item" id="adminPanelBtn">
-    <i class="fa-solid fa-shield-halved"></i>
-    Admin Panel
-</div>
-`
-                    : ""
-                }
-                
-                <div class="dropdown-item" id="themeToggle">Change Theme</div>
+      <div class="dropdown-menu" id="dropdownMenu">
+        ${isAdmin ? `
+          <div class="dropdown-item" id="adminPanelBtn">
+            <i class="fa-solid fa-shield-halved"></i> Admin Panel
+          </div>
+        ` : ""}
 
-                <div class="theme-submenu" id="themeMenu">
-                    <div class="theme-box" data-theme="dark"></div>
-                    <div class="theme-box" data-theme="light"></div>
-                    <div class="theme-box" data-theme="luxury"></div>
-                </div>
-
-                <div class="dropdown-item">
-                <a href="/orders" id="my-order-color">
-    <i class="fa-solid fa-box"></i>
-    <span>My Orders</span>
-</a>
-</div>
-
-                <div class="dropdown-item danger" id="logoutBtn">Logout</div>
-            </div>
+        <div class="dropdown-item" id="themeToggle">
+          <i class="fa-solid fa-palette"></i> Change Theme
         </div>
-    `;
 
-  const menuBtn = document.getElementById("userMenuBtn");
-  const menu = document.getElementById("dropdownMenu");
-  const logoutBtn = document.getElementById("logoutBtn");
-  const adminPanelBtn = document.getElementById("adminPanelBtn");
+        <div class="theme-submenu" id="themeMenu">
+          <div class="theme-box" data-theme="dark"   title="Dark"></div>
+          <div class="theme-box" data-theme="light"  title="Light"></div>
+          <div class="theme-box" data-theme="luxury" title="Luxury"></div>
+        </div>
+
+        <div class="dropdown-item" id="ordersBtn">
+  <i class="fa-solid fa-box"></i>
+  <span>My Orders</span>
+</div>
+
+        <div class="dropdown-item danger" id="logoutBtn">
+          <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </div>
+      </div>
+    </div>
+  `;
+
+  const menuBtn     = document.getElementById("userMenuBtn");
+  const menu        = document.getElementById("dropdownMenu");
+  const logoutBtn   = document.getElementById("logoutBtn");
+  const adminBtn    = document.getElementById("adminPanelBtn");
   const themeToggle = document.getElementById("themeToggle");
-  const themeMenu = document.getElementById("themeMenu");
+  const themeMenu   = document.getElementById("themeMenu");
+  const ordersBtn = document.getElementById("ordersBtn");
 
-  // toggle dropdown
-  menuBtn.addEventListener("click", (e) => {
+  menuBtn.addEventListener("click", e => {
     e.stopPropagation();
     menu.classList.toggle("show");
   });
 
-  // prevent instant close when clicking inside
-  menu.addEventListener("click", (e) => {
-    e.stopPropagation();
-  });
+  menu.addEventListener("click", e => e.stopPropagation());
 
-  const outsideClickHandler = () => {
+  // FIX: use persistent listener with condition instead of { once:true }
+  // which broke repeated closes
+  document.addEventListener("click", () => {
     menu.classList.remove("show");
-  };
-
-  document.addEventListener("click", outsideClickHandler, {
-    once: true,
   });
 
-  if (adminPanelBtn) {
-    adminPanelBtn.addEventListener("click", () => {
-      location.href = "/admin";
-    });
-  }
+  if (adminBtn) adminBtn.addEventListener("click", () => { location.href = "/admin"; });
 
-  // logout
-  logoutBtn.addEventListener("click", async () => {
+  if (ordersBtn)
+ordersBtn.addEventListener("click", () => {
+  location.href = "/orders";
+});
+    const logoutModal =
+document.getElementById("logoutModal");
+
+const cancelLogout =
+document.getElementById("cancelLogout");
+
+const confirmLogout =
+document.getElementById("confirmLogout");
+
+logoutBtn.addEventListener("click", () => {
+
+    logoutModal.classList.add("show");
+
+});
+
+cancelLogout.addEventListener("click", () => {
+
+    logoutModal.classList.remove("show");
+
+});
+
+confirmLogout.addEventListener("click", async () => {
+
     const { signOut } =
-      await import("https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js");
-    await signOut(auth);
-    location.href = "/";
-  });
+    await import(
+        "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js"
+    );
 
-  // theme submenu
-  themeToggle.addEventListener("click", () => {
+    await signOut(auth);
+
+    location.href="/";
+
+});
+
+  themeToggle.addEventListener("click", e => {
+    e.stopPropagation();
     themeMenu.classList.toggle("show");
   });
 
-  document.querySelectorAll(".theme-box").forEach((box) => {
+  document.querySelectorAll(".theme-box").forEach(box => {
     box.addEventListener("click", () => {
       document.body.dataset.theme = box.dataset.theme;
       localStorage.setItem("theme", box.dataset.theme);
@@ -122,22 +124,13 @@ function showUserDropdown(user, isAdmin) {
   });
 }
 
-onAuthStateChanged(auth, async (user) => {
-  const isLoggedIn = !!user;
+onAuthStateChanged(auth, async user => {
+  if (!user) { hideAdminUI(); return; }
 
-  if (!user) {
-    hideAdminUI();
-    return;
-  }
+  const adminDoc = await getDoc(doc(db, "admins", user.uid));
+  const isAdmin  = adminDoc.exists();
 
-  const adminRef = doc(db, "admins", user.uid);
-  const adminDoc = await getDoc(adminRef);
-  const isAdmin = adminDoc.exists();
-
-  // ADMIN ICON FIX
-  if (adminLinkContainer) {
-    adminLinkContainer.innerHTML = "";
-  }
+  if (adminLinkContainer) adminLinkContainer.innerHTML = "";
 
   showUserDropdown(user, isAdmin);
 });
