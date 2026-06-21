@@ -69,7 +69,9 @@ onAuthStateChanged(auth, async (user) => {
 
     }
 
-    adminBody.style.display = "block";
+    document.getElementById(
+    "admin-loading-screen"
+).style.display = "none";
 
   }
 
