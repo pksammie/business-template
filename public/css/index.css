@@ -1,3 +1,118 @@
+#admin-loading-screen{
+    position:fixed;
+    inset:0;
+
+    background:#0b0c10;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    z-index:99999;
+}
+
+.luxury-loader{
+    text-align:center;
+}
+
+.gold-line{
+
+    width:0;
+
+    height:2px;
+
+    margin:auto;
+
+    background:#c5a880;
+
+    animation:
+    drawLine 2.2s ease infinite;
+}
+
+.luxury-logo{
+
+    margin-top:30px;
+
+    font-size:42px;
+
+    letter-spacing:10px;
+
+    color:#c5a880;
+
+    font-weight:300;
+
+    opacity:0;
+
+    animation:
+    logoFade 2.2s ease infinite;
+}
+
+.luxury-subtitle{
+
+    margin-top:12px;
+
+    font-size:12px;
+
+    letter-spacing:6px;
+
+    color:rgba(255,255,255,.5);
+
+    opacity:0;
+
+    animation:
+    subtitleFade 2.2s ease infinite;
+}
+
+@keyframes drawLine{
+
+0%{
+    width:0;
+}
+
+40%{
+    width:220px;
+}
+
+100%{
+    width:220px;
+}
+
+}
+
+@keyframes logoFade{
+
+0%,35%{
+    opacity:0;
+    transform:translateY(10px);
+}
+
+50%{
+    opacity:1;
+    transform:translateY(0);
+}
+
+100%{
+    opacity:1;
+}
+
+}
+
+@keyframes subtitleFade{
+
+0%,55%{
+    opacity:0;
+}
+
+70%{
+    opacity:1;
+}
+
+100%{
+    opacity:1;
+}
+
+}
+
 :root {
   --bg-color: #0b0c10;
   --card-bg: #1f2833;
