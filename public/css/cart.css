@@ -575,18 +575,6 @@
 
   .restore-cart-controls  { flex-direction: column; }
 
-  .btn-continue {
-    height: 70px;
-  }
-
-  .btn-update {
-    height: 70px;
-  }
-
-  .btn-clear {
-    height: 70px;
-  }
-
   #restore-range {
     width: 100%;
     height: 60px;

@@ -17,6 +17,45 @@ body{
     font-family:sans-serif;
 }
 
+.vanguard-ring{
+    position:relative;
+
+    width:120px;
+    height:120px;
+
+    margin:auto;
+}
+
+.ring{
+    position:absolute;
+
+    inset:0;
+
+    border-radius:50%;
+
+    border:2px solid transparent;
+
+    border-top-color:#c5a880;
+
+    animation:spin 1.2s linear infinite;
+}
+
+.ring:nth-child(2){
+    inset:12px;
+    animation-duration:1.8s;
+}
+
+.ring:nth-child(3){
+    inset:24px;
+    animation-duration:2.4s;
+}
+
+@keyframes spin{
+    to{
+        transform:rotate(360deg);
+    }
+}
+
 #admin-loader,
 #admin-denied{
 
