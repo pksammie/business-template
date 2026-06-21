@@ -18,106 +18,167 @@ body{
 }
 
 #admin-loading-screen .spinner {
-    width: 120px;
-    height: 120px;
-    border: none;
-    border-radius: 0;
-    position: relative;
-    background: transparent;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  width: 260px;
+  height: 260px;
+  border: none;
+  border-radius: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  perspective: 1000px;
 }
 
-/* THE SEWING NEEDLE */
+/* ========================================================
+   THE ULTRA-PREMIUM LUXURY GOLD KINETIC MATRIX
+   ======================================================== */
+
+/* 1. Outer Holographic Shield - The Perimeter Weave */
 #admin-loading-screen .spinner::before {
-    content: '';
-    position: absolute;
-    width: 3px;
-    height: 70px;
-    background: linear-gradient(to bottom, #ffffff 70%, rgba(197, 168, 128, 0.5));
-    border-radius: 2px;
-    top: -20px;
-    left: 45px;
-    z-index: 10;
-    transform-origin: 50% 90%;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-    
-    /* Piercing up and down motion */
-    animation: needle-pierce 1.4s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  padding: 4px;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0%,
+    #c5a880 25%,
+    transparent 50%,
+    #ffffff 75%,
+    transparent 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  animation: ultra-orbit 3s cubic-bezier(0.3, 0.8, 0.7, 1) infinite;
+  filter: drop-shadow(0 0 15px rgba(197, 168, 128, 0.4));
 }
 
-/* THE LUXURY GOLDEN THREAD */
+/* 2. Interlocking Geometric Tailor Matrix */
 #admin-loading-screen .spinner::after {
-    content: '';
-    position: absolute;
-    width: 80px;
-    height: 45px;
-    top: 35px;
-    left: 20px;
-    border: 3px solid #c5a880;
-    
-    /* Simulates a fluid thread wave loop passing through fabric */
-    border-radius: 50% 40% 50% 40%;
-    background: transparent;
-    
-    /* Thread running, stretching, and pulling through the stitch */
-    animation: thread-weave 1.4s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
-    transform-origin: center;
+  content: '';
+  position: absolute;
+  width: 75%;
+  height: 75%;
+  border: 1px dashed rgba(197, 168, 128, 0.35);
+  border-radius: 38% 62% 63% 37% / 41% 44% 56% 59%;
+  background: radial-gradient(circle, rgba(31, 40, 51, 0.2) 0%, transparent 80%);
+  animation: asymmetric-morph 7s ease-in-out infinite alternate;
 }
 
-/* THE FABRIC LAYER BEING STITCHED */
-#admin-loading-screen .spinner::after, 
+/* ========================================================
+   THE HIGH-FASHION GOLDEN SEWING APPARATUS (3D NESTED ELEMENTS)
+   ======================================================== */
+
+/* Adding deep-nested CSS kinetic components via modern sibling hacks or procedural pseudo layout */
 #admin-loading-screen .spinner {
-    /* Creates the illusion of an active surface line */
-    box-shadow: 0 25px 0 -22px rgba(255, 255, 255, 0.15);
+  box-shadow: 
+    0 0 50px rgba(11, 12, 16, 0.8),
+    inset 0 0 30px rgba(197, 168, 128, 0.05);
 }
 
-/* =====================================
-   KINETIC STITCHING ANIMATION ENGINE
-===================================== */
-
-@keyframes needle-pierce {
-    0%, 100% {
-        transform: translateY(0) rotate(-8deg);
-    }
-    45% {
-        /* The rapid down-punch through the fabric */
-        transform: translateY(55px) rotate(2deg);
-        height: 65px;
-    }
-    50% {
-        /* Caught at the lowest piercing point */
-        transform: translateY(58px) rotate(0deg);
-    }
-    75% {
-        /* Pulling back up, drawing the tension */
-        transform: translateY(-5px) rotate(-12deg);
-    }
+/* 3. The Hyper-Velocity Needle Silhouette Core */
+#admin-loading-screen .spinner {
+  --needle-color: #ffffff;
+  --gold-glow: #c5a880;
+  --gold-bright: #ebd0a7;
 }
 
-@keyframes thread-weave {
-    0%, 100% {
-        transform: scaleX(1) scaleY(1) rotate(0deg);
-        border-color: #c5a880;
-        opacity: 0.9;
-        border-radius: 50% 40% 50% 40%;
-    }
-    45% {
-        /* Thread collapses and pulls tight as needle drops */
-        transform: scaleX(0.2) scaleY(1.3) rotate(-15deg) translate(-20px, 15px);
-        border-color: #ffffff;
-        opacity: 0.4;
-        border-radius: 20% 80% 20% 80%;
-    }
-    70% {
-        /* Thread expands into a wide elegant loop as stitch locks */
-        transform: scaleX(1.15) scaleY(0.8) rotate(10deg) translate(5px, -5px);
-        border-color: #ebd0a7;
-        opacity: 1;
-        border-radius: 60% 30% 60% 30%;
-        filter: drop-shadow(0 0 8px rgba(197, 168, 128, 0.6));
-    }
+/* We create an active overlay using pseudo-elements on the parent to build the needle and thread safely */
+#admin-loading-screen {
+  position: fixed;
+  overflow: hidden;
+}
+
+/* Injecting the cinematic atmosphere onto the core screen itself without breaking layout */
+#admin-loading-screen::before {
+  content: '';
+  position: absolute;
+  width: 300%;
+  height: 300%;
+  background: radial-gradient(circle, rgba(197, 168, 128, 0.03) 0%, transparent 60%);
+  animation: ambient-pulse 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* The Needle Blade & Golden Filament Core */
+#admin-loading-screen .spinner {
+  background-image: 
+    linear-gradient(165deg, transparent 48%, var(--gold-bright) 50%, transparent 52%),
+    linear-gradient(75deg, transparent 45%, rgba(255, 255, 255, 0.6) 50%, transparent 55%);
+  background-size: 180px 180px;
+  background-position: center;
+  background-repeat: no-repeat;
+  animation: mesh-shimmer 4s ease-in-out infinite;
+}
+
+/* ========================================================
+   THE MASTER KEYFRAME ENGINE (THE ENGINE ROOM)
+   ======================================================== */
+
+@keyframes ultra-orbit {
+  0% {
+    transform: rotate(0deg) scale(0.96);
+    filter: drop-shadow(0 0 15px rgba(197, 168, 128, 0.4));
+  }
+  50% {
+    transform: rotate(180deg) scale(1.04);
+    filter: drop-shadow(0 0 35px rgba(255, 255, 255, 0.6));
+  }
+  100% {
+    transform: rotate(360deg) scale(0.96);
+    filter: drop-shadow(0 0 15px rgba(197, 168, 128, 0.4));
+  }
+}
+
+@keyframes asymmetric-morph {
+  0% {
+    border-radius: 38% 62% 63% 37% / 41% 44% 56% 59%;
+    transform: rotate(0deg) scale(0.9) skewX(0deg);
+    border-color: var(--gold-glow);
+  }
+  33% {
+    border-radius: 65% 35% 70% 30% / 50% 60% 40% 50%;
+    transform: rotate(120deg) scale(1.1) skewX(5deg);
+    border-color: #ffffff;
+  }
+  66% {
+    border-radius: 45% 55% 35% 65% / 60% 35% 65% 40%;
+    transform: rotate(240deg) scale(0.95) skewY(-5deg);
+    border-color: var(--gold-bright);
+  }
+  100% {
+    border-radius: 38% 62% 63% 37% / 41% 44% 56% 59%;
+    transform: rotate(360deg) scale(0.9) skewX(0deg);
+    border-color: var(--gold-glow);
+  }
+}
+
+@keyframes mesh-shimmer {
+  0%, 100% {
+    background-size: 150px 150px;
+    background-position: calc(50% - 10px) calc(50% - 10px);
+    filter: brightness(1);
+  }
+  50% {
+    background-size: 220px 220px;
+    background-position: calc(50% + 10px) calc(50% + 10px);
+    filter: brightness(1.4) drop-shadow(0 0 25px var(--gold-glow));
+  }
+}
+
+@keyframes ambient-pulse {
+  0%, 100% {
+    transform: translate(-25%, -25%) scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translate(-25%, -25%) scale(1.2);
+    opacity: 0.9;
+  }
 }
 
 
