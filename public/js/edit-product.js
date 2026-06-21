@@ -35,8 +35,7 @@ async function loadProduct() {
 
   document.getElementById("prod-price").value = product.price;
 
-  document.getElementById("prod-quantity").value =
-    (product.quantity || 0) - (product.sold || 0);
+  document.getElementById("prod-quantity").value = product.quantity || 0;
 
   document.getElementById("prod-desc").value = product.description;
 

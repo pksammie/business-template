@@ -575,9 +575,21 @@
 
   .restore-cart-controls  { flex-direction: column; }
 
+  .btn-continue {
+    height: 70px !important;
+  }
+
+  .btn-update {
+    height: 70px !important;
+  }
+
+  .btn-clear {
+    height: 70px !important;
+  }
+
   #restore-range {
     width: 100%;
-    height: 46px;
+    height: 60px !important;
     font-size: 14px;
     padding: 0 12px;
   }

@@ -81,9 +81,11 @@ function renderProducts(products) {
             product.image ||
             "https://via.placeholder.com/600x600?text=No+Image";
 
-        const remainingStock =
-    (product.quantity || 0) -
-    (product.sold || 0);
+        const remainingStock = Math.max(
+  0,
+  (product.quantity || 0) -
+  (product.sold || 0)
+);
 
 const isOutOfStock =
     remainingStock <= 0;

@@ -46,10 +46,39 @@ document
 /* ---------------- AUTH ---------------- */
 
 onAuthStateChanged(auth, async (user) => {
-  if (!user) return (location.href = "/login");
 
-  const adminDoc = await getDoc(doc(db, "admins", user.uid));
-  if (!adminDoc.exists()) location.href = "/";
+  const adminBody =
+    document.getElementById("admin-body");
+
+  if (!user) {
+    location.href = "/login";
+    return;
+  }
+
+  try {
+
+    const adminDoc =
+      await getDoc(
+        doc(db, "admins", user.uid)
+      );
+
+    if (!adminDoc.exists()) {
+
+      location.href = "/";
+      return;
+
+    }
+
+    adminBody.style.display = "block";
+
+  }
+
+  catch(err){
+
+    location.href = "/";
+
+  }
+
 });
 
 /* ---------------- ELEMENTS ---------------- */
