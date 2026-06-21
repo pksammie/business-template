@@ -3,12 +3,21 @@ body{
     background:#0b0c10;
 }
 
-#admin-loading-screen .spinner{
-
-  position:fixed;
+#admin-loading-screen{
+    position:fixed;
     inset:0;
 
     background:#0b0c10;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+
+    z-index:999999;
+}
+
+#admin-loading-screen .spinner{
 
     width:70px;
     height:70px;
@@ -22,6 +31,7 @@ body{
 
     animation: spin 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite, pulse 2s ease-in-out infinite;
     box-shadow: 0 0 20px rgba(197, 168, 128, 0.2), inset 0 0 15px rgba(197, 168, 128, 0.1);
+    position: relative;
 }
 
 #admin-loading-screen .spinner::before {
