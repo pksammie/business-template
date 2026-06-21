@@ -10,294 +10,110 @@ body{
     background:#0b0c10;
 
     display:flex;
-    align-items:center;
     justify-content:center;
-    flex-direction:column;
+    align-items:center;
 
-    z-index:999999;
+    z-index:99999;
 }
 
-.impact-scene{
-    position:relative;
-    width:350px;
-    height:350px;
-    overflow:hidden;
+.luxury-loader{
+    text-align:center;
 }
 
-.pin{
-    position:absolute;
+.gold-line{
 
-    left:50%;
-    top:-150px;
+    width:0;
 
-    width:4px;
-    height:120px;
+    height:2px;
 
-    margin-left:-2px;
+    margin:auto;
 
-    background:
-    linear-gradient(
-        to bottom,
-        #ffffff,
-        #ffffff,
-        #c5a880
-    );
-
-    clip-path:polygon(
-        50% 100%,
-        0 88%,
-        0 0,
-        100% 0,
-        100% 88%
-    );
-
-    transform-origin:center bottom;
+    background:#c5a880;
 
     animation:
-    pinFall 3.5s infinite;
+    drawLine 2.2s ease infinite;
 }
 
-.pin{
-    position:absolute;
+.luxury-logo{
 
-    left:50%;
-    top:-150px;
+    margin-top:30px;
 
-    width:4px;
-    height:120px;
+    font-size:42px;
 
-    margin-left:-2px;
+    letter-spacing:10px;
 
-    background:
-    linear-gradient(
-        to bottom,
-        #ffffff,
-        #ffffff,
-        #c5a880
-    );
+    color:#c5a880;
 
-    clip-path:polygon(
-        50% 100%,
-        0 88%,
-        0 0,
-        100% 0,
-        100% 88%
-    );
-
-    transform-origin:center bottom;
-
-    animation:
-    pinFall 3.5s infinite;
-}
-
-.impact-flash{
-    position:absolute;
-
-    bottom:70px;
-    left:50%;
-
-    width:20px;
-    height:20px;
-
-    margin-left:-10px;
-
-    border-radius:50%;
-
-    background:white;
-
-    opacity:0;
-
-    filter:blur(4px);
-
-    animation:
-    impactFlash 3.5s infinite;
-}
-
-.shockwave{
-    position:absolute;
-
-    bottom:50px;
-    left:50%;
-
-    width:20px;
-    height:20px;
-
-    margin-left:-10px;
-
-    border:4px solid #c5a880;
-
-    border-radius:50%;
+    font-weight:300;
 
     opacity:0;
 
     animation:
-    shockwave 3.5s infinite;
+    logoFade 2.2s ease infinite;
 }
 
-.smoke{
-    position:absolute;
+.luxury-subtitle{
 
-    left:50%;
-    bottom:45px;
+    margin-top:12px;
 
-    width:80px;
-    height:80px;
+    font-size:12px;
 
-    margin-left:-40px;
+    letter-spacing:6px;
 
-    border-radius:50%;
-
-    background:
-    radial-gradient(
-        circle,
-        rgba(255,255,255,.8),
-        rgba(197,168,128,.5),
-        transparent
-    );
+    color:rgba(255,255,255,.5);
 
     opacity:0;
 
-    filter:blur(15px);
-
     animation:
-    smokeRise 3.5s infinite;
+    subtitleFade 2.2s ease infinite;
 }
 
-@keyframes pinFall{
+@keyframes drawLine{
 
 0%{
-    top:-180px;
-    transform:
-    rotate(-3deg)
-    scaleY(1.2);
+    width:0;
 }
 
-15%{
-    transform:rotate(2deg);
+40%{
+    width:220px;
 }
 
-30%{
-    transform:rotate(-1deg);
+100%{
+    width:220px;
 }
 
-55%{
-    top:220px;
-    transform:
-    rotate(.5deg)
-    scaleY(.95);
 }
 
-58%{
+@keyframes logoFade{
+
+0%,35%{
+    opacity:0;
+    transform:translateY(10px);
+}
+
+50%{
+    opacity:1;
+    transform:translateY(0);
+}
+
+100%{
     opacity:1;
 }
 
-60%{
+}
+
+@keyframes subtitleFade{
+
+0%,55%{
     opacity:0;
 }
 
-100%{
-    opacity:0;
-}
-
-}
-
-@keyframes streamFall{
-
-0%{
-    top:-220px;
-    opacity:0;
-}
-
-10%{
+70%{
     opacity:1;
 }
 
-55%{
-    top:170px;
-    opacity:.9;
-}
-
-60%{
-    opacity:0;
-}
-
 100%{
-    opacity:0;
-}
-
-}
-
-@keyframes impactFlash{
-
-0%,59%{
-    opacity:0;
-    transform:scale(0);
-}
-
-60%{
     opacity:1;
-    transform:scale(1);
-}
-
-64%{
-    opacity:0;
-    transform:scale(12);
-}
-
-100%{
-    opacity:0;
-}
-
-}
-
-@keyframes shockwave{
-
-0%,60%{
-    opacity:0;
-    transform:scale(.1);
-}
-
-61%{
-    opacity:1;
-}
-
-75%{
-    opacity:.6;
-    transform:scale(10);
-}
-
-100%{
-    opacity:0;
-    transform:scale(14);
-}
-
-}
-
-@keyframes smokeRise{
-
-0%,60%{
-    opacity:0;
-    transform:
-    scale(.2)
-    translateY(0);
-}
-
-65%{
-    opacity:.9;
-}
-
-80%{
-    opacity:.5;
-    transform:
-    scale(2)
-    translateY(-20px);
-}
-
-100%{
-    opacity:0;
-    transform:
-    scale(3)
-    translateY(-40px);
 }
 
 }
