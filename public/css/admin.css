@@ -18,102 +18,105 @@ body{
 }
 
 #admin-loading-screen .spinner {
-    width: 90px;
+    width: 120px;
     height: 120px;
     border: none;
     border-radius: 0;
     position: relative;
+    background: transparent;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: transparent;
-    animation: floating-garment 4s ease-in-out infinite;
 }
 
-/* The Golden Thread / Pattern Grid Lines */
+/* THE SEWING NEEDLE */
 #admin-loading-screen .spinner::before {
     content: '';
     position: absolute;
-    width: 2px;
-    height: 140px;
-    background: linear-gradient(to bottom, transparent, #c5a880, transparent);
-    left: 50%;
-    transform: translateX(-50%);
-    animation: laser-scan 2s ease-in-out infinite;
+    width: 3px;
+    height: 70px;
+    background: linear-gradient(to bottom, #ffffff 70%, rgba(197, 168, 128, 0.5));
+    border-radius: 2px;
+    top: -20px;
+    left: 45px;
+    z-index: 10;
+    transform-origin: 50% 90%;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    
+    /* Piercing up and down motion */
+    animation: needle-pierce 1.4s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
 }
 
-/* The Luxury Fabric Monogram Loop */
+/* THE LUXURY GOLDEN THREAD */
 #admin-loading-screen .spinner::after {
     content: '';
     position: absolute;
-    width: 60px;
-    height: 80px;
-    border: 2px solid #c5a880;
-    border-radius: 4px;
-    background: linear-gradient(135deg, rgba(31, 40, 51, 0.9) 0%, rgba(11, 12, 16, 0.9) 100%);
-    box-shadow: 
-        0 0 30px rgba(197, 168, 128, 0.3),
-        inset 0 0 20px rgba(255, 255, 255, 0.05);
-    animation: fabric-morph 6s cubic-bezier(0.76, 0, 0.24, 1) infinite;
+    width: 80px;
+    height: 45px;
+    top: 35px;
+    left: 20px;
+    border: 3px solid #c5a880;
+    
+    /* Simulates a fluid thread wave loop passing through fabric */
+    border-radius: 50% 40% 50% 40%;
+    background: transparent;
+    
+    /* Thread running, stretching, and pulling through the stitch */
+    animation: thread-weave 1.4s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+    transform-origin: center;
+}
+
+/* THE FABRIC LAYER BEING STITCHED */
+#admin-loading-screen .spinner::after, 
+#admin-loading-screen .spinner {
+    /* Creates the illusion of an active surface line */
+    box-shadow: 0 25px 0 -22px rgba(255, 255, 255, 0.15);
 }
 
 /* =====================================
-   THE DROP-JAW KINETIC WEAVE EFFECTS
+   KINETIC STITCHING ANIMATION ENGINE
 ===================================== */
 
-@keyframes fabric-morph {
-    0% {
-        transform: scale(0.9) rotate(0deg);
-        border-radius: 4px; /* Structured Tuxedo Suit Silhouette */
-        border-color: #c5a880;
-        box-shadow: 0 0 30px rgba(197, 168, 128, 0.3);
+@keyframes needle-pierce {
+    0%, 100% {
+        transform: translateY(0) rotate(-8deg);
     }
-    25% {
-        transform: scale(1.05) rotate(45deg);
-        border-radius: 50% 0 50% 0; /* Dynamic Fabric Fold / Leaf Pattern */
-        border-color: #ffffff;
-        box-shadow: 0 0 40px rgba(255, 255, 255, 0.2);
+    45% {
+        /* The rapid down-punch through the fabric */
+        transform: translateY(55px) rotate(2deg);
+        height: 65px;
     }
     50% {
-        transform: scale(0.95) rotate(90deg);
-        border-radius: 50%; /* Flowing Fluid Silk Silhouette */
-        border-color: #c5a880;
-        box-shadow: 0 0 50px rgba(197, 168, 128, 0.5);
+        /* Caught at the lowest piercing point */
+        transform: translateY(58px) rotate(0deg);
     }
     75% {
-        transform: scale(1.08) rotate(45deg);
-        border-radius: 0 50% 0 50%; /* Avant-Garde High-Fashion Cut */
-        border-color: #ffffff;
-        box-shadow: 0 0 40px rgba(255, 255, 255, 0.2);
+        /* Pulling back up, drawing the tension */
+        transform: translateY(-5px) rotate(-12deg);
     }
-    100% {
-        transform: scale(0.9) rotate(0deg);
-        border-radius: 4px;
+}
+
+@keyframes thread-weave {
+    0%, 100% {
+        transform: scaleX(1) scaleY(1) rotate(0deg);
         border-color: #c5a880;
-        box-shadow: 0 0 30px rgba(197, 168, 128, 0.3);
+        opacity: 0.9;
+        border-radius: 50% 40% 50% 40%;
     }
-}
-
-@keyframes floating-garment {
-    0%, 100% {
-        transform: translateY(0px) scaleX(1);
+    45% {
+        /* Thread collapses and pulls tight as needle drops */
+        transform: scaleX(0.2) scaleY(1.3) rotate(-15deg) translate(-20px, 15px);
+        border-color: #ffffff;
+        opacity: 0.4;
+        border-radius: 20% 80% 20% 80%;
     }
-    50% {
-        transform: translateY(-15px) scaleX(0.95);
-    }
-}
-
-@keyframes laser-scan {
-    0%, 100% {
-        top: -20px;
-        opacity: 0;
-    }
-    30%, 70% {
+    70% {
+        /* Thread expands into a wide elegant loop as stitch locks */
+        transform: scaleX(1.15) scaleY(0.8) rotate(10deg) translate(5px, -5px);
+        border-color: #ebd0a7;
         opacity: 1;
-    }
-    50% {
-        top: 100px;
-        opacity: 1;
+        border-radius: 60% 30% 60% 30%;
+        filter: drop-shadow(0 0 8px rgba(197, 168, 128, 0.6));
     }
 }
 
