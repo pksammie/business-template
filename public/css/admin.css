@@ -18,8 +18,8 @@ body{
 }
 
 #admin-loading-screen .spinner {
-  width: 260px;
-  height: 260px;
+  width: 200px;
+  height: 200px;
   border: none;
   border-radius: 0;
   position: relative;
@@ -27,157 +27,156 @@ body{
   align-items: center;
   justify-content: center;
   background: transparent;
-  perspective: 1000px;
 }
 
 /* ========================================================
-   THE ULTRA-PREMIUM LUXURY GOLD KINETIC MATRIX
+   THE ULTRA-KINETIC HIGH-FASHION IMPACT ENGINE
    ======================================================== */
 
-/* 1. Outer Holographic Shield - The Perimeter Weave */
+/* 1. THE LUXURY SEWING PIN (FALLS FROM THE SKY) */
 #admin-loading-screen .spinner::before {
   content: '';
   position: absolute;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  padding: 4px;
-  background: conic-gradient(
-    from 0deg,
-    transparent 0%,
-    #c5a880 25%,
-    transparent 50%,
-    #ffffff 75%,
-    transparent 100%
-  );
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-          mask-composite: exclude;
-  animation: ultra-orbit 3s cubic-bezier(0.3, 0.8, 0.7, 1) infinite;
-  filter: drop-shadow(0 0 15px rgba(197, 168, 128, 0.4));
+  width: 4px;
+  height: 80px;
+  
+  /* Pin needle body with a gleaming luxury diamond/gold pinhead */
+  background: linear-gradient(to bottom, #ffffff 0%, #ffffff 85%, var(--primary-color) 85%, var(--primary-color) 100%);
+  border-radius: 2px;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+  
+  left: 50%;
+  margin-left: -2px;
+  transform-origin: bottom center;
+  
+  /* Terminal velocity drop + ground impact crunch */
+  animation: pin-skyfall 2.5s cubic-bezier(0.6, -0.28, 0.735, 0.045) infinite;
+  z-index: 10;
 }
 
-/* 2. Interlocking Geometric Tailor Matrix */
+/* 2. THE GROUND IMPACT EXPLOSION (SHOCKWAVE & DEBRIS) */
 #admin-loading-screen .spinner::after {
   content: '';
   position: absolute;
-  width: 75%;
-  height: 75%;
-  border: 1px dashed rgba(197, 168, 128, 0.35);
-  border-radius: 38% 62% 63% 37% / 41% 44% 56% 59%;
-  background: radial-gradient(circle, rgba(31, 40, 51, 0.2) 0%, transparent 80%);
-  animation: asymmetric-morph 7s ease-in-out infinite alternate;
+  bottom: 40px; /* The floor level where the pin impacts */
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  margin-left: -5px;
+  border-radius: 50%;
+  
+  /* Golden luxury particulate cloud blast */
+  background: radial-gradient(circle, #ffffff 0%, var(--primary-color) 50%, transparent 70%);
+  
+  /* Delayed explosion triggering exactly when the pin slams down */
+  animation: luxury-detonation 2.5s cubic-bezier(0.165, 0.84, 0.44, 1) infinite;
+  z-index: 5;
 }
 
-/* ========================================================
-   THE HIGH-FASHION GOLDEN SEWING APPARATUS (3D NESTED ELEMENTS)
-   ======================================================== */
-
-/* Adding deep-nested CSS kinetic components via modern sibling hacks or procedural pseudo layout */
-#admin-loading-screen .spinner {
-  box-shadow: 
-    0 0 50px rgba(11, 12, 16, 0.8),
-    inset 0 0 30px rgba(197, 168, 128, 0.05);
-}
-
-/* 3. The Hyper-Velocity Needle Silhouette Core */
-#admin-loading-screen .spinner {
-  --needle-color: #ffffff;
-  --gold-glow: #c5a880;
-  --gold-bright: #ebd0a7;
-}
-
-/* We create an active overlay using pseudo-elements on the parent to build the needle and thread safely */
+/* 3. ADDITIONAL SPARK PARTICLES VIA CONTAINER PSEUDO HACK */
 #admin-loading-screen {
-  position: fixed;
   overflow: hidden;
 }
 
-/* Injecting the cinematic atmosphere onto the core screen itself without breaking layout */
+/* Injecting secondary shockwave rings across the entire backdrop */
 #admin-loading-screen::before {
   content: '';
   position: absolute;
-  width: 300%;
-  height: 300%;
-  background: radial-gradient(circle, rgba(197, 168, 128, 0.03) 0%, transparent 60%);
-  animation: ambient-pulse 4s ease-in-out infinite;
+  top: 50%;
+  left: 50%;
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(to right, transparent, var(--primary-color), #ffffff, var(--primary-color), transparent);
+  transform: translate(-50%, -50%) scale(0);
+  animation: ground-ripple 2.5s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+  opacity: 0;
+  z-index: 1;
   pointer-events: none;
 }
 
-/* The Needle Blade & Golden Filament Core */
-#admin-loading-screen .spinner {
-  background-image: 
-    linear-gradient(165deg, transparent 48%, var(--gold-bright) 50%, transparent 52%),
-    linear-gradient(75deg, transparent 45%, rgba(255, 255, 255, 0.6) 50%, transparent 55%);
-  background-size: 180px 180px;
-  background-position: center;
-  background-repeat: no-repeat;
-  animation: mesh-shimmer 4s ease-in-out infinite;
-}
-
 /* ========================================================
-   THE MASTER KEYFRAME ENGINE (THE ENGINE ROOM)
+   THE MASTER TIMING AND VELOCITY PHYSICS
    ======================================================== */
 
-@keyframes ultra-orbit {
+@keyframes pin-skyfall {
   0% {
-    transform: rotate(0deg) scale(0.96);
-    filter: drop-shadow(0 0 15px rgba(197, 168, 128, 0.4));
+    /* Pin starts high up in the stratosphere, completely invisible */
+    transform: translateY(-500px) scaleY(2);
+    opacity: 0;
   }
-  50% {
-    transform: rotate(180deg) scale(1.04);
-    filter: drop-shadow(0 0 35px rgba(255, 255, 255, 0.6));
+  5% {
+    /* Becomes visible as a high-speed streak falling fast */
+    opacity: 1;
+  }
+  38% {
+    /* Slams into the floor at maximum terminal velocity */
+    transform: translateY(60px) scaleY(0.4);
+    opacity: 1;
+  }
+  40% {
+    /* Pin breaks apart / gets swallowed completely by the explosion */
+    transform: translateY(60px) scaleY(0);
+    opacity: 0;
   }
   100% {
-    transform: rotate(360deg) scale(0.96);
-    filter: drop-shadow(0 0 15px rgba(197, 168, 128, 0.4));
+    /* Dead silence/delay before the loop restarts */
+    transform: translateY(60px) scaleY(0);
+    opacity: 0;
   }
 }
 
-@keyframes asymmetric-morph {
-  0% {
-    border-radius: 38% 62% 63% 37% / 41% 44% 56% 59%;
-    transform: rotate(0deg) scale(0.9) skewX(0deg);
-    border-color: var(--gold-glow);
+@keyframes luxury-detonation {
+  0%, 37% {
+    /* Waiting silently while the pin is falling */
+    transform: scale(0);
+    opacity: 0;
+    box-shadow: none;
   }
-  33% {
-    border-radius: 65% 35% 70% 30% / 50% 60% 40% 50%;
-    transform: rotate(120deg) scale(1.1) skewX(5deg);
-    border-color: #ffffff;
+  38% {
+    /* INSTANT CONTACT: Supernova white core ignition */
+    transform: scale(1);
+    opacity: 1;
+    background: #ffffff;
+    box-shadow: 
+      0 0 30px 10px #ffffff,
+      0 0 60px 20px var(--primary-color);
   }
-  66% {
-    border-radius: 45% 55% 35% 65% / 60% 35% 65% 40%;
-    transform: rotate(240deg) scale(0.95) skewY(-5deg);
-    border-color: var(--gold-bright);
+  45% {
+    /* EXPANSION: Gold plasma sphere blows outwards */
+    background: radial-gradient(circle, var(--primary-color) 20%, transparent 60%);
+    box-shadow: 
+      0 0 50px 25px var(--primary-color),
+      0 0 90px 45px rgba(197, 168, 128, 0.4);
+  }
+  65% {
+    /* DISSIPATION: Particle cloud spreads thin and fades out */
+    transform: scale(12);
+    opacity: 0;
+    box-shadow: 
+      0 0 100px 50px transparent;
   }
   100% {
-    border-radius: 38% 62% 63% 37% / 41% 44% 56% 59%;
-    transform: rotate(360deg) scale(0.9) skewX(0deg);
-    border-color: var(--gold-glow);
+    /* Loop reset state */
+    transform: scale(12);
+    opacity: 0;
   }
 }
 
-@keyframes mesh-shimmer {
-  0%, 100% {
-    background-size: 150px 150px;
-    background-position: calc(50% - 10px) calc(50% - 10px);
-    filter: brightness(1);
+@keyframes ground-ripple {
+  0%, 37% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
   }
-  50% {
-    background-size: 220px 220px;
-    background-position: calc(50% + 10px) calc(50% + 10px);
-    filter: brightness(1.4) drop-shadow(0 0 25px var(--gold-glow));
+  38% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
   }
-}
-
-@keyframes ambient-pulse {
-  0%, 100% {
-    transform: translate(-25%, -25%) scale(1);
-    opacity: 0.4;
+  60% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(25);
   }
-  50% {
-    transform: translate(-25%, -25%) scale(1.2);
-    opacity: 0.9;
+  100% {
+    opacity: 0;
   }
 }
 
