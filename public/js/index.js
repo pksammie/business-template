@@ -328,3 +328,42 @@ async function initStorefront() {
 }
 
 initStorefront();
+
+window.addEventListener("load", () => {
+
+    const loader =
+    document.getElementById("admin-loading-screen");
+
+    if (!loader) return;
+
+    const alreadyShown =
+    sessionStorage.getItem("vanguardLoader");
+
+    if (alreadyShown) {
+
+        loader.remove();
+        return;
+
+    }
+
+    sessionStorage.setItem(
+        "vanguardLoader",
+        "true"
+    );
+
+    setTimeout(() => {
+
+        loader.style.transition =
+        "opacity .8s ease";
+
+        loader.style.opacity = "0";
+
+        setTimeout(() => {
+
+            loader.remove();
+
+        }, 800);
+
+    }, 2200);
+
+});
