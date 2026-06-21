@@ -20,6 +20,9 @@ app.get("/cart", (req, res) =>
   res.sendFile(path.join(__dirname, "public", "cart.html")),
 );
 app.get("/admin", (req, res) =>
+  res.sendFile(path.join(__dirname, "public", "admin-guard.html")),
+);
+app.get("/admin-panel", (req, res) =>
   res.sendFile(path.join(__dirname, "public", "admin.html")),
 );
 app.get("/checkout", (req, res) =>
