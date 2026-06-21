@@ -18,8 +18,8 @@ body{
 }
 
 #admin-loading-screen .spinner {
-  width: 200px;
-  height: 200px;
+  width: 280px;
+  height: 280px;
   border: none;
   border-radius: 0;
   position: relative;
@@ -27,155 +27,214 @@ body{
   align-items: center;
   justify-content: center;
   background: transparent;
+  overflow: hidden;
 }
 
 /* ========================================================
-   THE ULTRA-KINETIC HIGH-FASHION IMPACT ENGINE
+   CINEMATIC TWO-STAGE ENVIRONMENT ENGINE
    ======================================================== */
 
-/* 1. THE LUXURY SEWING PIN (FALLS FROM THE SKY) */
+/* 1. SCENE 1: ATMOSPHERIC STRATOSPHERE CLOUDS */
 #admin-loading-screen .spinner::before {
   content: '';
   position: absolute;
-  width: 4px;
-  height: 80px;
+  inset: 0;
+  background: 
+    radial-gradient(ellipse at 30% 20%, rgba(255, 255, 255, 0.15) 0%, transparent 40%),
+    radial-gradient(ellipse at 70% 40%, rgba(197, 168, 128, 0.1) 0%, transparent 50%),
+    radial-gradient(ellipse at 40% 70%, rgba(255, 255, 255, 0.08) 0%, transparent 45%);
+  filter: blur(15px);
+  transform: translateY(-100%);
   
-  /* Pin needle body with a gleaming luxury diamond/gold pinhead */
-  background: linear-gradient(to bottom, #ffffff 0%, #ffffff 85%, var(--primary-color) 85%, var(--primary-color) 100%);
-  border-radius: 2px;
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
-  
-  left: 50%;
-  margin-left: -2px;
-  transform-origin: bottom center;
-  
-  /* Terminal velocity drop + ground impact crunch */
-  animation: pin-skyfall 2.5s cubic-bezier(0.6, -0.28, 0.735, 0.045) infinite;
-  z-index: 10;
+  /* Rushes upwards to simulate the camera zooming downwards past clouds */
+  animation: atmospheric-rush 3.5s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+  z-index: 1;
 }
 
-/* 2. THE GROUND IMPACT EXPLOSION (SHOCKWAVE & DEBRIS) */
+/* 2. SCENE 1: INSANE SPEED AIR WARP STREAMLINES */
 #admin-loading-screen .spinner::after {
   content: '';
   position: absolute;
-  bottom: 40px; /* The floor level where the pin impacts */
+  top: 10%;
   left: 50%;
-  width: 10px;
-  height: 10px;
-  margin-left: -5px;
-  border-radius: 50%;
+  width: 60px;
+  height: 120px;
+  margin-left: -30px;
   
-  /* Golden luxury particulate cloud blast */
-  background: radial-gradient(circle, #ffffff 0%, var(--primary-color) 50%, transparent 70%);
+  /* Supersonic frictional air cone warped around the invisible descent path */
+  border-left: 2px dashed rgba(255, 255, 255, 0.4);
+  border-right: 2px dashed rgba(255, 255, 255, 0.4);
+  border-radius: 50% 50% 0 0;
+  background: linear-gradient(to bottom, rgba(197, 168, 128, 0.15), transparent);
+  box-shadow: 0 -10px 20px rgba(255, 255, 255, 0.1);
+  transform: scaleX(0.3) translateY(-150%);
   
-  /* Delayed explosion triggering exactly when the pin slams down */
-  animation: luxury-detonation 2.5s cubic-bezier(0.165, 0.84, 0.44, 1) infinite;
-  z-index: 5;
+  /* Rips into view and vibrates at hypersonic speeds during stage 1 */
+  animation: supersonic-warp 3.5s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+  z-index: 2;
 }
 
-/* 3. ADDITIONAL SPARK PARTICLES VIA CONTAINER PSEUDO HACK */
+/* ========================================================
+   THE HIGH-VELOCITY SEWING PIN & DETONATION
+   ======================================================== */
+
+/* Injecting the physical pin onto the base loader wrapper */
 #admin-loading-screen {
   overflow: hidden;
 }
 
-/* Injecting secondary shockwave rings across the entire backdrop */
+/* 3. THE HIGH-SPEED PIN SPRINT */
 #admin-loading-screen::before {
   content: '';
   position: absolute;
-  top: 50%;
+  top: 0;
   left: 50%;
-  width: 40px;
-  height: 2px;
-  background: linear-gradient(to right, transparent, var(--primary-color), #ffffff, var(--primary-color), transparent);
-  transform: translate(-50%, -50%) scale(0);
-  animation: ground-ripple 2.5s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+  width: 4px;
+  height: 90px;
+  margin-left: -2px;
+  
+  /* Polished steel needle body with a gleaming solid luxury gold head */
+  background: linear-gradient(to bottom, #ffffff 0%, #ffffff 80%, #c5a880 80%, #c5a880 100%);
+  border-radius: 2px;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
+  transform-origin: bottom center;
+  transform: translateY(-200px) scaleY(2);
+  
+  /* Pierces through the clouds, disappears, then cuts to floor level impact */
+  animation: pin-cinematic-descent 3.5s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+  z-index: 5;
+}
+
+/* 4. SCENE 2: CAMERA JUMP TO GROUND LEVEL DEVASTATING EXPLOSION */
+#admin-loading-screen::after {
+  content: '';
+  position: absolute;
+  bottom: 15%; /* Ground contact floor plane */
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  margin-left: -7px;
+  border-radius: 50%;
+  background: #ffffff;
+  transform: scale(0);
   opacity: 0;
-  z-index: 1;
-  pointer-events: none;
+  
+  /* Detonates precisely as stage 2 triggers and the pin cuts down hard */
+  animation: ground-zero-blast 3.5s cubic-bezier(0.1, 0.8, 0.1, 1) infinite;
+  z-index: 6;
 }
 
 /* ========================================================
-   THE MASTER TIMING AND VELOCITY PHYSICS
+   THE HOLLYWOOD EDITING & CAMERA TIMING LAYOUT
    ======================================================== */
 
-@keyframes pin-skyfall {
+@keyframes atmospheric-rush {
   0% {
-    /* Pin starts high up in the stratosphere, completely invisible */
-    transform: translateY(-500px) scaleY(2);
+    transform: translateY(-120%) scaleY(1.5);
     opacity: 0;
   }
   5% {
-    /* Becomes visible as a high-speed streak falling fast */
     opacity: 1;
   }
-  38% {
-    /* Slams into the floor at maximum terminal velocity */
-    transform: translateY(60px) scaleY(0.4);
+  35% {
+    /* Fast camera tracking plunge passing cloud clusters */
+    transform: translateY(60%) scaleY(1);
     opacity: 1;
   }
-  40% {
-    /* Pin breaks apart / gets swallowed completely by the explosion */
-    transform: translateY(60px) scaleY(0);
-    opacity: 0;
-  }
-  100% {
-    /* Dead silence/delay before the loop restarts */
-    transform: translateY(60px) scaleY(0);
+  42%, 100% {
+    /* Sudden camera cut: Clouds completely vanished from frame */
+    transform: translateY(100%);
     opacity: 0;
   }
 }
 
-@keyframes luxury-detonation {
-  0%, 37% {
-    /* Waiting silently while the pin is falling */
+@keyframes supersonic-warp {
+  0% {
+    transform: scaleX(0.1) translateY(-150%);
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.8;
+    transform: scaleX(1.1) translateY(-10px);
+  }
+  15%, 30% {
+    /* Intense hypersonic turbulence friction vibration */
+    transform: scaleX(1) translateY(0px) skewX(2deg);
+    opacity: 1;
+  }
+  35% {
+    /* Vapor cone snaps outwards right before camera cuts */
+    transform: scaleX(2) translateY(50px);
+    opacity: 0;
+  }
+  100% {
+    transform: scaleX(2) translateY(50px);
+    opacity: 0;
+  }
+}
+
+@keyframes pin-cinematic-descent {
+  0% {
+    /* Stage 1: Enters upper atmosphere streak */
+    transform: translateY(-200px) scaleY(3);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  30% {
+    /* Accelerating out of the cloud camera frame */
+    transform: translateY(220px) scaleY(2);
+    opacity: 1;
+  }
+  34%, 39% {
+    /* HARD CAMERA CUT TO FLOOR LEVEL: Pin enters from absolute roof of frame */
+    transform: translateY(-150px) scaleY(2.5);
+    opacity: 0;
+  }
+  40% {
+    /* CRITICAL IMPACT: Pin hits the deck at blinding velocity */
+    transform: translateY(160px) scaleY(0.2);
+    opacity: 1;
+  }
+  43%, 100% {
+    /* Dissolved into pure kinetic light energy */
+    transform: translateY(160px) scaleY(0);
+    opacity: 0;
+  }
+}
+
+@keyframes ground-zero-blast {
+  0%, 39% {
     transform: scale(0);
     opacity: 0;
     box-shadow: none;
   }
-  38% {
-    /* INSTANT CONTACT: Supernova white core ignition */
+  40% {
+    /* INSTANT GROUND CONTACT DETONATION */
     transform: scale(1);
     opacity: 1;
     background: #ffffff;
     box-shadow: 
-      0 0 30px 10px #ffffff,
-      0 0 60px 20px var(--primary-color);
+      0 0 40px 15px #ffffff,
+      0 0 80px 30px #c5a880,
+      0 0 150px 60px rgba(197, 168, 128, 0.4);
   }
-  45% {
-    /* EXPANSION: Gold plasma sphere blows outwards */
-    background: radial-gradient(circle, var(--primary-color) 20%, transparent 60%);
+  48% {
+    /* SHOCKWAVE EXPANSION: Gold plasma field spreads out wide */
+    background: radial-gradient(circle, #c5a880 20%, transparent 60%);
     box-shadow: 
-      0 0 50px 25px var(--primary-color),
-      0 0 90px 45px rgba(197, 168, 128, 0.4);
+      0 0 70px 35px #c5a880,
+      0 0 140px 70px rgba(255, 255, 255, 0.2);
   }
-  65% {
-    /* DISSIPATION: Particle cloud spreads thin and fades out */
-    transform: scale(12);
+  75% {
+    /* ENERGY DISSIPATION: Shockwave dissolves into the background */
+    transform: scale(18);
     opacity: 0;
-    box-shadow: 
-      0 0 100px 50px transparent;
+    box-shadow: 0 0 120px 60px transparent;
   }
   100% {
-    /* Loop reset state */
-    transform: scale(12);
-    opacity: 0;
-  }
-}
-
-@keyframes ground-ripple {
-  0%, 37% {
-    transform: translate(-50%, -50%) scale(0);
-    opacity: 0;
-  }
-  38% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
-  60% {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(25);
-  }
-  100% {
+    transform: scale(18);
     opacity: 0;
   }
 }
