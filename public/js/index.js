@@ -85,9 +85,11 @@ function renderProducts(products) {
     (product.quantity || 0) -
     (product.sold || 0);
 
-const isSuspended =
-    product.isSuspended ||
+const isOutOfStock =
     remainingStock <= 0;
+
+const isSuspended =
+    product.isSuspended;
 
         const card =
 document.createElement("div");
@@ -120,63 +122,64 @@ if (!isSuspended) {
     </button>
 `;
 
-        if (isSuspended) {
+        if (isSuspended || isOutOfStock) {
 
-            suspensionMaskOverlay = `
-                <div style="
-                    position:absolute;
-                    top:0;
-                    left:0;
-                    width:100%;
-                    height:100%;
-                    background:rgba(0,0,0,0.85);
-                    z-index:10;
-                    display:flex;
-                    justify-content:center;
-                    align-items:center;
-                    text-align:center;
-                    padding:15px;
-                    border-radius:8px;
-                ">
+    const overlayText =
+        isOutOfStock
+            ? "Out Of<br>Stock"
+            : "Post Has Been<br>Suspended";
 
-                    <div style="
-                        width:140px;
-                        height:140px;
-                        border:2px dashed #ff4d4d;
-                        border-radius:50%;
-                        display:flex;
-                        justify-content:center;
-                        align-items:center;
-                        color:#ff4d4d;
-                        font-size:12px;
-                        font-weight:bold;
-                        text-transform:uppercase;
-                        letter-spacing:1px;
-                        line-height:1.4;
-                        background:#000;
-                    ">
-                        Post Has Been<br>
-                        Suspended
-                    </div>
+    suspensionMaskOverlay = `
+        <div style="
+            position:absolute;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            background:rgba(0,0,0,0.85);
+            z-index:10;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            text-align:center;
+            padding:15px;
+            border-radius:8px;
+        ">
+            <div style="
+                width:140px;
+                height:140px;
+                border:2px dashed #ff4d4d;
+                border-radius:50%;
+                display:flex;
+                justify-content:center;
+                align-items:center;
+                color:#ff4d4d;
+                font-size:12px;
+                font-weight:bold;
+                text-transform:uppercase;
+                letter-spacing:1px;
+                line-height:1.4;
+                background:#000;
+            ">
+                ${overlayText}
+            </div>
+        </div>
+    `;
 
-                </div>
-            `;
-
-            actionButtonElement = `
-                <button
-                    class="add-to-cart-btn"
-                    style="
-                        background:#333;
-                        color:#777;
-                        cursor:not-allowed;
-                    "
-                    disabled
-                >
-                    Unavailable
-                </button>
-            `;
-
-        }
+    actionButtonElement = `
+        <button
+            class="add-to-cart-btn"
+            style="
+                background:#333;
+                color:#777;
+                cursor:not-allowed;
+            "
+            disabled
+        >
+            ${isOutOfStock ? "Out of Stock" : "Unavailable"}
+        </button>
+    `;
+}
 
         let stockColor = "lime";
 let stockText = `${remainingStock} left in stock`;

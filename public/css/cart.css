@@ -548,6 +548,13 @@
 
   .cart-summary-panel {
     position: static;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .cart-layout > * {
+    width: 100%;
   }
 
   .cart-product-card {
