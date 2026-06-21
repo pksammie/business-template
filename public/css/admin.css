@@ -17,79 +17,102 @@ body{
     z-index:999999;
 }
 
-#admin-loading-screen .spinner{
-
-    width: 70px;
-    height: 70px;
-
-    background: transparent;
-    border: 3px solid rgba(197, 168, 128, 0.15);
-    border-top: 3px solid #c5a880;
-    border-bottom: 3px solid #c5a880;
-
-    border-radius: 50%;
-
-    animation: luxury-weave 2.2s cubic-bezier(0.77, 0, 0.175, 1) infinite;
+#admin-loading-screen .spinner {
+    width: 90px;
+    height: 120px;
+    border: none;
+    border-radius: 0;
     position: relative;
-    box-shadow: 0 0 15px rgba(197, 168, 128, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    animation: floating-garment 4s ease-in-out infinite;
 }
 
+/* The Golden Thread / Pattern Grid Lines */
 #admin-loading-screen .spinner::before {
     content: '';
     position: absolute;
-    inset: 12px;
-    border: 1px dashed rgba(255, 255, 255, 0.4);
-    border-radius: 50%;
-    animation: stitch-spin 4.4s linear infinite reverse;
+    width: 2px;
+    height: 140px;
+    background: linear-gradient(to bottom, transparent, #c5a880, transparent);
+    left: 50%;
+    transform: translateX(-50%);
+    animation: laser-scan 2s ease-in-out infinite;
 }
 
+/* The Luxury Fabric Monogram Loop */
 #admin-loading-screen .spinner::after {
     content: '';
     position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 6px;
-    height: 6px;
-    background-color: #ffffff;
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 0 0 10px #ffffff;
-    animation: core-pulse 1.1s ease-in-out infinite alternate;
+    width: 60px;
+    height: 80px;
+    border: 2px solid #c5a880;
+    border-radius: 4px;
+    background: linear-gradient(135deg, rgba(31, 40, 51, 0.9) 0%, rgba(11, 12, 16, 0.9) 100%);
+    box-shadow: 
+        0 0 30px rgba(197, 168, 128, 0.3),
+        inset 0 0 20px rgba(255, 255, 255, 0.05);
+    animation: fabric-morph 6s cubic-bezier(0.76, 0, 0.24, 1) infinite;
 }
 
-@keyframes luxury-weave {
+/* =====================================
+   THE DROP-JAW KINETIC WEAVE EFFECTS
+===================================== */
+
+@keyframes fabric-morph {
     0% {
-        transform: rotate(0deg) scale(0.95);
-        border-width: 3px;
+        transform: scale(0.9) rotate(0deg);
+        border-radius: 4px; /* Structured Tuxedo Suit Silhouette */
+        border-color: #c5a880;
+        box-shadow: 0 0 30px rgba(197, 168, 128, 0.3);
+    }
+    25% {
+        transform: scale(1.05) rotate(45deg);
+        border-radius: 50% 0 50% 0; /* Dynamic Fabric Fold / Leaf Pattern */
+        border-color: #ffffff;
+        box-shadow: 0 0 40px rgba(255, 255, 255, 0.2);
     }
     50% {
-        transform: rotate(180deg) scale(1.05);
-        border-width: 1px;
-        border-top-color: #ffffff;
-        border-bottom-color: #ffffff;
+        transform: scale(0.95) rotate(90deg);
+        border-radius: 50%; /* Flowing Fluid Silk Silhouette */
+        border-color: #c5a880;
+        box-shadow: 0 0 50px rgba(197, 168, 128, 0.5);
+    }
+    75% {
+        transform: scale(1.08) rotate(45deg);
+        border-radius: 0 50% 0 50%; /* Avant-Garde High-Fashion Cut */
+        border-color: #ffffff;
+        box-shadow: 0 0 40px rgba(255, 255, 255, 0.2);
     }
     100% {
-        transform: rotate(360deg) scale(0.95);
-        border-width: 3px;
+        transform: scale(0.9) rotate(0deg);
+        border-radius: 4px;
+        border-color: #c5a880;
+        box-shadow: 0 0 30px rgba(197, 168, 128, 0.3);
     }
 }
 
-@keyframes stitch-spin {
-    0% {
-        transform: rotate(0deg);
+@keyframes floating-garment {
+    0%, 100% {
+        transform: translateY(0px) scaleX(1);
     }
-    100% {
-        transform: rotate(360deg);
+    50% {
+        transform: translateY(-15px) scaleX(0.95);
     }
 }
 
-@keyframes core-pulse {
-    0% {
-        transform: translate(-50%, -50%) scale(0.8);
-        opacity: 0.5;
+@keyframes laser-scan {
+    0%, 100% {
+        top: -20px;
+        opacity: 0;
     }
-    100% {
-        transform: translate(-50%, -50%) scale(1.3);
+    30%, 70% {
+        opacity: 1;
+    }
+    50% {
+        top: 100px;
         opacity: 1;
     }
 }
