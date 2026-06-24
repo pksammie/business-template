@@ -1,108 +1,253 @@
-#admin-loading-screen{
-    position:fixed;
-    inset:0;
-    background:#0b0c10;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    z-index:99999;
+/* ============================================================
+   FUTURISTIC STORE LOADER — Vanguard
+   Colors: #0b0c10 (bg) · #c5a880 (gold) · #ffffff (text)
+   ============================================================ */
+
+#admin-loading-screen {
+  position: fixed;
+  inset: 0;
+  background: #0b0c10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+  overflow: hidden;
 }
 
-.fashion-loader{
-    text-align:center;
+/* Dark grid background */
+#admin-loading-screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(197,168,128,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(197,168,128,0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  animation: gridDrift 8s linear infinite;
 }
 
-.hanger-svg{
-    width:220px;
-    height:180px;
-
-    transform-origin:center top;
-
-    animation:swing 2.5s ease-in-out infinite;
+@keyframes gridDrift {
+  from { background-position: 0 0; }
+  to   { background-position: 40px 40px; }
 }
 
-.hanger-path,
-.hanger-bar{
-
-    fill:none;
-
-    stroke:#c5a880;
-
-    stroke-width:4;
-
-    stroke-linecap:round;
-
-    stroke-linejoin:round;
-
-    stroke-dasharray:800;
-    stroke-dashoffset:800;
-
-    animation:drawHanger 2s ease forwards;
+/* ── MAIN CONTAINER ─────────────────────────────────────── */
+.futuristic-loader {
+  position: relative;
+  width: 260px;
+  height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.loader-brand{
-
-    margin-top:20px;
-
-    color:#c5a880;
-
-    font-size:42px;
-
-    letter-spacing:10px;
-
-    opacity:0;
-
-    animation:brandFade 1s ease forwards;
-    animation-delay:1.2s;
+/* ── RINGS ───────────────────────────────────────────────── */
+.ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid transparent;
 }
 
-.loader-tag{
-
-    margin-top:10px;
-
-    color:rgba(255,255,255,.55);
-
-    letter-spacing:4px;
-
-    opacity:0;
-
-    animation:brandFade 1s ease forwards;
-    animation-delay:1.5s;
+.ring-outer {
+  width: 240px;
+  height: 240px;
+  border-top-color:    #c5a880;
+  border-right-color:  rgba(197,168,128,0.25);
+  border-bottom-color: rgba(197,168,128,0.08);
+  border-left-color:   rgba(197,168,128,0.25);
+  animation: spinCW 2.4s linear infinite;
+  box-shadow: 0 0 22px rgba(197,168,128,0.18), inset 0 0 22px rgba(197,168,128,0.06);
 }
 
-@keyframes drawHanger{
-
-    to{
-        stroke-dashoffset:0;
-    }
+.ring-mid {
+  width: 190px;
+  height: 190px;
+  border-top-color:    rgba(197,168,128,0.15);
+  border-right-color:  #c5a880;
+  border-bottom-color: rgba(197,168,128,0.15);
+  border-left-color:   rgba(197,168,128,0.06);
+  animation: spinCCW 1.8s linear infinite;
 }
 
-@keyframes swing{
-
-    0%{
-        transform:rotate(-3deg);
-    }
-
-    50%{
-        transform:rotate(3deg);
-    }
-
-    100%{
-        transform:rotate(-3deg);
-    }
+.ring-inner {
+  width: 144px;
+  height: 144px;
+  border-top-color:    rgba(197,168,128,0.5);
+  border-right-color:  transparent;
+  border-bottom-color: rgba(197,168,128,0.5);
+  border-left-color:   transparent;
+  animation: spinCW 1.2s linear infinite;
 }
 
-@keyframes brandFade{
+@keyframes spinCW  { to { transform: rotate(360deg);  } }
+@keyframes spinCCW { to { transform: rotate(-360deg); } }
 
-    from{
-        opacity:0;
-        transform:translateY(20px);
-    }
+/* ── SCAN BRACKETS (corner HUD brackets) ────────────────── */
+.scan-bracket {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border-color: #c5a880;
+  border-style: solid;
+  opacity: 0;
+  animation: bracketAppear 0.5s ease forwards;
+}
 
-    to{
-        opacity:1;
-        transform:translateY(0);
-    }
+.top-left     { top: 10px; left: 10px;  border-width: 2px 0 0 2px; animation-delay: 0.3s; }
+.top-right    { top: 10px; right: 10px; border-width: 2px 2px 0 0; animation-delay: 0.5s; }
+.bottom-left  { bottom: 10px; left: 10px;  border-width: 0 0 2px 2px; animation-delay: 0.7s; }
+.bottom-right { bottom: 10px; right: 10px; border-width: 0 2px 2px 0; animation-delay: 0.9s; }
+
+@keyframes bracketAppear {
+  from { opacity: 0; transform: scale(1.4); }
+  to   { opacity: 1; transform: scale(1);   }
+}
+
+/* ── SCAN LINE ───────────────────────────────────────────── */
+.scan-line {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(197,168,128,0.0) 10%,
+    #c5a880 50%,
+    rgba(197,168,128,0.0) 90%,
+    transparent 100%
+  );
+  box-shadow: 0 0 10px rgba(197,168,128,0.6);
+  animation: scanMove 2s ease-in-out infinite;
+  top: 50%;
+}
+
+@keyframes scanMove {
+  0%   { transform: translateY(-100px); opacity: 0; }
+  15%  { opacity: 1; }
+  85%  { opacity: 1; }
+  100% { transform: translateY(100px);  opacity: 0; }
+}
+
+/* ── CENTRE CONTENT ──────────────────────────────────────── */
+.loader-centre {
+  position: absolute;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.loader-brand-text {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 6px;
+  color: #c5a880;
+  text-shadow: 0 0 18px rgba(197,168,128,0.7), 0 0 40px rgba(197,168,128,0.3);
+  animation: textPulse 2.4s ease-in-out infinite;
+  opacity: 0;
+  animation-fill-mode: forwards;
+  animation-delay: 0.5s;
+}
+
+.loader-sub-text {
+  font-size: 8px;
+  letter-spacing: 3.5px;
+  color: rgba(255,255,255,0.45);
+  text-transform: uppercase;
+  opacity: 0;
+  animation: textPulse 2.4s ease-in-out infinite;
+  animation-delay: 0.8s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes textPulse {
+  0%   { opacity: 0; }
+  30%  { opacity: 1; }
+  70%  { opacity: 1; }
+  100% { opacity: 0.7; }
+}
+
+/* Animated dots */
+.loader-dots {
+  display: flex;
+  gap: 5px;
+  margin-top: 6px;
+  opacity: 0;
+  animation: fadeIn 0.4s ease 1.2s forwards;
+}
+
+.loader-dots span {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #c5a880;
+  animation: dotBlink 1.2s ease-in-out infinite;
+}
+
+.loader-dots span:nth-child(2) { animation-delay: 0.2s; }
+.loader-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes dotBlink {
+  0%, 100% { opacity: 0.2; transform: scale(0.8); }
+  50%       { opacity: 1;   transform: scale(1.2); }
+}
+
+/* ── HUD PROGRESS BAR ────────────────────────────────────── */
+.hud-bar {
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 180px;
+  height: 2px;
+  background: rgba(197,168,128,0.12);
+  border-radius: 2px;
+  overflow: hidden;
+  opacity: 0;
+  animation: fadeIn 0.4s ease 0.6s forwards;
+}
+
+.hud-progress {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, transparent, #c5a880, transparent);
+  box-shadow: 0 0 8px #c5a880;
+  animation: progressFill 2.2s ease-in-out infinite;
+}
+
+@keyframes progressFill {
+  0%   { width: 0%;   opacity: 1; }
+  80%  { width: 100%; opacity: 1; }
+  100% { width: 100%; opacity: 0; }
+}
+
+/* ── FLOATING PARTICLES ──────────────────────────────────── */
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  background: #c5a880;
+  opacity: 0;
+}
+
+.p1 { width:3px; height:3px; top:20%;  left:18%;  animation: floatP 3.0s ease-in-out 0.2s infinite; }
+.p2 { width:2px; height:2px; top:70%;  left:22%;  animation: floatP 2.6s ease-in-out 0.8s infinite; }
+.p3 { width:3px; height:3px; top:15%;  right:20%; animation: floatP 3.4s ease-in-out 0.4s infinite; }
+.p4 { width:2px; height:2px; top:75%;  right:18%; animation: floatP 2.8s ease-in-out 1.0s infinite; }
+.p5 { width:2px; height:2px; top:45%;  left:8%;   animation: floatP 3.2s ease-in-out 0.6s infinite; }
+.p6 { width:3px; height:3px; top:50%;  right:9%;  animation: floatP 2.5s ease-in-out 1.2s infinite; }
+
+@keyframes floatP {
+  0%   { opacity: 0;   transform: translateY(0)    scale(1);   }
+  30%  { opacity: 0.8; }
+  70%  { opacity: 0.5; }
+  100% { opacity: 0;   transform: translateY(-28px) scale(0.4); }
+}
+
+/* shared fade-in utility */
+@keyframes fadeIn {
+  to { opacity: 1; }
 }
 
 :root {
