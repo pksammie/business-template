@@ -249,7 +249,7 @@ else if(remainingStock <= 3){
     </span>
 
 </div>
-
+<br>
                 <p class="stock-left" style="
     color:${stockColor};
     margin-bottom:10px;
