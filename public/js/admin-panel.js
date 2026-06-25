@@ -331,15 +331,17 @@ function loadOrders() {
             font-size:12px;
             font-weight:700;
             background:
-            ${
-              order.status === "Pending"
-                ? "#c5a880"
-                : order.status === "Approved"
-                  ? "#28a745"
-                  : order.status === "Delivered"
-                    ? "#17a2b8"
-                    : "#ff4d4d"
-            };
+${
+  order.status === "Pending"
+    ? "#c5a880"
+    : order.status === "Approved"
+      ? "#28a745"
+      : order.status === "Delivery In Progress"
+        ? "#ff9800"
+        : order.status === "Delivered"
+          ? "#17a2b8"
+          : "#ff4d4d"
+};
             color:
             ${order.status === "Pending" ? "#000" : "#fff"};
         ">
@@ -440,22 +442,38 @@ function loadOrders() {
                 </button>
             `
             : order.status === "Approved"
-              ? `
-                <button
-                    onclick="deliverOrder('${order.id}')"
-                    style="
-                        width:100%;
-                        background:#17a2b8;
-                        color:white;
-                        border:none;
-                        padding:12px;
-                        border-radius:8px;
-                        cursor:pointer;
-                    "
-                >
-                    Mark as Delivered
-                </button>
-                 </div>
+  ? `
+      <button
+          onclick="startDelivery('${order.id}')"
+          style="
+              width:100%;
+              background:#ff9800;
+              color:white;
+              border:none;
+              padding:12px;
+              border-radius:8px;
+              cursor:pointer;
+          "
+      >
+          Delivery In Progress
+      </button>
+    `
+    : order.status === "Delivery In Progress"
+  ? `
+      <button
+          onclick="deliverOrder('${order.id}')"
+          style="
+              width:100%;
+              background:#17a2b8;
+              color:white;
+              border:none;
+              padding:12px;
+              border-radius:8px;
+              cursor:pointer;
+          "
+      >
+          Mark as Delivered
+      </button>
     `
               : order.status === "Delivered"
                 ? `
@@ -490,6 +508,17 @@ function loadOrders() {
     },
   );
 }
+
+window.startDelivery = async function(id) {
+  await updateDoc(
+    doc(db, "cart_reservations", id),
+    {
+      status: "Delivery In Progress"
+    }
+  );
+
+  showToast("Order is now on delivery.");
+};
 
 window.approveOrder = async function (id) {
   const reservationRef = doc(db, "cart_reservations", id);

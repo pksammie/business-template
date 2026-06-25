@@ -31,6 +31,8 @@ async function load() {
 
   product = snap.data();
 
+  saveRecentlyViewed(id);
+
   /* PRODUCT SUSPENSION CHECK */
 
   if (product.isSuspended) {
@@ -122,6 +124,80 @@ async function load() {
       });
     }
   }
+
+loadRelatedProducts(id);
+
+loadRecentlyViewed();
+}
+
+async function loadRelatedProducts(currentProductId){
+
+    const relatedGrid =
+    document.getElementById(
+        "related-products-grid"
+    );
+
+    if(!relatedGrid) return;
+
+    const snap =
+    await getDocs(
+        collection(db,"products")
+    );
+
+    relatedGrid.innerHTML = "";
+
+    let count = 0;
+
+    products.forEach((item)=>{
+
+        if(count >= 8) return;
+
+        if(item.id === currentProductId)
+        return;
+
+        if(item.isSuspended)
+        return;
+
+        count++;
+
+        const card =
+        document.createElement("div");
+
+        card.className =
+        "product-card";
+
+        card.innerHTML = `
+            <img
+                src="${item.image}"
+                class="product-image"
+            >
+
+            <div class="product-info">
+
+                <h3 class="product-title">
+                    ${item.title}
+                </h3>
+
+                <div class="product-price">
+                    ₦${Number(item.price)
+                        .toLocaleString()}
+                </div>
+
+            </div>
+        `;
+
+        card.onclick = ()=>{
+
+            location.href =
+            "/decision-page.html?id=" +
+            item.id;
+
+        };
+
+        relatedGrid.appendChild(card);
+
+    });
+
 }
 
 window.increaseQty = function () {
@@ -330,4 +406,113 @@ window.submitToCartBag = async function () {
     addingToCart = false;
   }
 };
+
+function saveRecentlyViewed(productId){
+
+    let viewed =
+    JSON.parse(
+        localStorage.getItem(
+            "recentlyViewed"
+        )
+    ) || [];
+
+    viewed =
+    viewed.filter(
+        item => item !== productId
+    );
+
+    viewed.unshift(productId);
+
+    viewed =
+    viewed.slice(0,8);
+
+    localStorage.setItem(
+        "recentlyViewed",
+        JSON.stringify(viewed)
+    );
+
+}
+
+async function loadRecentlyViewed(){
+
+    const grid =
+    document.getElementById(
+        "recently-viewed-grid"
+    );
+
+    if(!grid) return;
+
+    const viewed =
+    JSON.parse(
+        localStorage.getItem(
+            "recentlyViewed"
+        )
+    ) || [];
+
+    grid.innerHTML = "";
+
+    for(const productId of viewed){
+
+        if(productId === id)
+        continue;
+
+        const snap =
+        await getDoc(
+            doc(
+                db,
+                "products",
+                productId
+            )
+        );
+
+        if(!snap.exists())
+        continue;
+
+        const item = {
+            id:snap.id,
+            ...snap.data()
+        };
+
+        const card =
+        document.createElement("div");
+
+        card.className =
+        "product-card";
+
+        card.innerHTML = `
+
+            <img
+                src="${item.image}"
+                class="product-image"
+            >
+
+            <div class="product-info">
+
+                <h3 class="product-title">
+                    ${item.title}
+                </h3>
+
+                <div class="product-price">
+                    ₦${Number(item.price)
+                        .toLocaleString()}
+                </div>
+
+            </div>
+
+        `;
+
+        card.onclick = ()=>{
+
+            location.href =
+            "/decision-page.html?id=" +
+            item.id;
+
+        };
+
+        grid.appendChild(card);
+
+    }
+
+}
+
 load();

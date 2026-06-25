@@ -132,3 +132,8 @@
 
   width: fit-content;
 }
+
+.status-delivery{
+    background:#ff9800;
+    color:white;
+}

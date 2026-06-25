@@ -81,6 +81,11 @@ function loadOrders(userId) {
           statusClass = "status-approved";
           break;
 
+        case "Delivery In Progress":
+          statusText = "Delivery In Progress";
+          statusClass = "status-delivery";
+          break;
+
         case "Delivered":
           statusText = "Delivered";
           statusClass = "status-delivered";

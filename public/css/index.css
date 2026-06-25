@@ -1,253 +1,108 @@
-/* ============================================================
-   FUTURISTIC STORE LOADER — Vanguard
-   Colors: #0b0c10 (bg) · #c5a880 (gold) · #ffffff (text)
-   ============================================================ */
-
-#admin-loading-screen {
-  position: fixed;
-  inset: 0;
-  background: #0b0c10;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 99999;
-  overflow: hidden;
+#admin-loading-screen{
+    position:fixed;
+    inset:0;
+    background:#0b0c10;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:99999;
 }
 
-/* Dark grid background */
-#admin-loading-screen::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(197,168,128,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(197,168,128,0.04) 1px, transparent 1px);
-  background-size: 40px 40px;
-  animation: gridDrift 8s linear infinite;
+.fashion-loader{
+    text-align:center;
 }
 
-@keyframes gridDrift {
-  from { background-position: 0 0; }
-  to   { background-position: 40px 40px; }
+.hanger-svg{
+    width:220px;
+    height:180px;
+
+    transform-origin:center top;
+
+    animation:swing 2.5s ease-in-out infinite;
 }
 
-/* ── MAIN CONTAINER ─────────────────────────────────────── */
-.futuristic-loader {
-  position: relative;
-  width: 260px;
-  height: 260px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.hanger-path,
+.hanger-bar{
+
+    fill:none;
+
+    stroke:#c5a880;
+
+    stroke-width:4;
+
+    stroke-linecap:round;
+
+    stroke-linejoin:round;
+
+    stroke-dasharray:800;
+    stroke-dashoffset:800;
+
+    animation:drawHanger 2s ease forwards;
 }
 
-/* ── RINGS ───────────────────────────────────────────────── */
-.ring {
-  position: absolute;
-  border-radius: 50%;
-  border: 2px solid transparent;
+.loader-brand{
+
+    margin-top:20px;
+
+    color:#c5a880;
+
+    font-size:42px;
+
+    letter-spacing:10px;
+
+    opacity:0;
+
+    animation:brandFade 1s ease forwards;
+    animation-delay:1.2s;
 }
 
-.ring-outer {
-  width: 240px;
-  height: 240px;
-  border-top-color:    #c5a880;
-  border-right-color:  rgba(197,168,128,0.25);
-  border-bottom-color: rgba(197,168,128,0.08);
-  border-left-color:   rgba(197,168,128,0.25);
-  animation: spinCW 2.4s linear infinite;
-  box-shadow: 0 0 22px rgba(197,168,128,0.18), inset 0 0 22px rgba(197,168,128,0.06);
+.loader-tag{
+
+    margin-top:10px;
+
+    color:rgba(255,255,255,.55);
+
+    letter-spacing:4px;
+
+    opacity:0;
+
+    animation:brandFade 1s ease forwards;
+    animation-delay:1.5s;
 }
 
-.ring-mid {
-  width: 190px;
-  height: 190px;
-  border-top-color:    rgba(197,168,128,0.15);
-  border-right-color:  #c5a880;
-  border-bottom-color: rgba(197,168,128,0.15);
-  border-left-color:   rgba(197,168,128,0.06);
-  animation: spinCCW 1.8s linear infinite;
+@keyframes drawHanger{
+
+    to{
+        stroke-dashoffset:0;
+    }
 }
 
-.ring-inner {
-  width: 144px;
-  height: 144px;
-  border-top-color:    rgba(197,168,128,0.5);
-  border-right-color:  transparent;
-  border-bottom-color: rgba(197,168,128,0.5);
-  border-left-color:   transparent;
-  animation: spinCW 1.2s linear infinite;
+@keyframes swing{
+
+    0%{
+        transform:rotate(-3deg);
+    }
+
+    50%{
+        transform:rotate(3deg);
+    }
+
+    100%{
+        transform:rotate(-3deg);
+    }
 }
 
-@keyframes spinCW  { to { transform: rotate(360deg);  } }
-@keyframes spinCCW { to { transform: rotate(-360deg); } }
+@keyframes brandFade{
 
-/* ── SCAN BRACKETS (corner HUD brackets) ────────────────── */
-.scan-bracket {
-  position: absolute;
-  width: 22px;
-  height: 22px;
-  border-color: #c5a880;
-  border-style: solid;
-  opacity: 0;
-  animation: bracketAppear 0.5s ease forwards;
-}
+    from{
+        opacity:0;
+        transform:translateY(20px);
+    }
 
-.top-left     { top: 10px; left: 10px;  border-width: 2px 0 0 2px; animation-delay: 0.3s; }
-.top-right    { top: 10px; right: 10px; border-width: 2px 2px 0 0; animation-delay: 0.5s; }
-.bottom-left  { bottom: 10px; left: 10px;  border-width: 0 0 2px 2px; animation-delay: 0.7s; }
-.bottom-right { bottom: 10px; right: 10px; border-width: 0 2px 2px 0; animation-delay: 0.9s; }
-
-@keyframes bracketAppear {
-  from { opacity: 0; transform: scale(1.4); }
-  to   { opacity: 1; transform: scale(1);   }
-}
-
-/* ── SCAN LINE ───────────────────────────────────────────── */
-.scan-line {
-  position: absolute;
-  left: 14px;
-  right: 14px;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(197,168,128,0.0) 10%,
-    #c5a880 50%,
-    rgba(197,168,128,0.0) 90%,
-    transparent 100%
-  );
-  box-shadow: 0 0 10px rgba(197,168,128,0.6);
-  animation: scanMove 2s ease-in-out infinite;
-  top: 50%;
-}
-
-@keyframes scanMove {
-  0%   { transform: translateY(-100px); opacity: 0; }
-  15%  { opacity: 1; }
-  85%  { opacity: 1; }
-  100% { transform: translateY(100px);  opacity: 0; }
-}
-
-/* ── CENTRE CONTENT ──────────────────────────────────────── */
-.loader-centre {
-  position: absolute;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.loader-brand-text {
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: 6px;
-  color: #c5a880;
-  text-shadow: 0 0 18px rgba(197,168,128,0.7), 0 0 40px rgba(197,168,128,0.3);
-  animation: textPulse 2.4s ease-in-out infinite;
-  opacity: 0;
-  animation-fill-mode: forwards;
-  animation-delay: 0.5s;
-}
-
-.loader-sub-text {
-  font-size: 8px;
-  letter-spacing: 3.5px;
-  color: rgba(255,255,255,0.45);
-  text-transform: uppercase;
-  opacity: 0;
-  animation: textPulse 2.4s ease-in-out infinite;
-  animation-delay: 0.8s;
-  animation-fill-mode: forwards;
-}
-
-@keyframes textPulse {
-  0%   { opacity: 0; }
-  30%  { opacity: 1; }
-  70%  { opacity: 1; }
-  100% { opacity: 0.7; }
-}
-
-/* Animated dots */
-.loader-dots {
-  display: flex;
-  gap: 5px;
-  margin-top: 6px;
-  opacity: 0;
-  animation: fadeIn 0.4s ease 1.2s forwards;
-}
-
-.loader-dots span {
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: #c5a880;
-  animation: dotBlink 1.2s ease-in-out infinite;
-}
-
-.loader-dots span:nth-child(2) { animation-delay: 0.2s; }
-.loader-dots span:nth-child(3) { animation-delay: 0.4s; }
-
-@keyframes dotBlink {
-  0%, 100% { opacity: 0.2; transform: scale(0.8); }
-  50%       { opacity: 1;   transform: scale(1.2); }
-}
-
-/* ── HUD PROGRESS BAR ────────────────────────────────────── */
-.hud-bar {
-  position: absolute;
-  bottom: -30px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 180px;
-  height: 2px;
-  background: rgba(197,168,128,0.12);
-  border-radius: 2px;
-  overflow: hidden;
-  opacity: 0;
-  animation: fadeIn 0.4s ease 0.6s forwards;
-}
-
-.hud-progress {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, transparent, #c5a880, transparent);
-  box-shadow: 0 0 8px #c5a880;
-  animation: progressFill 2.2s ease-in-out infinite;
-}
-
-@keyframes progressFill {
-  0%   { width: 0%;   opacity: 1; }
-  80%  { width: 100%; opacity: 1; }
-  100% { width: 100%; opacity: 0; }
-}
-
-/* ── FLOATING PARTICLES ──────────────────────────────────── */
-.particle {
-  position: absolute;
-  border-radius: 50%;
-  background: #c5a880;
-  opacity: 0;
-}
-
-.p1 { width:3px; height:3px; top:20%;  left:18%;  animation: floatP 3.0s ease-in-out 0.2s infinite; }
-.p2 { width:2px; height:2px; top:70%;  left:22%;  animation: floatP 2.6s ease-in-out 0.8s infinite; }
-.p3 { width:3px; height:3px; top:15%;  right:20%; animation: floatP 3.4s ease-in-out 0.4s infinite; }
-.p4 { width:2px; height:2px; top:75%;  right:18%; animation: floatP 2.8s ease-in-out 1.0s infinite; }
-.p5 { width:2px; height:2px; top:45%;  left:8%;   animation: floatP 3.2s ease-in-out 0.6s infinite; }
-.p6 { width:3px; height:3px; top:50%;  right:9%;  animation: floatP 2.5s ease-in-out 1.2s infinite; }
-
-@keyframes floatP {
-  0%   { opacity: 0;   transform: translateY(0)    scale(1);   }
-  30%  { opacity: 0.8; }
-  70%  { opacity: 0.5; }
-  100% { opacity: 0;   transform: translateY(-28px) scale(0.4); }
-}
-
-/* shared fade-in utility */
-@keyframes fadeIn {
-  to { opacity: 1; }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
 }
 
 :root {
@@ -2044,4 +1899,471 @@ a:active {
     background:#c5a880;
     color:black;
     font-weight:700;
+}
+
+.related-products-section{
+
+    margin-top:120px;
+
+    padding:0 8%;
+}
+
+.related-products-section .product-card{
+
+    transition:
+    transform .35s ease,
+    box-shadow .35s ease;
+}
+
+.related-products-section .product-card:hover{
+
+    transform:translateY(-8px);
+
+    box-shadow:
+    0 20px 40px rgba(0,0,0,.35);
+}
+
+/* =====================================
+   VANGUARD LUXURY HERO
+===================================== */
+
+.hero-fashion{
+
+    position:relative;
+
+    height:100vh;
+
+    min-height:700px;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    overflow:hidden;
+
+    background:url("https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=2000")
+    center center/cover no-repeat;
+}
+
+.hero-overlay{
+
+    position:absolute;
+    inset:0;
+
+    background:
+    linear-gradient(
+        rgba(0,0,0,.45),
+        rgba(0,0,0,.65)
+    );
+}
+
+.hero-content{
+
+    position:relative;
+
+    z-index:2;
+
+    text-align:center;
+
+    max-width:900px;
+
+    padding:0 20px;
+}
+
+.hero-tag{
+
+    display:inline-block;
+
+    color:#c5a880;
+
+    letter-spacing:5px;
+
+    font-size:13px;
+
+    text-transform:uppercase;
+
+    margin-bottom:25px;
+}
+
+.hero-content h1{
+
+    font-size:90px;
+
+    font-weight:800;
+
+    line-height:0.95;
+
+    color:white;
+
+    margin-bottom:25px;
+
+    letter-spacing:3px;
+}
+
+.hero-content p{
+
+    max-width:650px;
+
+    margin:auto;
+
+    color:rgba(255,255,255,.75);
+
+    font-size:18px;
+
+    line-height:1.8;
+
+    margin-bottom:40px;
+}
+
+.hero-btn{
+
+    display:inline-block;
+
+    padding:16px 40px;
+
+    background:#c5a880;
+
+    color:black;
+
+    font-weight:700;
+
+    letter-spacing:2px;
+
+    text-decoration:none;
+
+    border-radius:5px;
+
+    transition:.3s;
+}
+
+.hero-btn:hover{
+
+    transform:translateY(-4px);
+
+    box-shadow:
+    0 10px 30px
+    rgba(197,168,128,.4);
+}
+
+@media(max-width:768px){
+
+    .hero-content h1{
+
+        font-size:55px;
+    }
+
+    .hero-content p{
+
+        font-size:15px;
+    }
+}
+
+/* ===========================
+   FEATURED BRANDS
+=========================== */
+
+.featured-brands{
+
+    padding:100px 8%;
+
+    background:#0f1117;
+}
+
+.section-header{
+
+    text-align:center;
+
+    max-width:700px;
+
+    margin:auto auto 60px;
+}
+
+.section-tag{
+
+    color:#c5a880;
+
+    letter-spacing:3px;
+
+    text-transform:uppercase;
+
+    font-size:13px;
+}
+
+.section-header h2{
+
+    margin-top:15px;
+
+    font-size:42px;
+
+    font-weight:700;
+}
+
+.section-header p{
+
+    margin-top:15px;
+
+    color:#b7b7b7;
+
+    line-height:1.8;
+}
+
+.brands-slider{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+
+    gap:25px;
+}
+
+.brand-card{
+
+    background:#171a21;
+
+    border:1px solid rgba(255,255,255,.05);
+
+    border-radius:20px;
+
+    padding:30px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    transition:.35s;
+}
+
+.brand-card:hover{
+
+    transform:translateY(-8px);
+
+    border-color:#c5a880;
+
+    box-shadow:0 20px 40px rgba(0,0,0,.35);
+}
+
+.brand-card img{
+
+    width:100%;
+
+    max-width:120px;
+
+    object-fit:contain;
+
+    filter:grayscale(100%);
+
+    transition:.35s;
+}
+
+.brand-card:hover img{
+
+    filter:none;
+}
+
+/* ==========================
+   WHY SHOP VANGUARD
+========================== */
+
+.vanguard-benefits{
+
+    padding:120px 8%;
+
+    background:#0b0c10;
+}
+
+.benefits-grid{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(250px,1fr));
+
+    gap:25px;
+}
+
+.benefit-card{
+
+    background:#171a21;
+
+    border-radius:20px;
+
+    padding:40px 25px;
+
+    text-align:center;
+
+    border:1px solid
+    rgba(255,255,255,.05);
+
+    transition:.35s;
+}
+
+.benefit-card:hover{
+
+    transform:translateY(-8px);
+
+    border-color:#c5a880;
+
+    box-shadow:
+    0 20px 40px rgba(0,0,0,.35);
+}
+
+.benefit-card i{
+
+    font-size:45px;
+
+    color:#c5a880;
+
+    margin-bottom:20px;
+}
+
+.benefit-card h3{
+
+    margin-bottom:15px;
+}
+
+.benefit-card p{
+
+    color:#b7b7b7;
+
+    line-height:1.7;
+}
+
+/* ==========================
+   REVIEWS
+========================== */
+
+.testimonial-section{
+
+    padding:120px 8%;
+
+    background:#11151c;
+}
+
+.testimonial-grid{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(280px,1fr));
+
+    gap:25px;
+}
+
+.testimonial-card{
+
+    background:#171a21;
+
+    border-radius:20px;
+
+    padding:35px;
+
+    border:1px solid
+    rgba(255,255,255,.05);
+}
+
+.stars{
+
+    color:#c5a880;
+
+    font-size:22px;
+
+    margin-bottom:20px;
+}
+
+.testimonial-card p{
+
+    line-height:1.8;
+
+    margin-bottom:20px;
+}
+
+.testimonial-card h4{
+
+    color:#c5a880;
+}
+
+.trust-badges{
+
+    margin-top:25px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:10px;
+}
+
+.trust-item{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    color:#d8d8d8;
+
+    font-size:.95rem;
+}
+
+.trust-item i{
+
+    color:#c8a45d;
+}
+
+.vanguard-footer{
+
+margin-top:100px;
+
+background:#090909;
+
+padding:60px 8% 30px;
+}
+
+.footer-grid{
+
+display:grid;
+
+grid-template-columns:
+repeat(auto-fit,minmax(220px,1fr));
+
+gap:40px;
+}
+
+.footer-grid h3,
+.footer-grid h4{
+
+color:#c5a880;
+
+margin-bottom:15px;
+}
+
+.footer-grid a{
+
+display:block;
+
+margin-bottom:10px;
+
+color:#aaa;
+}
+
+.footer-grid a:hover{
+
+color:white;
+}
+
+.footer-bottom{
+
+margin-top:40px;
+
+padding-top:20px;
+
+border-top:
+1px solid rgba(255,255,255,.08);
+
+text-align:center;
+
+color:#777;
 }
