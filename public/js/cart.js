@@ -75,26 +75,10 @@ async function renderTabularCart() {
     const user = auth.currentUser;
     if (!user) return;
 
-    const snap =
-await getDocs(
-    collection(db,"products")
+    const snap = await getDocs(
+  collection(db, "users", user.uid, "cart")
 );
 
-const products = [];
-
-snap.forEach((docSnap)=>{
-
-    products.push({
-        id:docSnap.id,
-        ...docSnap.data()
-    });
-
-});
-
-/*
-shuffle products
-*/
-products.sort(() => Math.random() - 0.5);
     firestoreCart = [];
 
     /* ── Step 1: load items + availability ── */

@@ -139,16 +139,24 @@ async function loadRelatedProducts(currentProductId){
 
     if(!relatedGrid) return;
 
-    const snap =
-    await getDocs(
-        collection(db,"products")
-    );
+    const snap = await getDocs(
+  collection(db, "products")
+);
 
-    relatedGrid.innerHTML = "";
+const products = [];
 
-    let count = 0;
+snap.forEach((docSnap) => {
+  products.push({
+    id: docSnap.id,
+    ...docSnap.data()
+  });
+});
 
-    products.forEach((item)=>{
+relatedGrid.innerHTML = "";
+
+let count = 0;
+
+products.forEach((item) => {
 
         if(count >= 8) return;
 

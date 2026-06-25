@@ -2313,6 +2313,54 @@ a:active {
     color:#c8a45d;
 }
 
+.vanguard-breadcrumb{
+    display:flex;
+    align-items:center;
+    gap:10px;
+
+    padding:18px 24px;
+
+    background:rgba(255,255,255,0.03);
+
+    border:1px solid rgba(255,255,255,0.06);
+
+    border-radius:14px;
+
+    backdrop-filter:blur(10px);
+
+    margin-bottom:30px;
+
+    overflow-x:auto;
+}
+
+.vanguard-breadcrumb a{
+    color:var(--text-muted);
+
+    text-decoration:none;
+
+    font-size:14px;
+
+    transition:.3s;
+}
+
+.vanguard-breadcrumb a:hover{
+    color:#c5a880;
+}
+
+.vanguard-breadcrumb .separator{
+    color:rgba(255,255,255,.3);
+
+    font-size:11px;
+}
+
+.vanguard-breadcrumb .current{
+    color:#c5a880;
+
+    font-weight:600;
+
+    white-space:nowrap;
+}
+
 .vanguard-footer{
 
 margin-top:100px;
