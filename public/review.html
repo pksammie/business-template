@@ -3,44 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Reviews</title>
+
+    <link rel="stylesheet" href="/css/index.css">
 </head>
 <body>
-    
-    <form id="review-form">
 
-    <h2>
+    <div class="review-page-wrapper">
 
-        Leave Review
+    <form id="review-form" class="review-form">
 
-    </h2>
+        <h2>
+            Leave A Review
+        </h2>
 
-    <select id="review-rating">
+        <select id="review-rating">
 
-        <option value="5">★★★★★</option>
-        <option value="4">★★★★☆</option>
-        <option value="3">★★★☆☆</option>
-        <option value="2">★★☆☆☆</option>
-        <option value="1">★☆☆☆☆</option>
+            <option value="5">★★★★★</option>
+            <option value="4">★★★★☆</option>
+            <option value="3">★★★☆☆</option>
+            <option value="2">★★☆☆☆</option>
+            <option value="1">★☆☆☆☆</option>
 
-    </select>
+        </select>
 
-    <textarea
+        <textarea
         id="review-text"
-    ></textarea>
+        placeholder="Tell other customers about this product..."
+        ></textarea>
 
-    <button>
+        <button type="submit">
 
-        Submit Review
+            Submit Review
 
-    </button>
+        </button>
 
-</form>
+    </form>
 
-<script
+</div>
+
+
+    <script
 type="module"
 src="/js/review.js">
 </script>
-
 </body>
 </html>

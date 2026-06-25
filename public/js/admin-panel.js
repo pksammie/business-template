@@ -264,14 +264,14 @@ function loadInventory() {
     <span class="rating-stars">
 
         ${generateStars(
-    product.averageRating || 0
+    p.averageRating || 0
 )}
 
     </span>
 
     <span class="rating-count">
 
-        (${product.reviewCount || 0})
+        (${p.reviewCount || 0})
 
     </span>
 

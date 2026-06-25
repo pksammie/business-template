@@ -1,0 +1,96 @@
+.review-page-wrapper{
+
+    min-height:100vh;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    padding:50px 20px;
+
+}
+
+.review-form{
+
+    width:100%;
+    max-width:650px;
+
+    background:#111;
+
+    border:1px solid rgba(255,255,255,.08);
+
+    border-radius:18px;
+
+    padding:35px;
+
+}
+
+.review-form h2{
+
+    margin-bottom:25px;
+
+    color:var(--primary-color);
+
+}
+
+.review-form select{
+
+    width:100%;
+
+    padding:15px;
+
+    margin-bottom:20px;
+
+    background:#1a1a1a;
+
+    border:none;
+
+    color:white;
+
+    border-radius:10px;
+
+}
+
+.review-form textarea{
+
+    width:100%;
+
+    height:180px;
+
+    resize:none;
+
+    padding:15px;
+
+    border:none;
+
+    border-radius:10px;
+
+    background:#1a1a1a;
+
+    color:white;
+
+    margin-bottom:20px;
+
+}
+
+.review-form button{
+
+    width:100%;
+
+    padding:15px;
+
+    border:none;
+
+    border-radius:10px;
+
+    background:var(--primary-color);
+
+    color:black;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+}

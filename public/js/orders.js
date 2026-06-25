@@ -168,8 +168,17 @@ id:docSnap.id,
             </div>
 
             <div class="order-details">
+                Quantity:
+                ${order.quantity}
 
-            ${
+                <br>
+
+                Total:
+                ₦${order.total.toLocaleString()}
+
+                <br>
+
+                ${
 order.status === "Delivered"
 ?
 `
@@ -185,14 +194,6 @@ Leave Review
 :
 ""
 }
-
-                Quantity:
-                ${order.quantity}
-
-                <br>
-
-                Total:
-                ₦${order.total.toLocaleString()}
 
             </div>
 
