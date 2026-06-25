@@ -41,6 +41,26 @@ if (toggle && menu) {
 
 }
 
+function generateStars(rating){
+
+    let stars = "";
+
+    const rounded =
+    Math.round(rating);
+
+    for(let i=1;i<=5;i++){
+
+        stars +=
+        i <= rounded
+        ? "★"
+        : "☆";
+
+    }
+
+    return stars;
+
+}
+
 /* ---------------- RENDER PRODUCTS ---------------- */
 
 function renderProducts(products) {
@@ -211,6 +231,24 @@ else if(remainingStock <= 3){
                 <h3 class="product-title">
                     ${title}
                 </h3>
+
+                <div class="product-rating">
+
+    <span class="rating-stars">
+
+        ${generateStars(
+    product.averageRating || 0
+)}
+        
+    </span>
+
+    <span class="rating-count">
+
+        (${product.reviewCount || 0})
+
+    </span>
+
+</div>
 
                 <p class="stock-left" style="
     color:${stockColor};

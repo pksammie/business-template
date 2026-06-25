@@ -7,6 +7,10 @@ import {
   getDocs,
   addDoc,
   updateDoc,
+  collection,
+  query,
+  where,
+  orderBy
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 const params = new URLSearchParams(location.search);
@@ -23,6 +27,85 @@ const sizeWrapper = document.getElementById("size-options-wrapper");
 const colorWrapper = document.getElementById("color-options-wrapper"); // optional
 const descriptionBox = document.getElementById("decision-description");
 
+async function loadReviews(){
+
+    const reviewsContainer =
+    document.getElementById(
+        "reviews-container"
+    );
+
+    if(!reviewsContainer)
+    return;
+
+    const q =
+    query(
+
+        collection(
+            db,
+            "reviews"
+        ),
+
+        where(
+            "productId",
+            "==",
+            id
+        ),
+
+        orderBy(
+            "createdAt",
+            "desc"
+        )
+
+    );
+
+    const snap =
+    await getDocs(q);
+
+    reviewsContainer.innerHTML = "";
+
+    snap.forEach(docSnap=>{
+
+        const review =
+        docSnap.data();
+
+        reviewsContainer.innerHTML += `
+
+            <div class="review-card">
+
+                <div class="review-stars">
+
+                    ${generateStars(
+                        review.rating
+                    )}
+
+                </div>
+
+                <div class="review-name">
+
+                    ${review.customerName}
+
+                </div>
+
+                <div class="verified-badge">
+
+                    ✔ Verified Purchase
+
+                </div>
+
+                <p>
+
+                    ${review.reviewText}
+
+                </p>
+
+            </div>
+
+        `;
+
+    });
+
+}
+
 async function load() {
   if (!id) return;
 
@@ -30,6 +113,18 @@ async function load() {
   if (!snap.exists()) return;
 
   product = snap.data();
+
+  document.getElementById(
+    "product-stars"
+).innerHTML =
+generateStars(
+    product.averageRating || 0
+);
+
+document.getElementById(
+    "product-review-count"
+).innerText =
+`${product.reviewCount || 0} Reviews`;
 
   saveRecentlyViewed(id);
 
@@ -128,6 +223,28 @@ async function load() {
 loadRelatedProducts(id);
 
 loadRecentlyViewed();
+
+loadReviews();
+}
+
+function generateStars(rating){
+
+    let stars = "";
+
+    const rounded =
+    Math.round(rating);
+
+    for(let i=1;i<=5;i++){
+
+        stars +=
+        i <= rounded
+        ? "★"
+        : "☆";
+
+    }
+
+    return stars;
+
 }
 
 async function loadRelatedProducts(currentProductId){
@@ -185,6 +302,24 @@ products.forEach((item) => {
                 <h3 class="product-title">
                     ${item.title}
                 </h3>
+
+                <div class="product-rating">
+
+    <span class="rating-stars">
+
+        ${generateStars(
+            item.averageRating || 0
+        )}
+
+    </span>
+
+    <span class="rating-count">
+
+        (${item.reviewCount || 0})
+
+    </span>
+
+</div>
 
                 <div class="product-price">
                     ₦${Number(item.price)
@@ -441,6 +576,26 @@ function saveRecentlyViewed(productId){
 
 }
 
+function generateStars(rating){
+
+    let stars = "";
+
+    const rounded =
+    Math.round(rating);
+
+    for(let i=1;i<=5;i++){
+
+        stars +=
+        i <= rounded
+        ? "★"
+        : "☆";
+
+    }
+
+    return stars;
+
+}
+
 async function loadRecentlyViewed(){
 
     const grid =
@@ -499,6 +654,24 @@ async function loadRecentlyViewed(){
                 <h3 class="product-title">
                     ${item.title}
                 </h3>
+
+                <div class="product-rating">
+
+    <span class="rating-stars">
+
+        ${generateStars(
+            item.averageRating || 0
+        )}
+
+    </span>
+
+    <span class="rating-count">
+
+        (${item.reviewCount || 0})
+
+    </span>
+
+</div>
 
                 <div class="product-price">
                     ₦${Number(item.price)

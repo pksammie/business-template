@@ -207,6 +207,26 @@ function loadDashboardStats() {
   );
 }
 
+function generateStars(rating){
+
+    let stars = "";
+
+    const rounded =
+    Math.round(rating);
+
+    for(let i=1;i<=5;i++){
+
+        stars +=
+        i <= rounded
+        ? "★"
+        : "☆";
+
+    }
+
+    return stars;
+
+}
+
 /* ---------------- LOAD INVENTORY ---------------- */
 
 function loadInventory() {
@@ -238,6 +258,24 @@ function loadInventory() {
     <div class="admin-card-content">
 
         <h4>${p.title}</h4>
+
+        <div class="product-rating">
+
+    <span class="rating-stars">
+
+        ${generateStars(
+    product.averageRating || 0
+)}
+
+    </span>
+
+    <span class="rating-count">
+
+        (${product.reviewCount || 0})
+
+    </span>
+
+</div>
 
         <p>₦${Number(p.price).toLocaleString()}</p>
 
@@ -688,6 +726,9 @@ adminForm.addEventListener("submit", async (e) => {
     colors: finalColors,
     quantity,
     sold: 0,
+    reviewCount:0,
+    averageRating:0,
+    totalRating:0,
     isSuspended: false,
     isEditing: false,
     createdAt: Date.now(),

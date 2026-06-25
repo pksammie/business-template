@@ -62,7 +62,10 @@ function loadOrders(userId) {
     const docs = [];
 
     snapshot.forEach((docSnap) => {
-      docs.push(docSnap.data());
+      docs.push({
+id:docSnap.id,
+...docSnap.data()
+});
     });
 
     docs.sort((a, b) => b.createdAt - a.createdAt);
@@ -165,6 +168,23 @@ function loadOrders(userId) {
             </div>
 
             <div class="order-details">
+
+            ${
+order.status === "Delivered"
+?
+`
+<a
+href="/review.html?orderId=${order.id}&productId=${order.productId}"
+class="leave-review-btn"
+>
+
+Leave Review
+
+</a>
+`
+:
+""
+}
 
                 Quantity:
                 ${order.quantity}

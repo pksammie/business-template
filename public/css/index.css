@@ -2361,6 +2361,86 @@ a:active {
     white-space:nowrap;
 }
 
+.product-rating{
+
+    display:flex;
+    align-items:center;
+    gap:6px;
+
+    margin-top:4px;
+
+}
+
+.rating-stars{
+
+    color:#d4af37;
+
+    font-size:14px;
+
+}
+
+.rating-count{
+
+    font-size:12px;
+
+    color:#999;
+
+}
+
+.product-review-summary{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    margin-top:15px;
+
+}
+
+#product-stars{
+
+    color:#d4af37;
+
+    font-size:18px;
+
+}
+
+#product-review-count{
+
+    color:#999;
+
+}
+
+.leave-review-btn{
+
+display:inline-flex;
+justify-content:center;
+align-items:center;
+
+padding:12px 20px;
+
+margin-top:15px;
+
+background:#c5a880;
+
+color:black;
+
+text-decoration:none;
+
+font-weight:700;
+
+border-radius:8px;
+
+}
+
+.leave-review-btn:hover{
+
+opacity:.9;
+
+}
+
 .vanguard-footer{
 
 margin-top:100px;
