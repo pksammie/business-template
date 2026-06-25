@@ -575,26 +575,6 @@ function saveRecentlyViewed(productId){
 
 }
 
-function generateStars(rating){
-
-    let stars = "";
-
-    const rounded =
-    Math.round(rating);
-
-    for(let i=1;i<=5;i++){
-
-        stars +=
-        i <= rounded
-        ? "★"
-        : "☆";
-
-    }
-
-    return stars;
-
-}
-
 async function loadRecentlyViewed(){
 
     const grid =
