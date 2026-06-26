@@ -60,23 +60,46 @@ orderId
 const order =
 orderSnap.data();
 
+try{
+
 await addDoc(
+
 collection(
 db,
 "reviews"
 ),
+
 {
+
 productId,
+
 orderId,
+
 userId:user.uid,
+
 customerName:
 order.customerName,
+
 rating,
+
 reviewText,
+
 createdAt:
 Date.now()
+
 }
+
 );
+
+}catch(error){
+
+console.error(error);
+
+alert(error.message);
+
+return;
+
+}
 
 const productRef =
 doc(
