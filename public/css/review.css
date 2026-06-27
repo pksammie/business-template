@@ -460,3 +460,21 @@ opacity:.7;
 .star.filled { color: #c5a880; }
 .star.half   { color: #c5a880; opacity: 0.6; }
 .star.empty  { color: #444; }
+
+.cancel-review-btn{
+
+margin-top:15px;
+
+background:#222 !important;
+
+color:white !important;
+
+border:1px solid rgba(255,255,255,.1);
+
+}
+
+.cancel-review-btn:hover{
+
+background:#333 !important;
+
+}

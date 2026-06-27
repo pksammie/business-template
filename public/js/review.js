@@ -60,6 +60,16 @@ async function submitReview(oneStarReason = ""){
 
 const user = auth.currentUser;
 
+const submitBtn=document.querySelector(
+'#review-form button[type="submit"]'
+);
+
+if(submitBtn.disabled)return;
+
+submitBtn.disabled=true;
+
+submitBtn.innerText="Sending Review...";
+
 if(!user) return;
 
 const rating =
@@ -211,6 +221,8 @@ showToast(
 "Thank you for reviewing this product!"
 );
 
+submitBtn.innerText="Sending Review...";
+
 setTimeout(()=>{
 
 location.href="/orders";
@@ -303,7 +315,7 @@ return;
 
 submitOneStarBtn.disabled=true;
 
-submitOneStarBtn.innerText="Submitting...";
+submitOneStarBtn.innerText="Sending Review...";
 
 await submitReview(selectedReason);
 
@@ -337,6 +349,30 @@ oneStarModal.style.display="none";
 
 };
 
+document
+.querySelectorAll('input[name="oneStarReason"]')
+.forEach(radio=>{
+
+let lastChecked=null;
+
+radio.addEventListener("click",function(){
+
+if(lastChecked===this){
+
+this.checked=false;
+
+lastChecked=null;
+
+}else{
+
+lastChecked=this;
+
+}
+
+});
+
+});
+
 oneStarModal.onclick = (e)=>{
 
 if(e.target===oneStarModal){
@@ -344,5 +380,13 @@ if(e.target===oneStarModal){
 oneStarModal.style.display="none";
 
 }
+
+};
+
+document
+.getElementById("cancel-review-btn")
+.onclick=()=>{
+
+location.href="/orders";
 
 };
