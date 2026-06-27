@@ -1,15 +1,16 @@
 import { db, auth } from "./firebase.js";
 
 import {
-  doc,
-  getDoc,
-  collection,
-  getDocs,
-  addDoc,
-  updateDoc,
-  query,
-  where,
-  orderBy
+doc,
+getDoc,
+collection,
+getDocs,
+addDoc,
+updateDoc,
+query,
+where,
+orderBy,
+deleteDoc
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 const params = new URLSearchParams(location.search);
@@ -84,56 +85,98 @@ snap.forEach((docSnap)=>{
 
     const review = docSnap.data();
 
-    reviewsContainer.innerHTML += `
+    const currentUser =
+auth.currentUser;
 
-        <div class="review-card">
+const isOwner =
+currentUser &&
+currentUser.uid === review.userId;
 
-            <div class="review-stars">
+reviewsContainer.innerHTML += `
 
-                ${generateStars(review.rating)}
+<div class="review-card">
 
-            </div>
+<div class="review-top-row">
 
-            <div class="review-avatar">
+<div>
 
-    ${review.customerName.charAt(0).toUpperCase()}
+<div class="review-stars">
 
-</div>
-
-            <div class="review-name">
-
-    ${review.customerName}
-
-</div>
-
-<div class="review-date">
-
-    ${new Date(review.createdAt).toLocaleDateString(
-        "en-NG",
-        {
-            day:"numeric",
-            month:"short",
-            year:"numeric"
-        }
-    )}
+${generateStars(review.rating)}
 
 </div>
 
-            <div class="verified-badge">
+<div class="review-name">
 
-                ✔ Verified Purchase
+${review.customerName}
 
-            </div>
+</div>
 
-            <p>
+</div>
 
-    “${review.reviewText}”
+${
+isOwner
+?
+`
+
+<div
+class="review-menu-btn"
+onclick="toggleReviewMenu('${docSnap.id}')"
+>
+
+<i class="fa-solid fa-ellipsis-vertical"></i>
+
+</div>
+
+<div
+id="menu-${docSnap.id}"
+class="review-menu"
+>
+
+<div
+onclick="editReview('${docSnap.id}')"
+>
+
+<i class="fa-solid fa-pen"></i>
+
+Edit
+
+</div>
+
+<div
+onclick="deleteReview('${docSnap.id}')"
+>
+
+<i class="fa-solid fa-trash"></i>
+
+Delete
+
+</div>
+
+</div>
+
+`
+:
+""
+}
+
+</div>
+
+<div class="verified-badge">
+
+✔ Verified Purchase
+
+</div>
+
+<p>
+
+${review.reviewText}
 
 </p>
 
-        </div>
+</div>
 
-    `;
+`;
 
 });
 
@@ -710,3 +753,72 @@ async function loadRecentlyViewed(){
 }
 
 load();
+
+window.toggleReviewMenu = function(id){
+
+document
+.querySelectorAll(".review-menu")
+.forEach(menu=>{
+
+if(menu.id !== "menu-"+id){
+
+menu.style.display="none";
+
+}
+
+});
+
+const menu =
+document.getElementById(
+"menu-"+id
+);
+
+menu.style.display =
+menu.style.display==="block"
+?
+"none"
+:
+"block";
+
+};
+
+window.deleteReview =
+async function(reviewId){
+
+showConfirmModal(
+
+"Delete this review?",
+
+async()=>{
+
+await deleteDoc(
+
+doc(
+db,
+"reviews",
+reviewId
+)
+
+);
+
+showToast(
+"Review deleted."
+);
+
+loadReviews();
+
+}
+
+);
+
+};
+
+window.editReview = function(){
+
+showToast(
+
+"Editing comes next."
+
+);
+
+};

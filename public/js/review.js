@@ -63,32 +63,26 @@ orderSnap.data();
 try{
 
 await addDoc(
-
-collection(
-db,
-"reviews"
-),
-
+collection(db,"reviews"),
 {
-
 productId,
-
 orderId,
-
 userId:user.uid,
 
-customerName:
-order.customerName,
+customerName:order.customerName,
 
 rating,
 
 reviewText,
 
-createdAt:
-Date.now()
+createdAt:Date.now(),
 
+likes:0,
+
+likedBy:[],
+
+edited:false
 }
-
 );
 
 }catch(error){
