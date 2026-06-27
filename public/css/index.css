@@ -2550,9 +2550,17 @@ opacity:.9;
 
     color:#bfbfbf;
 
+    font-size:15px;
+
     line-height:1.8;
 
-    font-size:15px;
+    display:-webkit-box;
+
+    -webkit-line-clamp:5;
+
+    -webkit-box-orient:vertical;
+
+    overflow:hidden;
 
 }
 
@@ -2717,6 +2725,88 @@ transition:.3s;
 .review-menu div:hover{
 
 background:rgba(255,255,255,.08);
+
+}
+
+.review-edited{
+
+margin-top:10px;
+
+font-size:12px;
+
+font-style:italic;
+
+color:#888;
+
+}
+
+.review-footer{
+
+display:flex;
+
+justify-content:flex-end;
+
+margin-top:15px;
+
+}
+
+.review-like-btn{
+
+background:none;
+
+border:none;
+
+color:#999;
+
+cursor:pointer;
+
+font-size:15px;
+
+transition:.3s;
+
+}
+
+.review-like-btn:hover{
+
+color:#ff4d6d;
+
+transform:scale(1.05);
+
+}
+
+.review-like-btn:active{
+
+transform:scale(.95);
+
+}
+
+.see-more-reviews-btn{
+
+margin:30px auto 0;
+
+display:block;
+
+padding:12px 25px;
+
+border:none;
+
+border-radius:40px;
+
+cursor:pointer;
+
+background:#111;
+
+color:white;
+
+font-weight:600;
+
+transition:.3s;
+
+}
+
+.see-more-reviews-btn:hover{
+
+background:#000;
 
 }
 

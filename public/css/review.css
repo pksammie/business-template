@@ -94,3 +94,369 @@
     cursor:pointer;
 
 }
+
+.review-counter{
+
+    text-align:right;
+
+    margin-top:-12px;
+
+    margin-bottom:20px;
+
+    color:#999;
+
+    font-size:13px;
+
+}
+
+.review-reason-overlay{
+
+position:fixed;
+
+inset:0;
+
+background:rgba(0,0,0,.65);
+
+display:none;
+
+justify-content:center;
+
+align-items:center;
+
+z-index:5000;
+
+backdrop-filter:blur(8px);
+
+}
+
+.review-reason-modal{
+position:relative;
+
+width:min(520px,95%);
+
+background:#111;
+
+border:1px solid rgba(255,255,255,.08);
+
+border-radius:18px;
+
+padding:30px;
+
+}
+
+.review-reason-modal h3{
+
+margin-bottom:10px;
+
+}
+
+.review-reason-modal p{
+
+color:#aaa;
+
+margin-bottom:20px;
+
+}
+
+.reason-options{
+
+display:flex;
+
+flex-direction:column;
+
+gap:12px;
+
+margin-bottom:20px;
+
+}
+
+.reason-options label{
+
+display:flex;
+
+gap:10px;
+
+align-items:center;
+
+cursor:pointer;
+
+}
+
+#custom-one-star-reason{
+
+width:100%;
+
+height:120px;
+
+margin-bottom:20px;
+
+resize:none;
+
+padding:12px;
+
+background:#181818;
+
+border:1px solid rgba(255,255,255,.08);
+
+color:white;
+
+border-radius:10px;
+
+}
+
+.review-contact-buttons{
+
+display:flex;
+
+gap:15px;
+
+margin-bottom:20px;
+
+}
+
+.contact-support-btn,
+
+.call-support-btn{
+
+flex:1;
+
+text-align:center;
+
+padding:12px;
+
+border-radius:10px;
+
+text-decoration:none;
+
+background:#1b1b1b;
+
+color:white;
+
+transition:.25s;
+
+}
+
+.contact-support-btn:hover,
+
+.call-support-btn:hover{
+
+background:#2d2d2d;
+
+}
+
+#submit-one-star{
+
+width:100%;
+
+padding:14px;
+
+border:none;
+
+border-radius:12px;
+
+background:white;
+
+color:black;
+
+font-weight:bold;
+
+cursor:pointer;
+
+}
+
+.close-review-modal{
+
+position:absolute;
+
+top:18px;
+
+right:18px;
+
+background:none;
+
+border:none;
+
+color:white;
+
+font-size:22px;
+
+cursor:pointer;
+
+transition:.25s;
+
+}
+
+.close-review-modal:hover{
+
+transform:rotate(90deg);
+
+opacity:.7;
+
+}
+/* ─────────────────────────────────────────────────────────
+   REVIEW CARD FADE-IN ANIMATION
+───────────────────────────────────────────────────────── */
+.review-card {
+  animation: reviewFadeUp 0.35s ease both;
+}
+
+@keyframes reviewFadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* ─────────────────────────────────────────────────────────
+   LIKE BUTTON — heart pop animation
+───────────────────────────────────────────────────────── */
+.review-like-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px;
+  padding: 6px 14px;
+  color: #888;
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.review-like-btn.liked {
+  color: #ff4d6d;
+  border-color: rgba(255, 77, 109, 0.35);
+}
+
+.review-like-btn .heart-icon {
+  font-style: normal;
+  display: inline-block;
+  transition: transform 0.15s;
+}
+
+.review-like-btn .heart-pop {
+  animation: heartPop 0.35s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes heartPop {
+  0%   { transform: scale(1);    }
+  40%  { transform: scale(1.55); }
+  70%  { transform: scale(0.88); }
+  100% { transform: scale(1);    }
+}
+
+/* ─────────────────────────────────────────────────────────
+   EDIT REVIEW MODAL
+───────────────────────────────────────────────────────── */
+.edit-review-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(8px);
+  display: none;          /* shown via JS */
+  justify-content: center;
+  align-items: center;
+  z-index: 9000;
+  padding: 20px;
+}
+
+.edit-review-modal-box {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  background: #111;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 18px;
+  padding: 32px;
+  animation: modalSlideUp 0.3s ease both;
+}
+
+@keyframes modalSlideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+.edit-review-modal-box h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: 22px;
+}
+
+.close-edit-modal {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.5);
+  font-size: 20px;
+  cursor: pointer;
+  transition: color 0.2s, transform 0.2s;
+  width: auto;
+  padding: 4px 8px;
+}
+
+.close-edit-modal:hover {
+  color: #fff;
+  transform: rotate(90deg);
+}
+
+.edit-review-select {
+  width: 100%;
+  padding: 13px 15px;
+  margin-bottom: 18px;
+  background: #1a1a1a;
+  border: 1px solid rgba(255,255,255,0.08);
+  color: #fff;
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.edit-review-textarea {
+  width: 100%;
+  height: 160px;
+  resize: none;
+  padding: 13px 15px;
+  background: #1a1a1a;
+  border: 1px solid rgba(255,255,255,0.08);
+  color: #fff;
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 6px;
+}
+
+.edit-review-textarea:focus,
+.edit-review-select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.edit-review-counter {
+  text-align: right;
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 18px;
+}
+
+.edit-review-submit-btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  background: var(--primary-color);
+  color: #000;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.2s, opacity 0.2s;
+}
+
+.edit-review-submit-btn:hover    { background: #d9ba96; }
+.edit-review-submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* star colours */
+.star.filled { color: #c5a880; }
+.star.half   { color: #c5a880; opacity: 0.6; }
+.star.empty  { color: #444; }

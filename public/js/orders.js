@@ -179,9 +179,49 @@ id:docSnap.id,
                 <br>
 
                 ${
-order.status === "Delivered"
+
+order.status==="Delivered"
+
 ?
+
+order.reviewSubmitted
+
+?
+
 `
+
+<div class="review-complete-card">
+
+<div class="review-complete-icon">
+
+<i class="fa-solid fa-circle-check"></i>
+
+</div>
+
+<div>
+
+<div class="review-complete-title">
+
+Review Submitted
+
+</div>
+
+<div class="review-complete-sub">
+
+Thank you for sharing your experience.
+
+</div>
+
+</div>
+
+</div>
+
+`
+
+:
+
+`
+
 <a
 href="/review.html?orderId=${order.id}&productId=${order.productId}"
 class="leave-review-btn"
@@ -190,9 +230,13 @@ class="leave-review-btn"
 Leave Review
 
 </a>
+
 `
+
 :
+
 ""
+
 }
 
             </div>

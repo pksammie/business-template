@@ -1,187 +1,404 @@
 import { db, auth } from "./firebase.js";
 
 import {
-doc,
-getDoc,
-collection,
-getDocs,
-addDoc,
-updateDoc,
-query,
-where,
-orderBy,
-deleteDoc
+  doc,
+  getDoc,
+  collection,
+  getDocs,
+  addDoc,
+  updateDoc,
+  query,
+  where,
+  orderBy,
+  deleteDoc,
+  arrayUnion,
+  arrayRemove,
+  onSnapshot,
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
-const params = new URLSearchParams(location.search);
-
-const id = params.get("id");
-
+const params    = new URLSearchParams(location.search);
+const id        = params.get("id");
 const cartDocId = params.get("cartDocId");
 
-let product;
+let product          = null;
+let addingToCart     = false;
+let reviews          = [];
+let visibleReviews   = 3;
+let editingReviewId  = null;
 
-let addingToCart = false;
-
-const sizeWrapper = document.getElementById("size-options-wrapper");
-const colorWrapper = document.getElementById("color-options-wrapper"); // optional
+const sizeWrapper    = document.getElementById("size-options-wrapper");
+const colorWrapper   = document.getElementById("color-options-wrapper");
 const descriptionBox = document.getElementById("decision-description");
 
-async function loadReviews(){
+/* ─────────────────────────────────────────────────────────
+   STARS
+───────────────────────────────────────────────────────── */
+function generateStars(rating) {
+  let stars  = "";
+  const full = Math.floor(rating);
+  const half = rating - full >= 0.5;
 
-    const reviewsContainer =
-    document.getElementById(
-        "reviews-container"
-    );
+  for (let i = 1; i <= 5; i++) {
+    if (i <= full)           stars += `<span class="star filled">★</span>`;
+    else if (i === full + 1 && half) stars += `<span class="star half">★</span>`;
+    else                     stars += `<span class="star empty">☆</span>`;
+  }
+  return stars;
+}
 
-    if(!reviewsContainer)
+async function refreshProductRating() {
+    const snap = await getDoc(doc(db, "products", id));
+    const p = snap.data();
+
+    document.getElementById("product-stars").innerHTML =
+        generateStars(p.averageRating || 0);
+
+    document.getElementById("product-review-count").innerText =
+        `${p.reviewCount || 0} Reviews`;
+}
+
+/* ─────────────────────────────────────────────────────────
+   REVIEWS — load (one copy, no duplicate)
+───────────────────────────────────────────────────────── */
+function loadReviews() {
+  const container = document.getElementById("reviews-container");
+  if (!container) return;
+
+  const q = query(
+    collection(db, "reviews"),
+    where("productId", "==", id),
+    orderBy("createdAt", "desc")
+  );
+
+  onSnapshot(q, snapshot => {
+    reviews = [];
+    snapshot.forEach(d => reviews.push({ id: d.id, ...d.data() }));
+    renderReviews();
+  });
+}
+
+/* ─────────────────────────────────────────────────────────
+   REVIEWS — render (one copy, no duplicate)
+   Changes vs old:
+   · Heart pop animation on like button
+   · "X people found this helpful" instead of "23 ❤️"
+   · Smooth fade-in animation on each card
+   · Edit opens a proper modal (not prompt())
+───────────────────────────────────────────────────────── */
+function renderReviews() {
+  const container = document.getElementById("reviews-container");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  if (reviews.length === 0) {
+    container.innerHTML = `
+      <div class="no-review-card">
+        No reviews yet. Be the first to review this product.
+      </div>
+    `;
     return;
+  }
 
-    const q =
-    query(
+  const currentUser = auth.currentUser;
 
-        collection(
-            db,
-            "reviews"
-        ),
+  reviews.slice(0, visibleReviews).forEach((review, idx) => {
+    const isOwner   = currentUser && currentUser.uid === review.userId;
+    const liked     = currentUser && (review.likedBy || []).includes(currentUser.uid);
+    const likeCount = review.likes || 0;
 
-        where(
-            "productId",
-            "==",
-            id
-        ),
+    const card = document.createElement("div");
+    card.className = "review-card";
+    card.style.animationDelay = `${idx * 0.07}s`;
 
-        orderBy(
-            "createdAt",
-            "desc"
-        )
-
-    );
-
-    const snap =
-    await getDocs(q);
-
-    reviewsContainer.innerHTML = "";
-
-    if (snap.empty) {
-
-    reviewsContainer.innerHTML = `
-
-        <div class="no-review-card">
-
-            No reviews yet.
-
-            Be the first to review this product.
-
+    card.innerHTML = `
+      <div class="review-top-row">
+        <div>
+          <div class="review-stars">${generateStars(review.rating)}</div>
+          <div class="review-name">${review.customerName}</div>
         </div>
 
+        ${isOwner ? `
+          <div class="review-menu-btn" onclick="toggleReviewMenu('${review.id}')">
+            <i class="fa-solid fa-ellipsis-vertical"></i>
+          </div>
+          <div id="menu-${review.id}" class="review-menu">
+            <div onclick="openEditModal('${review.id}')">Edit</div>
+            <div onclick="deleteReview('${review.id}')">Delete</div>
+          </div>
+        ` : ""}
+      </div>
+
+      <div class="verified-badge">✔ Verified Purchase</div>
+
+      <p class="review-body">${review.reviewText}</p>
+
+      <div class="review-footer">
+        <button
+          class="review-like-btn ${liked ? "liked" : ""}"
+          id="like-btn-${review.id}"
+          onclick="toggleLike('${review.id}', this)"
+        >
+          <span class="heart-icon">❤</span>
+          <span class="like-text">
+            ${likeCount > 0
+              ? `${likeCount} ${likeCount === 1 ? "person" : "people"} found this helpful`
+              : "Helpful"}
+          </span>
+        </button>
+      </div>
+
+      ${review.edited ? `<div class="review-edited">Edited</div>` : ""}
     `;
 
+    container.appendChild(card);
+  });
+
+  if (visibleReviews < reviews.length) {
+    const btn = document.createElement("button");
+    btn.className = "see-more-reviews-btn";
+    btn.textContent = "See More Reviews";
+    btn.onclick = () => window.showMoreReviews();
+    container.appendChild(btn);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────
+   EDIT REVIEW MODAL (replaces ugly prompt())
+───────────────────────────────────────────────────────── */
+function injectEditModal() {
+  if (document.getElementById("edit-review-modal")) return;
+
+  const modal = document.createElement("div");
+  modal.id = "edit-review-modal";
+  modal.className = "edit-review-modal-overlay";
+  modal.innerHTML = `
+    <div class="edit-review-modal-box">
+      <button class="close-edit-modal" onclick="closeEditModal()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <h3>Edit Your Review</h3>
+
+      <label style="font-size:13px;color:var(--text-muted);margin-bottom:6px;display:block;">Rating</label>
+      <select id="edit-review-rating" class="edit-review-select">
+        <option value="5">★★★★★ — Excellent</option>
+        <option value="4">★★★★☆ — Good</option>
+        <option value="3">★★★☆☆ — Average</option>
+        <option value="2">★★☆☆☆ — Poor</option>
+        <option value="1">★☆☆☆☆ — Terrible</option>
+      </select>
+
+      <label style="font-size:13px;color:var(--text-muted);margin-bottom:6px;display:block;">Your Review</label>
+      <textarea
+        id="edit-review-text"
+        class="edit-review-textarea"
+        placeholder="Update your review (min 20 characters)..."
+        maxlength="1000"
+      ></textarea>
+      <div class="edit-review-counter"><span id="edit-char-count">0</span>/1000</div>
+
+      <button class="edit-review-submit-btn" onclick="submitEditReview()">Save Changes</button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  document.getElementById("edit-review-text").addEventListener("input", e => {
+    document.getElementById("edit-char-count").textContent = e.target.value.length;
+  });
+
+  /* close on backdrop click */
+  modal.addEventListener("click", e => {
+    if (e.target === modal) closeEditModal();
+  });
+}
+
+window.closeEditModal = function () {
+  const modal = document.getElementById("edit-review-modal");
+  if (modal) modal.style.display = "none";
+};
+
+window.openEditModal = async function (reviewId) {
+  injectEditModal();
+  editingReviewId = reviewId;
+
+  const snap   = await getDoc(doc(db, "reviews", reviewId));
+  const review = snap.data();
+
+  document.getElementById("edit-review-rating").value = review.rating;
+  document.getElementById("edit-review-text").value   = review.reviewText;
+  document.getElementById("edit-char-count").textContent = review.reviewText.length;
+
+  document.getElementById("edit-review-modal").style.display = "flex";
+
+  /* close any open menus */
+  document.querySelectorAll(".review-menu").forEach(m => m.style.display = "none");
+};
+
+window.submitEditReview = async function () {
+  const newText   = document.getElementById("edit-review-text").value.trim();
+  const newRating = Number(document.getElementById("edit-review-rating").value);
+
+  if (newText.length < 20) {
+    showToast("Review must be at least 20 characters.");
     return;
+  }
+
+  const submitBtn = document.querySelector(".edit-review-submit-btn");
+
+if (submitBtn.disabled) return;
+
+submitBtn.disabled = true;
+submitBtn.textContent = "Saving...";
+
+  try {
+    const reviewSnap = await getDoc(doc(db, "reviews", editingReviewId));
+    const oldReview  = reviewSnap.data();
+
+    await updateDoc(doc(db, "reviews", editingReviewId), {
+      reviewText: newText,
+      rating:     newRating,
+      edited:     true,
+    });
+
+    /* recalculate product average */
+    const productRef  = doc(db, "products", id);
+    const productSnap = await getDoc(productRef);
+    const pd          = productSnap.data();
+
+    const newTotal   = (pd.totalRating || 0) - oldReview.rating + newRating;
+    const newAverage = newTotal / (pd.reviewCount || 1);
+
+    await updateDoc(productRef, { totalRating: newTotal, averageRating: newAverage });
+
+    await refreshProductRating();
+
+showToast("Review updated.");
+closeEditModal();
+
+editingReviewId = null;
+document.getElementById("edit-review-text").value = "";
+document.getElementById("edit-char-count").textContent = "0";
 
 }
+catch(err){
 
-snap.forEach((docSnap)=>{
+   console.error(err);
+   showToast("Couldn't update review.");
 
-    const review = docSnap.data();
+  } finally {
+    submitBtn.disabled    = false;
+    submitBtn.textContent = "Save Changes";
+  }
+};
 
-    const currentUser =
-auth.currentUser;
+/* ─────────────────────────────────────────────────────────
+   LIKE with heart pop animation
+───────────────────────────────────────────────────────── */
+window.toggleLike = async function (reviewId, btn) {
+  const user = auth.currentUser;
+  if (!user) { showToast("Please login to like reviews."); return; }
 
-const isOwner =
-currentUser &&
-currentUser.uid === review.userId;
+  const reviewRef = doc(db, "reviews", reviewId);
+  const review    = reviews.find(r => r.id === reviewId);
+  if (!review) return;
 
-reviewsContainer.innerHTML += `
+  const alreadyLiked = (review.likedBy || []).includes(user.uid);
 
-<div class="review-card">
+  /* instant optimistic UI — heart pop */
+  if (!alreadyLiked) {
+    btn.classList.add("liked");
+    const heart = btn.querySelector(".heart-icon");
+    heart.classList.add("heart-pop");
+    heart.addEventListener("animationend", () => heart.classList.remove("heart-pop"), { once: true });
+  } else {
+    btn.classList.remove("liked");
+  }
 
-<div class="review-top-row">
+  const newLikes = alreadyLiked ? (review.likes || 1) - 1 : (review.likes || 0) + 1;
 
-<div>
+  /* update local state immediately so the text updates on re-render */
+  review.likes   = newLikes;
+  review.likedBy = alreadyLiked
+    ? (review.likedBy || []).filter(u => u !== user.uid)
+    : [...(review.likedBy || []), user.uid];
 
-<div class="review-stars">
+  const likeTextEl = btn.querySelector(".like-text");
+  if (likeTextEl) {
+    likeTextEl.textContent = newLikes > 0
+      ? `${newLikes} ${newLikes === 1 ? "person" : "people"} found this helpful`
+      : "Helpful";
+  }
 
-${generateStars(review.rating)}
+  /* background Firestore write */
+  await updateDoc(reviewRef, {
+    likedBy: alreadyLiked ? arrayRemove(user.uid) : arrayUnion(user.uid),
+    likes:   newLikes,
+  });
+};
 
-</div>
+/* ─────────────────────────────────────────────────────────
+   TOGGLE REVIEW MENU (3-dot)
+───────────────────────────────────────────────────────── */
+window.toggleReviewMenu = function (reviewId) {
+  document.querySelectorAll(".review-menu").forEach(m => {
+    if (m.id !== "menu-" + reviewId) m.style.display = "none";
+  });
+  const menu = document.getElementById("menu-" + reviewId);
+  if (menu) menu.style.display = menu.style.display === "block" ? "none" : "block";
+};
 
-<div class="review-name">
-
-${review.customerName}
-
-</div>
-
-</div>
-
-${
-isOwner
-?
-`
-
-<div
-class="review-menu-btn"
-onclick="toggleReviewMenu('${docSnap.id}')"
->
-
-<i class="fa-solid fa-ellipsis-vertical"></i>
-
-</div>
-
-<div
-id="menu-${docSnap.id}"
-class="review-menu"
->
-
-<div
-onclick="editReview('${docSnap.id}')"
->
-
-<i class="fa-solid fa-pen"></i>
-
-Edit
-
-</div>
-
-<div
-onclick="deleteReview('${docSnap.id}')"
->
-
-<i class="fa-solid fa-trash"></i>
-
-Delete
-
-</div>
-
-</div>
-
-`
-:
-""
-}
-
-</div>
-
-<div class="verified-badge">
-
-✔ Verified Purchase
-
-</div>
-
-<p>
-
-${review.reviewText}
-
-</p>
-
-</div>
-
-`;
-
+/* close menus when clicking outside */
+document.addEventListener("click", e => {
+  if (!e.target.closest(".review-menu-btn") && !e.target.closest(".review-menu")) {
+    document.querySelectorAll(".review-menu").forEach(m => m.style.display = "none");
+  }
 });
 
-}
+/* ─────────────────────────────────────────────────────────
+   DELETE REVIEW
+───────────────────────────────────────────────────────── */
+window.deleteReview = function (reviewId) {
+  showConfirmModal("Delete this review?", async () => {
+    const reviewSnap = await getDoc(doc(db, "reviews", reviewId));
+    if (!reviewSnap.exists()) return;
 
+    const review = reviewSnap.data();
+
+    await deleteDoc(doc(db, "reviews", reviewId));
+
+    /* update product rating stats */
+    const productRef  = doc(db, "products", id);
+    const productSnap = await getDoc(productRef);
+    const pd          = productSnap.data();
+
+    const newCount   = Math.max(0, (pd.reviewCount || 1) - 1);
+    const newTotal   = Math.max(0, (pd.totalRating || 0) - review.rating);
+    const newAverage = newCount > 0 ? newTotal / newCount : 0;
+
+    await updateDoc(productRef, {
+      reviewCount:   newCount,
+      totalRating:   newTotal,
+      averageRating: newAverage,
+    });
+
+    await refreshProductRating();
+
+    showToast("Review deleted.");
+    /* onSnapshot handles re-render */
+  });
+};
+
+/* ─────────────────────────────────────────────────────────
+   SHOW MORE REVIEWS
+───────────────────────────────────────────────────────── */
+window.showMoreReviews = function () {
+  visibleReviews += 3;
+  renderReviews();
+};
+
+/* ─────────────────────────────────────────────────────────
+   LOAD PRODUCT
+───────────────────────────────────────────────────────── */
 async function load() {
   if (!id) return;
 
@@ -190,635 +407,282 @@ async function load() {
 
   product = snap.data();
 
-  document.getElementById(
-    "product-stars"
-).innerHTML =
-generateStars(
-    product.averageRating || 0
-);
-
-document.getElementById(
-    "product-review-count"
-).innerText =
-`${product.reviewCount || 0} Reviews`;
+  /* stars + review count */
+  document.getElementById("product-stars").innerHTML =
+    generateStars(product.averageRating || 0);
+  document.getElementById("product-review-count").innerText =
+    `${product.reviewCount || 0} Reviews`;
 
   saveRecentlyViewed(id);
 
-  /* PRODUCT SUSPENSION CHECK */
-
   if (product.isSuspended) {
     showToast("This product is currently unavailable.");
-
-    setTimeout(() => {
-      location.href = "/";
-    }, 1500);
-
+    setTimeout(() => { location.href = "/"; }, 1500);
     return;
   }
 
   const remaining = (product.quantity || 0) - (product.sold || 0);
-
   const stockText = document.getElementById("stock-left");
-
   stockText.textContent = `${remaining} available`;
 
-  if (remaining <= 0) {
-    stockText.style.color = "#ff4d4d";
-  } else if (remaining < 4) {
-    stockText.style.color = "orange";
-  } else {
-    stockText.style.color = "lime";
-  }
+  if      (remaining <= 0) stockText.style.color = "#ff4d4d";
+  else if (remaining < 4)  stockText.style.color = "orange";
+  else                     stockText.style.color = "lime";
 
   const soldBadge = document.getElementById("sold-out-badge");
-
-  const addBtn = document.querySelector(".add-to-cart-btn");
+  const addBtn    = document.querySelector(".add-to-cart-btn");
 
   if (remaining <= 0) {
     soldBadge.style.display = "inline-block";
-
-    addBtn.disabled = true;
-
-    addBtn.textContent = "Sold Out";
+    addBtn.disabled         = true;
+    addBtn.textContent      = "Sold Out";
   } else {
     soldBadge.style.display = "none";
-
-    addBtn.disabled = false;
-
-    addBtn.textContent = "Add To Cart";
+    addBtn.disabled         = false;
+    addBtn.textContent      = "Add To Bag";
   }
 
-  document.getElementById("decision-title").textContent = product.title;
-  document.getElementById("decision-price").textContent = "₦" + product.price;
-  document.getElementById("decision-product-img").src =
-    product.image || "https://via.placeholder.com/600x600?text=No+Image";
-  descriptionBox.textContent = product.description;
+  document.getElementById("decision-title").textContent       = product.title;
+  document.getElementById("decision-price").textContent       = "₦" + Number(product.price).toLocaleString();
+  document.getElementById("decision-product-img").src         = product.image || "https://via.placeholder.com/600x600?text=No+Image";
+  descriptionBox.textContent                                  = product.description;
 
-  /* ---------------- SIZES ---------------- */
+  /* sizes */
   sizeWrapper.innerHTML = "";
-
   const sizes = Array.isArray(product.sizes) ? product.sizes : [];
-
   if (sizes.includes("None")) {
     sizeWrapper.style.display = "none";
   } else {
     sizeWrapper.style.display = "flex";
-
-    sizes.forEach((size) => {
+    sizes.forEach(size => {
       sizeWrapper.innerHTML += `
         <label class="size-radio-chip">
           <input type="radio" name="size" value="${size}">
           <span>${size}</span>
-        </label>
-      `;
+        </label>`;
     });
   }
 
-  /* ---------------- COLORS (SAFE OPTIONAL) ---------------- */
+  /* colors */
   if (colorWrapper) {
     colorWrapper.innerHTML = "";
-
     const colors = Array.isArray(product.colors) ? product.colors : [];
-
     if (colors.includes("None")) {
       colorWrapper.style.display = "none";
     } else {
       colorWrapper.style.display = "flex";
-
-      colors.forEach((color) => {
+      colors.forEach(color => {
         colorWrapper.innerHTML += `
           <label class="size-radio-chip">
             <input type="radio" name="color" value="${color}">
             <span>${color}</span>
-          </label>
-        `;
+          </label>`;
       });
     }
   }
 
-loadRelatedProducts(id);
-
-loadRecentlyViewed();
-
-loadReviews();
+  loadRelatedProducts(id);
+  loadRecentlyViewed();
+  loadReviews();
 }
 
-function generateStars(rating){
-
-    let stars = "";
-
-    const rounded =
-    Math.round(rating);
-
-    for(let i=1;i<=5;i++){
-
-        stars +=
-        i <= rounded
-        ? "★"
-        : "☆";
-
-    }
-
-    return stars;
-
-}
-
-async function loadRelatedProducts(currentProductId){
-
-    const relatedGrid =
-    document.getElementById(
-        "related-products-grid"
-    );
-
-    if(!relatedGrid) return;
-
-    const snap = await getDocs(
-  collection(db, "products")
-);
-
-const products = [];
-
-snap.forEach((docSnap) => {
-  products.push({
-    id: docSnap.id,
-    ...docSnap.data()
-  });
-});
-
-relatedGrid.innerHTML = "";
-
-let count = 0;
-
-products.forEach((item) => {
-
-        if(count >= 8) return;
-
-        if(item.id === currentProductId)
-        return;
-
-        if(item.isSuspended)
-        return;
-
-        count++;
-
-        const card =
-        document.createElement("div");
-
-        card.className =
-        "product-card";
-
-        card.innerHTML = `
-            <img
-                src="${item.image}"
-                class="product-image"
-            >
-
-            <div class="product-info">
-
-                <h3 class="product-title">
-                    ${item.title}
-                </h3>
-
-                <div class="product-rating">
-
-    <span class="rating-stars">
-
-        ${generateStars(
-            item.averageRating || 0
-        )}
-
-    </span>
-
-    <span class="rating-count">
-
-        (${item.reviewCount || 0})
-
-    </span>
-
-</div>
-
-                <div class="product-price">
-                    ₦${Number(item.price)
-                        .toLocaleString()}
-                </div>
-
-            </div>
-        `;
-
-        card.onclick = ()=>{
-
-            location.href =
-            "/decision-page.html?id=" +
-            item.id;
-
-        };
-
-        relatedGrid.appendChild(card);
-
-    });
-
-}
-
+/* ─────────────────────────────────────────────────────────
+   QTY
+───────────────────────────────────────────────────────── */
 window.increaseQty = function () {
-  const qty = document.getElementById("item-quantity");
-
-  qty.value = Number(qty.value) + 1;
+  const el = document.getElementById("item-quantity");
+  el.value = Number(el.value) + 1;
 };
 
 window.decreaseQty = function () {
-  const qty = document.getElementById("item-quantity");
-
-  if (Number(qty.value) > 1) {
-    qty.value = Number(qty.value) - 1;
-  }
+  const el = document.getElementById("item-quantity");
+  if (Number(el.value) > 1) el.value = Number(el.value) - 1;
 };
 
-/* ---------------- CART ---------------- */
+/* ─────────────────────────────────────────────────────────
+   ADD TO CART
+───────────────────────────────────────────────────────── */
 window.submitToCartBag = async function () {
-  if (addingToCart) {
-    return;
-  }
-
+  if (addingToCart) return;
   addingToCart = true;
 
+  const addBtn = document.querySelector(".add-to-cart-btn");
+
   try {
-    if (!product) {
-      showToast("Please wait, product is still loading.");
-      return;
-    }
+    if (!product) { showToast("Please wait, product is still loading."); return; }
 
     const latestSnap = await getDoc(doc(db, "products", id));
-
     if (!latestSnap.exists()) {
       showToast("This product is no longer available.");
-
-      setTimeout(() => {
-        location.href = "/";
-      }, 1500);
-
+      setTimeout(() => { location.href = "/"; }, 1500);
       return;
     }
 
-    const latestProduct = latestSnap.data();
+    const latestProduct  = latestSnap.data();
+    const latestRemaining = (latestProduct.quantity || 0) - (latestProduct.sold || 0);
 
-    const latestRemaining =
-      (latestProduct.quantity || 0) - (latestProduct.sold || 0);
-
-    if (latestRemaining <= 0) {
-      showToast("This product is sold out.");
-
-      return;
-    }
+    if (latestRemaining <= 0) { showToast("This product is sold out."); return; }
 
     product = latestProduct;
 
     if (latestProduct.isEditing) {
-      const started = latestProduct.editingStartedAt || 0;
-
-      const age = Date.now() - started;
-
-      /*
-    10 minutes
-    */
-
+      const age = Date.now() - (latestProduct.editingStartedAt || 0);
       if (age < 600000) {
-        showToast(
-          "This product is currently being updated by the administrator. Please try again shortly.",
-        );
-
+        showToast("This product is currently being updated. Please try again shortly.");
         return;
-      } else {
-        /*
-        stale lock
-        auto release
-        */
-
-        await updateDoc(
-          doc(db, "products", id),
-
-          {
-            isEditing: false,
-          },
-        );
       }
+      await updateDoc(doc(db, "products", id), { isEditing: false });
     }
 
-    if (latestProduct.isSuspended) {
-      showToast("This product is unavailable.");
+    if (latestProduct.isSuspended) { showToast("This product is unavailable."); return; }
 
-      return;
-    }
-
-    const sizes = Array.isArray(product.sizes) ? product.sizes : [];
-
+    const sizes  = Array.isArray(product.sizes)  ? product.sizes  : [];
     const colors = Array.isArray(product.colors) ? product.colors : [];
 
-    const selectedSize = document.querySelector('input[name="size"]:checked');
-
+    const selectedSize  = document.querySelector('input[name="size"]:checked');
     const selectedColor = document.querySelector('input[name="color"]:checked');
 
-    /* REQUIRE SIZE */
-    if (!sizes.includes("None") && !selectedSize) {
-      showToast("Please select a size.");
-      return;
-    }
+    if (!sizes.includes("None")  && !selectedSize)  { showToast("Please select a size.");  return; }
+    if (!colors.includes("None") && !selectedColor) { showToast("Please select a color."); return; }
 
-    /* REQUIRE COLOR */
-    if (!colors.includes("None") && !selectedColor) {
-      showToast("Please select a color.");
-      return;
-    }
-
-    const qty = Number(document.getElementById("item-quantity").value);
-
+    const qty       = Number(document.getElementById("item-quantity").value);
     const remaining = (product.quantity || 0) - (product.sold || 0);
 
-    const addBtn = document.querySelector(".add-to-cart-btn");
-
     if (remaining <= 0) {
-      addBtn.disabled = true;
-      addBtn.textContent = "Sold Out";
-
+      if (addBtn) { addBtn.disabled = true; addBtn.textContent = "Sold Out"; }
       return;
     }
 
-    if (qty > remaining) {
-      showToast("Only " + remaining + " left in stock");
-      return;
-    }
+    if (qty > remaining) { showToast(`Only ${remaining} left in stock`); return; }
 
     const user = auth.currentUser;
+    if (!user) { showToast("Please login first."); location.href = "/login"; return; }
 
-    if (!user) {
-      showToast("Please login first.");
-
-      location.href = "/login";
-
-      return;
-    }
+    if (addBtn) { addBtn.disabled = true; addBtn.textContent = "Adding..."; }
 
     const updatedItem = {
       productId: id,
-
-      title: latestProduct.title,
-
-      price: latestProduct.price,
-
-      image: latestProduct.image,
-
-      size: selectedSize ? selectedSize.value : "None",
-
-      color: selectedColor ? selectedColor.value : "None",
-
-      quantity: qty,
+      title:     latestProduct.title,
+      price:     latestProduct.price,
+      image:     latestProduct.image,
+      size:      selectedSize  ? selectedSize.value  : "None",
+      color:     selectedColor ? selectedColor.value : "None",
+      quantity:  qty,
     };
 
-    const cartRef = collection(db, "users", user.uid, "cart");
-
+    const cartRef  = collection(db, "users", user.uid, "cart");
     const cartSnap = await getDocs(cartRef);
-
     let existingDoc = null;
 
-    cartSnap.forEach((docSnap) => {
-      const item = docSnap.data();
-
+    cartSnap.forEach(d => {
+      const item = d.data();
       if (
         item.productId === updatedItem.productId &&
-        item.size === updatedItem.size &&
-        item.color === updatedItem.color
-      ) {
-        existingDoc = docSnap;
-      }
+        item.size      === updatedItem.size &&
+        item.color     === updatedItem.color
+      ) existingDoc = d;
     });
 
     if (cartDocId) {
-      await updateDoc(
-        doc(db, "users", user.uid, "cart", cartDocId),
-        updatedItem,
-      );
+      await updateDoc(doc(db, "users", user.uid, "cart", cartDocId), updatedItem);
+    } else if (existingDoc) {
+      await updateDoc(existingDoc.ref, { quantity: existingDoc.data().quantity + updatedItem.quantity });
     } else {
-      if (existingDoc) {
-        await updateDoc(existingDoc.ref, {
-          quantity: existingDoc.data().quantity + updatedItem.quantity,
-        });
-      } else {
-        await addDoc(cartRef, updatedItem);
-      }
+      await addDoc(cartRef, updatedItem);
     }
 
-    const toast = document.createElement("div");
+    showToast("✓ Added to bag");
+    setTimeout(() => { location.href = "/cart"; }, 900);
 
-    toast.className = "toast";
-
-    toast.textContent = "✓ Added to cart";
-
-    document.body.appendChild(toast);
-
-    setTimeout(() => {
-      toast.remove();
-    }, 2500);
-
-    setTimeout(() => {
-      location.href = "/cart";
-    }, 1000);
   } finally {
     addingToCart = false;
+    if (addBtn && addBtn.textContent === "Adding...") {
+      addBtn.disabled    = false;
+      addBtn.textContent = "Add To Bag";
+    }
   }
 };
 
-function saveRecentlyViewed(productId){
-
-    let viewed =
-    JSON.parse(
-        localStorage.getItem(
-            "recentlyViewed"
-        )
-    ) || [];
-
-    viewed =
-    viewed.filter(
-        item => item !== productId
-    );
-
-    viewed.unshift(productId);
-
-    viewed =
-    viewed.slice(0,8);
-
-    localStorage.setItem(
-        "recentlyViewed",
-        JSON.stringify(viewed)
-    );
-
+/* ─────────────────────────────────────────────────────────
+   RECENTLY VIEWED
+───────────────────────────────────────────────────────── */
+function saveRecentlyViewed(productId) {
+  let viewed = JSON.parse(localStorage.getItem("recentlyViewed")) || [];
+  viewed = viewed.filter(i => i !== productId);
+  viewed.unshift(productId);
+  viewed = viewed.slice(0, 8);
+  localStorage.setItem("recentlyViewed", JSON.stringify(viewed));
 }
 
-async function loadRecentlyViewed(){
+async function loadRecentlyViewed() {
+  const grid = document.getElementById("recently-viewed-grid");
+  if (!grid) return;
 
-    const grid =
-    document.getElementById(
-        "recently-viewed-grid"
-    );
+  const viewed = JSON.parse(localStorage.getItem("recentlyViewed")) || [];
+  grid.innerHTML = "";
 
-    if(!grid) return;
+  for (const productId of viewed) {
+    if (productId === id) continue;
 
-    const viewed =
-    JSON.parse(
-        localStorage.getItem(
-            "recentlyViewed"
-        )
-    ) || [];
+    const snap = await getDoc(doc(db, "products", productId));
+    if (!snap.exists()) continue;
 
-    grid.innerHTML = "";
-
-    for(const productId of viewed){
-
-        if(productId === id)
-        continue;
-
-        const snap =
-        await getDoc(
-            doc(
-                db,
-                "products",
-                productId
-            )
-        );
-
-        if(!snap.exists())
-        continue;
-
-        const item = {
-            id:snap.id,
-            ...snap.data()
-        };
-
-        const card =
-        document.createElement("div");
-
-        card.className =
-        "product-card";
-
-        card.innerHTML = `
-
-            <img
-                src="${item.image}"
-                class="product-image"
-            >
-
-            <div class="product-info">
-
-                <h3 class="product-title">
-                    ${item.title}
-                </h3>
-
-                <div class="product-rating">
-
-    <span class="rating-stars">
-
-        ${generateStars(
-            item.averageRating || 0
-        )}
-
-    </span>
-
-    <span class="rating-count">
-
-        (${item.reviewCount || 0})
-
-    </span>
-
-</div>
-
-                <div class="product-price">
-                    ₦${Number(item.price)
-                        .toLocaleString()}
-                </div>
-
-            </div>
-
-        `;
-
-        card.onclick = ()=>{
-
-            location.href =
-            "/decision-page.html?id=" +
-            item.id;
-
-        };
-
-        grid.appendChild(card);
-
-    }
-
+    const item = { id: snap.id, ...snap.data() };
+    const card = document.createElement("div");
+    card.className = "product-card";
+    card.innerHTML = `
+      <img src="${item.image}" class="product-image">
+      <div class="product-info">
+        <h3 class="product-title">${item.title}</h3>
+        <div class="product-rating">
+          <span class="rating-stars">${generateStars(item.averageRating || 0)}</span>
+          <span class="rating-count">(${item.reviewCount || 0})</span>
+        </div>
+        <div class="product-price">₦${Number(item.price).toLocaleString()}</div>
+      </div>`;
+    card.onclick = () => { location.href = "/decision-page.html?id=" + item.id; };
+    grid.appendChild(card);
+  }
 }
 
+/* ─────────────────────────────────────────────────────────
+   RELATED PRODUCTS
+───────────────────────────────────────────────────────── */
+async function loadRelatedProducts(currentProductId) {
+  const relatedGrid = document.getElementById("related-products-grid");
+  if (!relatedGrid) return;
+
+  const snap     = await getDocs(collection(db, "products"));
+  const products = [];
+  snap.forEach(d => products.push({ id: d.id, ...d.data() }));
+
+  relatedGrid.innerHTML = "";
+  let count = 0;
+
+  products.forEach(item => {
+    if (count >= 8)                    return;
+    if (item.id === currentProductId)  return;
+    if (item.isSuspended)              return;
+
+    count++;
+    const card = document.createElement("div");
+    card.className = "product-card";
+    card.innerHTML = `
+      <img src="${item.image}" class="product-image">
+      <div class="product-info">
+        <h3 class="product-title">${item.title}</h3>
+        <div class="product-rating">
+          <span class="rating-stars">${generateStars(item.averageRating || 0)}</span>
+          <span class="rating-count">(${item.reviewCount || 0})</span>
+        </div>
+        <div class="product-price">₦${Number(item.price).toLocaleString()}</div>
+      </div>`;
+    card.onclick = () => { location.href = "/decision-page.html?id=" + item.id; };
+    relatedGrid.appendChild(card);
+  });
+}
+
+/* ─────────────────────────────────────────────────────────
+   INIT
+───────────────────────────────────────────────────────── */
 load();
-
-window.toggleReviewMenu = function(id){
-
-document
-.querySelectorAll(".review-menu")
-.forEach(menu=>{
-
-if(menu.id !== "menu-"+id){
-
-menu.style.display="none";
-
-}
-
-});
-
-const menu =
-document.getElementById(
-"menu-"+id
-);
-
-menu.style.display =
-menu.style.display==="block"
-?
-"none"
-:
-"block";
-
-};
-
-window.deleteReview =
-async function(reviewId){
-
-showConfirmModal(
-
-"Delete this review?",
-
-async()=>{
-
-await deleteDoc(
-
-doc(
-db,
-"reviews",
-reviewId
-)
-
-);
-
-showToast(
-"Review deleted."
-);
-
-loadReviews();
-
-}
-
-);
-
-};
-
-window.editReview = function(){
-
-showToast(
-
-"Editing comes next."
-
-);
-
-};

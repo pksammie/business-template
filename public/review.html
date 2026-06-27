@@ -29,9 +29,20 @@
         </select>
 
         <textarea
-        id="review-text"
-        placeholder="Tell other customers about this product..."
-        ></textarea>
+id="review-text"
+maxlength="500"
+placeholder="Tell other customers about this product..."
+></textarea>
+
+<div class="review-counter">
+
+    <span id="review-count">
+        0
+    </span>
+
+    /500
+
+</div>
 
         <button type="submit">
 
@@ -43,6 +54,124 @@
 
 </div>
 
+<div id="one-star-modal" class="review-reason-overlay">
+
+    <div class="review-reason-modal">
+
+<button
+id="close-one-star-modal"
+class="close-review-modal">
+
+<i class="fa-solid fa-xmark"></i>
+
+</button>
+
+        <h3>
+            Sorry your experience wasn't great
+        </h3>
+
+        <p>
+            Help us improve by telling us what happened.
+        </p>
+
+        <div class="reason-options">
+
+            <label>
+
+                <input
+                type="radio"
+                name="oneStarReason"
+                value="Product quality was poor">
+
+                Product quality was poor
+
+            </label>
+
+            <label>
+
+                <input
+                type="radio"
+                name="oneStarReason"
+                value="Wrong item delivered">
+
+                Wrong item delivered
+
+            </label>
+
+            <label>
+
+                <input
+                type="radio"
+                name="oneStarReason"
+                value="Item arrived damaged">
+
+                Item arrived damaged
+
+            </label>
+
+            <label>
+
+                <input
+                type="radio"
+                name="oneStarReason"
+                value="Delivery took too long">
+
+                Delivery took too long
+
+            </label>
+
+            <label>
+
+                <input
+                type="radio"
+                name="oneStarReason"
+                value="Not worth the price">
+
+                Not worth the price
+
+            </label>
+
+        </div>
+
+        <textarea
+
+            id="custom-one-star-reason"
+
+            placeholder="Anything else?"
+
+        ></textarea>
+
+        <div class="review-contact-buttons">
+
+            <a
+            href="/contact"
+            class="contact-support-btn">
+
+                Message Support
+
+            </a>
+
+            <a
+            href="tel:+2348000000000"
+            class="call-support-btn">
+
+                Call Support
+
+            </a>
+
+        </div>
+
+        <button id="submit-one-star">
+
+            Submit Review
+
+        </button>
+
+    </div>
+
+</div>
+
+<script src="/js/toast.js"></script>
 
     <script
 type="module"
