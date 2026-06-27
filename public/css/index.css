@@ -2441,6 +2441,209 @@ opacity:.9;
 
 }
 
+/* ===========================
+   CUSTOMER REVIEWS
+=========================== */
+
+.reviews-section{
+
+    width:min(1200px,92%);
+    margin:80px auto;
+
+}
+
+.reviews-section h2{
+
+    color:white;
+
+    font-size:32px;
+
+    margin-bottom:35px;
+
+    text-align:center;
+
+    letter-spacing:1px;
+
+}
+
+#reviews-container{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(330px,1fr));
+
+    gap:25px;
+
+}
+
+.review-card{
+
+    background:#111;
+
+    border:1px solid rgba(255,255,255,.08);
+
+    border-radius:18px;
+
+    padding:28px;
+
+    transition:.35s;
+
+    position:relative;
+
+    overflow:hidden;
+
+}
+
+.review-card:hover{
+
+    transform:translateY(-6px);
+
+    border-color:var(--primary-color);
+
+    box-shadow:
+    0 15px 35px rgba(0,0,0,.35);
+
+}
+
+.review-stars{
+
+    color:#f5c542;
+
+    font-size:22px;
+
+    letter-spacing:2px;
+
+    margin-bottom:15px;
+
+}
+
+.review-name{
+
+    color:white;
+
+    font-size:18px;
+
+    font-weight:700;
+
+}
+
+.verified-badge{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    margin:12px 0 20px;
+
+    color:#7df59b;
+
+    font-size:14px;
+
+    font-weight:600;
+
+}
+
+.review-card p{
+
+    color:#bfbfbf;
+
+    line-height:1.8;
+
+    font-size:15px;
+
+}
+
+.no-review-card{
+
+    grid-column:1/-1;
+
+    background:#111;
+
+    border:1px dashed rgba(255,255,255,.12);
+
+    border-radius:18px;
+
+    padding:60px;
+
+    text-align:center;
+
+    color:#999;
+
+    font-size:18px;
+
+}
+
+.review-date{
+
+    color:#777;
+
+    font-size:13px;
+
+    margin-top:4px;
+
+    margin-bottom:15px;
+
+}
+
+.product-review-summary{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    margin:18px 0;
+
+}
+
+#product-stars{
+
+    color:#f5c542;
+
+    font-size:22px;
+
+    letter-spacing:2px;
+
+}
+
+#product-review-count{
+
+    color:#bbb;
+
+    font-size:15px;
+
+}
+
+.review-avatar{
+
+    width:58px;
+
+    height:58px;
+
+    border-radius:50%;
+
+    background:var(--primary-color);
+
+    color:black;
+
+    font-weight:bold;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-size:22px;
+
+    margin-bottom:18px;
+
+}
+
 .vanguard-footer{
 
 margin-top:100px;

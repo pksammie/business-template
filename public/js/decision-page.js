@@ -62,46 +62,80 @@ async function loadReviews(){
 
     reviewsContainer.innerHTML = "";
 
-    snap.forEach(docSnap=>{
+    if (snap.empty) {
 
-        const review =
-        docSnap.data();
+    reviewsContainer.innerHTML = `
 
-        reviewsContainer.innerHTML += `
+        <div class="no-review-card">
 
-            <div class="review-card">
+            No reviews yet.
 
-                <div class="review-stars">
+            Be the first to review this product.
 
-                    ${generateStars(
-                        review.rating
-                    )}
+        </div>
 
-                </div>
+    `;
 
-                <div class="review-name">
+    return;
 
-                    ${review.customerName}
+}
 
-                </div>
+snap.forEach((docSnap)=>{
 
-                <div class="verified-badge">
+    const review = docSnap.data();
 
-                    ✔ Verified Purchase
+    reviewsContainer.innerHTML += `
 
-                </div>
+        <div class="review-card">
 
-                <p>
+            <div class="review-stars">
 
-                    ${review.reviewText}
-
-                </p>
+                ${generateStars(review.rating)}
 
             </div>
 
-        `;
+            <div class="review-avatar">
 
-    });
+    ${review.customerName.charAt(0).toUpperCase()}
+
+</div>
+
+            <div class="review-name">
+
+    ${review.customerName}
+
+</div>
+
+<div class="review-date">
+
+    ${new Date(review.createdAt).toLocaleDateString(
+        "en-NG",
+        {
+            day:"numeric",
+            month:"short",
+            year:"numeric"
+        }
+    )}
+
+</div>
+
+            <div class="verified-badge">
+
+                ✔ Verified Purchase
+
+            </div>
+
+            <p>
+
+    “${review.reviewText}”
+
+</p>
+
+        </div>
+
+    `;
+
+});
 
 }
 
