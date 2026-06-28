@@ -60,17 +60,19 @@ async function submitReview(oneStarReason = ""){
 
 const user = auth.currentUser;
 
-const submitBtn=document.querySelector(
+if (!user) {
+    showToast("Please login first.");
+    return;
+}
+
+const submitBtn = document.querySelector(
 '#review-form button[type="submit"]'
 );
 
-if(submitBtn.disabled)return;
+if (submitBtn.disabled) return;
 
-submitBtn.disabled=true;
-
-submitBtn.innerText="Sending Review...";
-
-if(!user) return;
+submitBtn.disabled = true;
+submitBtn.innerText = "Sending Review...";
 
 const rating =
 Number(
@@ -108,9 +110,10 @@ return;
 
 if(reviewText.length < 20){
 
-showToast(
-"Please write at least 20 characters."
-);
+showToast("Please write at least 20 characters.");
+
+submitBtn.disabled=false;
+submitBtn.innerText="Submit Review";
 
 return;
 
@@ -251,9 +254,10 @@ reviewBox.value.trim();
 
 if(reviewText.length < 20){
 
-showToast(
-"Please write at least 20 characters."
-);
+showToast("Please write at least 20 characters.");
+
+submitBtn.disabled=false;
+submitBtn.innerText="Submit Review";
 
 return;
 

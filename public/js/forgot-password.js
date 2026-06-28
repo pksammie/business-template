@@ -1,23 +1,96 @@
 import { auth } from "./firebase.js";
 
-import { sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+import {
+sendPasswordResetEmail
+}
 
-document.getElementById("forgotForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
+from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
 
-  const email = document.getElementById("email").value;
+const form =
+document.getElementById("forgotForm");
 
-  try {
-    await sendPasswordResetEmail(auth, email);
+form.addEventListener(
+"submit",
+async(e)=>{
 
-    showToast("Password reset email sent. Check your inbox or spam folder.");
-  } catch (err) {
-    let message = "Unable to send reset email.";
+e.preventDefault();
 
-    if (err.code === "auth/user-not-found") {
-      message = "No account exists with this email.";
-    }
+const btn =
+form.querySelector("button");
 
-    showToast(message);
-  }
+btn.disabled=true;
+
+btn.innerHTML="Sending Link...";
+
+const email =
+document
+.getElementById("email")
+.value.trim();
+
+try{
+
+await sendPasswordResetEmail(
+auth,
+email
+);
+
+showToast(
+"Password reset email sent successfully. Please check your Inbox and Spam folder."
+);
+
+btn.innerHTML="Email Sent ✓";
+
+setTimeout(()=>{
+
+location.href="/login";
+
+},2000);
+
+}
+
+catch(err){
+
+btn.disabled=false;
+
+btn.innerHTML="Send Reset Link";
+
+let message=
+"Unable to send reset email.";
+
+switch(err.code){
+
+case "auth/user-not-found":
+
+message=
+"No account exists with this email.";
+
+break;
+
+case "auth/invalid-email":
+
+message=
+"Please enter a valid email address.";
+
+break;
+
+case "auth/network-request-failed":
+
+message=
+"Check your internet connection.";
+
+break;
+
+case "auth/too-many-requests":
+
+message=
+"Too many attempts. Please try again later.";
+
+break;
+
+}
+
+showToast(message);
+
+}
+
 });

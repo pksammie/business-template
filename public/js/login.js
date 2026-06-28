@@ -92,3 +92,27 @@ document.getElementById("googleLogin").addEventListener("click", async () => {
     showToast("Google sign in failed. Please try again.");
   }
 });
+
+const toggle=document.getElementById("togglePassword");
+
+toggle.onclick=()=>{
+
+const password=document.getElementById("password");
+
+const icon=toggle.querySelector("i");
+
+if(password.type==="password"){
+
+password.type="text";
+
+icon.className="fa-solid fa-eye-slash";
+
+}else{
+
+password.type="password";
+
+icon.className="fa-solid fa-eye";
+
+}
+
+};
