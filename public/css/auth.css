@@ -77,14 +77,12 @@ justify-content:center;
 align-items:center;
 
 background:
+radial-gradient(circle at top,#2c2417,#0f1117 55%);
 
-radial-gradient(circle at top,
+overflow-x:hidden;
+overflow-y:auto;
 
-#2c2417,
-
-#0f1117 55%);
-
-overflow:hidden;
+padding:40px 20px;
 
 }
 
@@ -170,7 +168,8 @@ padding-right:48px;
 
 }
 
-#togglePassword{
+#togglePassword,
+#toggleConfirmPassword{
 
 position:absolute;
 
@@ -187,6 +186,18 @@ border:none;
 color:#999;
 
 cursor:pointer;
+
+padding:0;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+width:24px;
+
+height:24px;
 
 }
 
@@ -534,5 +545,52 @@ transition:.3s;
 font-size:13px;
 
 color:#999;
+
+}
+
+/* ===========================================
+   MOBILE FIXES
+=========================================== */
+
+@media (max-height:850px){
+
+body{
+
+align-items:flex-start;
+
+padding-top:40px;
+padding-bottom:40px;
+
+}
+
+.auth-container{
+
+margin:auto 0;
+
+}
+
+}
+
+@media (max-width:480px){
+
+.auth-container{
+
+padding:28px 22px;
+
+border-radius:18px;
+
+}
+
+.auth-logo{
+
+font-size:32px;
+
+}
+
+.auth-subtitle{
+
+font-size:14px;
+
+}
 
 }

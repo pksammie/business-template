@@ -1,3 +1,4 @@
+```javascript
 import { db, auth } from "./firebase.js";
 
 import {
@@ -11,78 +12,135 @@ import {
     getDocs
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
-const params =
-new URLSearchParams(
-    location.search
-);
+/* =====================================================
+   URL PARAMETERS
+===================================================== */
 
-const orderId =
-params.get("orderId");
+const params = new URLSearchParams(location.search);
 
-const productId =
-params.get("productId");
+const orderId = params.get("orderId");
+const productId = params.get("productId");
 
-const reviewBox =
-document.getElementById(
-"review-text"
-);
+/* =====================================================
+   ELEMENTS
+===================================================== */
 
-const oneStarModal =
-document.getElementById(
-"one-star-modal"
-);
+const reviewForm = document.getElementById("review-form");
 
-const submitOneStarBtn =
-document.getElementById(
-"submit-one-star"
-);
+const reviewBox = document.getElementById("review-text");
 
-const closeOneStarModal =
-document.getElementById(
-"close-one-star-modal"
-);
+const ratingSelect =
+document.getElementById("review-rating");
 
 const counter =
-document.getElementById(
-"review-count"
+document.getElementById("review-count");
+
+const oneStarModal =
+document.getElementById("one-star-modal");
+
+const submitOneStarBtn =
+document.getElementById("submit-one-star");
+
+const closeOneStarModal =
+document.getElementById("close-one-star-modal");
+
+const submitBtn =
+reviewForm.querySelector(
+'button[type="submit"]'
 );
 
-reviewBox.addEventListener(
-"input",
-()=>{
+/* =====================================================
+   REVIEW COUNTER
+===================================================== */
+
+reviewBox.addEventListener("input", () => {
 
 counter.innerText =
 reviewBox.value.length;
 
 });
 
+/* =====================================================
+   BUTTON HELPERS
+===================================================== */
+
+function lockMainButton(){
+
+submitBtn.disabled = true;
+
+submitBtn.innerText =
+"Sending Review...";
+
+}
+
+function unlockMainButton(){
+
+submitBtn.disabled = false;
+
+submitBtn.innerText =
+"Submit Review";
+
+}
+
+function lockModalButton(){
+
+submitOneStarBtn.disabled = true;
+
+submitOneStarBtn.innerText =
+"Sending Review...";
+
+}
+
+function unlockModalButton(){
+
+submitOneStarBtn.disabled = false;
+
+submitOneStarBtn.innerText =
+"Submit Review";
+
+}
+
+/* =====================================================
+   SUBMIT REVIEW
+===================================================== */
+
 async function submitReview(oneStarReason = ""){
 
 const user = auth.currentUser;
 
-if (!user) {
-    showToast("Please login first.");
-    return;
+if(!user){
+
+showToast(
+"Please login first."
+);
+
+return false;
+
 }
 
-const submitBtn = document.querySelector(
-'#review-form button[type="submit"]'
-);
+try{
 
-if (submitBtn.disabled) return;
-
-submitBtn.disabled = true;
-submitBtn.innerText = "Sending Review...";
+lockMainButton();
 
 const rating =
-Number(
-document.getElementById(
-"review-rating"
-).value
-);
+Number(ratingSelect.value);
 
 const reviewText =
 reviewBox.value.trim();
+
+/* ---------- validation ---------- */
+
+if(reviewText.length < 20){
+
+showToast(
+"Please write at least 20 characters."
+);
+
+return false;
+
+}
+
+/* ---------- already reviewed ---------- */
 
 const existingReviewQuery =
 query(
@@ -104,34 +162,36 @@ showToast(
 "You already reviewed this product."
 );
 
-return;
+return false;
 
 }
 
-if(reviewText.length < 20){
+/* ---------- order ---------- */
 
-showToast("Please write at least 20 characters.");
-
-submitBtn.disabled=false;
-submitBtn.innerText="Submit Review";
-
-return;
-
-}
-
-const orderSnap =
-await getDoc(
-
+const orderRef =
 doc(
 db,
 "cart_reservations",
 orderId
-)
-
 );
+
+const orderSnap =
+await getDoc(orderRef);
+
+if(!orderSnap.exists()){
+
+showToast(
+"Order could not be found."
+);
+
+return false;
+
+}
 
 const order =
 orderSnap.data();
+
+/* ---------- save review ---------- */
 
 await addDoc(
 
@@ -166,21 +226,15 @@ edited:false
 
 );
 
-await updateDoc(
+/* ---------- mark reviewed ---------- */
 
-doc(
-db,
-"cart_reservations",
-orderId
-),
-
-{
+await updateDoc(orderRef,{
 
 reviewSubmitted:true
 
-}
+});
 
-);
+/* ---------- update product ---------- */
 
 const productRef =
 doc(
@@ -191,6 +245,8 @@ productId
 
 const productSnap =
 await getDoc(productRef);
+
+if(productSnap.exists()){
 
 const product =
 productSnap.data();
@@ -214,17 +270,18 @@ totalRating,
 reviewCount,
 
 averageRating:
-(totalRating)/(reviewCount)
+totalRating /
+reviewCount
 
 }
 
 );
 
+}
+
 showToast(
 "Thank you for reviewing this product!"
 );
-
-submitBtn.innerText="Sending Review...";
 
 setTimeout(()=>{
 
@@ -232,36 +289,58 @@ location.href="/orders";
 
 },1500);
 
+return true;
+
 }
 
-document
-.getElementById("review-form")
-.addEventListener(
-"submit",
-async(e)=>{
+catch(err){
+
+console.error(err);
+
+showToast(
+err.message ||
+"Couldn't submit review."
+);
+
+return false;
+
+}
+
+finally{
+
+unlockMainButton();
+
+}
+
+}
+```
+
+```javascript
+/* =====================================================
+   FORM SUBMIT
+===================================================== */
+
+reviewForm.addEventListener("submit", async (e) => {
 
 e.preventDefault();
 
 const rating =
-Number(
-document.getElementById(
-"review-rating"
-).value
-);
+Number(ratingSelect.value);
 
 const reviewText =
 reviewBox.value.trim();
 
 if(reviewText.length < 20){
 
-showToast("Please write at least 20 characters.");
-
-submitBtn.disabled=false;
-submitBtn.innerText="Submit Review";
+showToast(
+"Please write at least 20 characters."
+);
 
 return;
 
 }
+
+/* ---------- one star ---------- */
 
 if(rating === 1){
 
@@ -271,9 +350,15 @@ return;
 
 }
 
-submitReview();
+/* ---------- normal review ---------- */
+
+await submitReview();
 
 });
+
+/* =====================================================
+   ONE STAR REVIEW
+===================================================== */
 
 submitOneStarBtn.onclick = async()=>{
 
@@ -281,9 +366,7 @@ let selectedReason = "";
 
 const selectedRadio =
 document.querySelector(
-
 'input[name="oneStarReason"]:checked'
-
 );
 
 if(selectedRadio){
@@ -298,7 +381,8 @@ document
 .getElementById(
 "custom-one-star-reason"
 )
-.value.trim();
+.value
+.trim();
 
 if(customReason){
 
@@ -317,15 +401,14 @@ return;
 
 }
 
-submitOneStarBtn.disabled=true;
+lockModalButton();
 
-submitOneStarBtn.innerText="Sending Review...";
-
+const success =
 await submitReview(selectedReason);
 
-submitOneStarBtn.disabled=false;
+unlockModalButton();
 
-submitOneStarBtn.innerText="Submit Review";
+if(success){
 
 document
 .querySelectorAll(
@@ -345,7 +428,13 @@ document
 
 oneStarModal.style.display="none";
 
+}
+
 };
+
+/* =====================================================
+   CLOSE MODAL
+===================================================== */
 
 closeOneStarModal.onclick = ()=>{
 
@@ -353,13 +442,31 @@ oneStarModal.style.display="none";
 
 };
 
+oneStarModal.onclick = (e)=>{
+
+if(e.target===oneStarModal){
+
+oneStarModal.style.display="none";
+
+}
+
+};
+
+/* =====================================================
+   RADIO TOGGLE
+===================================================== */
+
+let lastChecked = null;
+
 document
-.querySelectorAll('input[name="oneStarReason"]')
+.querySelectorAll(
+'input[name="oneStarReason"]'
+)
 .forEach(radio=>{
 
-let lastChecked=null;
-
-radio.addEventListener("click",function(){
+radio.addEventListener(
+"click",
+function(){
 
 if(lastChecked===this){
 
@@ -373,24 +480,113 @@ lastChecked=this;
 
 }
 
-});
-
-});
-
-oneStarModal.onclick = (e)=>{
-
-if(e.target===oneStarModal){
-
-oneStarModal.style.display="none";
-
 }
 
-};
+);
+
+});
+```
+
+```javascript
+/* =====================================================
+   CANCEL REVIEW
+===================================================== */
 
 document
 .getElementById("cancel-review-btn")
-.onclick=()=>{
+.addEventListener("click",()=>{
+
+if(submitBtn.disabled){
+
+showToast(
+"Please wait until your review finishes submitting."
+);
+
+return;
+
+}
 
 location.href="/orders";
 
-};
+});
+
+/* =====================================================
+   PAGE SAFETY
+===================================================== */
+
+window.addEventListener("beforeunload",(e)=>{
+
+if(submitBtn.disabled || submitOneStarBtn.disabled){
+
+e.preventDefault();
+
+e.returnValue="";
+
+}
+
+});
+
+/* =====================================================
+   RESET UI AFTER SUCCESS
+===================================================== */
+
+function resetReviewForm(){
+
+reviewForm.reset();
+
+reviewBox.value="";
+
+counter.innerText="0";
+
+ratingSelect.value="5";
+
+document
+.querySelectorAll(
+'input[name="oneStarReason"]'
+)
+.forEach(r=>{
+
+r.checked=false;
+
+});
+
+document
+.getElementById(
+"custom-one-star-reason"
+)
+.value="";
+
+}
+
+/* =====================================================
+   GLOBAL FIREBASE ERROR CATCH
+===================================================== */
+
+window.addEventListener("unhandledrejection",(event)=>{
+
+console.error(event.reason);
+
+showToast(
+"Something went wrong. Please try again."
+);
+
+unlockMainButton();
+
+unlockModalButton();
+
+});
+
+/* =====================================================
+   PAGE READY
+===================================================== */
+
+document.addEventListener("DOMContentLoaded",()=>{
+
+counter.innerText="0";
+
+unlockMainButton();
+
+unlockModalButton();
+
+});
+```
