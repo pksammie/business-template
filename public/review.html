@@ -1,191 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reviews</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leave a Review — Vanguard</title>
 
-    <link rel="stylesheet" href="/css/index.css">
-    <link rel="stylesheet" href="/css/review.css">
+  <link rel="stylesheet" href="/css/index.css">
+  <link rel="stylesheet" href="/css/review.css">
+
+  <!-- FIX: Font Awesome was missing — needed for the ✕ close icon -->
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 <body>
 
-    <div class="review-page-wrapper">
+  <div class="review-page-wrapper">
 
     <form id="review-form" class="review-form">
 
-        <h2>
-            Leave A Review
-        </h2>
+      <h2>Leave A Review</h2>
 
-        <select id="review-rating">
+      <select id="review-rating">
+        <option value="5">★★★★★ — Excellent</option>
+        <option value="4">★★★★☆ — Good</option>
+        <option value="3">★★★☆☆ — Average</option>
+        <option value="2">★★☆☆☆ — Poor</option>
+        <option value="1">★☆☆☆☆ — Terrible</option>
+      </select>
 
-            <option value="5">★★★★★</option>
-            <option value="4">★★★★☆</option>
-            <option value="3">★★★☆☆</option>
-            <option value="2">★★☆☆☆</option>
-            <option value="1">★☆☆☆☆</option>
+      <textarea
+        id="review-text"
+        maxlength="500"
+        placeholder="Tell other customers about this product (min 20 characters)..."
+      ></textarea>
 
-        </select>
+      <div class="review-counter">
+        <span id="review-count">0</span>/500
+      </div>
 
-        <textarea
-id="review-text"
-maxlength="500"
-placeholder="Tell other customers about this product..."
-></textarea>
+      <button type="submit">Submit Review</button>
 
-<div class="review-counter">
-
-    <span id="review-count">
-        0
-    </span>
-
-    /500
-
-</div>
-
-        <button type="submit">
-
-            Submit Review
-
-        </button>
-
-        <button
-type="button"
-id="cancel-review-btn"
-class="cancel-review-btn">
-
-Exit Review
-
-</button>
+      <button
+        type="button"
+        id="cancel-review-btn"
+        class="cancel-review-btn"
+      >
+        Exit Review
+      </button>
 
     </form>
 
-</div>
+  </div>
 
-<div id="one-star-modal" class="review-reason-overlay">
+  <!-- ONE-STAR REASON MODAL -->
+  <div id="one-star-modal" class="review-reason-overlay">
 
     <div class="review-reason-modal">
 
-<button
-id="close-one-star-modal"
-class="close-review-modal">
+      <button id="close-one-star-modal" class="close-review-modal">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
 
-<i class="fa-solid fa-xmark"></i>
+      <h3>Sorry your experience wasn't great</h3>
 
-</button>
+      <p>Help us improve by telling us what happened.</p>
 
-        <h3>
-            Sorry your experience wasn't great
-        </h3>
+      <div class="reason-options">
 
-        <p>
-            Help us improve by telling us what happened.
-        </p>
+        <label>
+          <input type="radio" name="oneStarReason" value="Product quality was poor">
+          Product quality was poor
+        </label>
 
-        <div class="reason-options">
+        <label>
+          <input type="radio" name="oneStarReason" value="Wrong item delivered">
+          Wrong item delivered
+        </label>
 
-            <label>
+        <label>
+          <input type="radio" name="oneStarReason" value="Item arrived damaged">
+          Item arrived damaged
+        </label>
 
-                <input
-                type="radio"
-                name="oneStarReason"
-                value="Product quality was poor">
+        <label>
+          <input type="radio" name="oneStarReason" value="Delivery took too long">
+          Delivery took too long
+        </label>
 
-                Product quality was poor
+        <label>
+          <input type="radio" name="oneStarReason" value="Not worth the price">
+          Not worth the price
+        </label>
 
-            </label>
+      </div>
 
-            <label>
+      <textarea
+        id="custom-one-star-reason"
+        placeholder="Anything else you'd like to add?"
+      ></textarea>
 
-                <input
-                type="radio"
-                name="oneStarReason"
-                value="Wrong item delivered">
+      <div class="review-contact-buttons">
+        <a
+          href="https://wa.me/2348109007611?text=Hello%20I%20need%20help%20with%20my%20order."
+          target="_blank"
+          class="contact-support-btn"
+        >
+          Message Support
+        </a>
+        <a href="tel:+2348109007611" class="call-support-btn">
+          Call Support
+        </a>
+      </div>
 
-                Wrong item delivered
-
-            </label>
-
-            <label>
-
-                <input
-                type="radio"
-                name="oneStarReason"
-                value="Item arrived damaged">
-
-                Item arrived damaged
-
-            </label>
-
-            <label>
-
-                <input
-                type="radio"
-                name="oneStarReason"
-                value="Delivery took too long">
-
-                Delivery took too long
-
-            </label>
-
-            <label>
-
-                <input
-                type="radio"
-                name="oneStarReason"
-                value="Not worth the price">
-
-                Not worth the price
-
-            </label>
-
-        </div>
-
-        <textarea
-
-            id="custom-one-star-reason"
-
-            placeholder="Anything else?"
-
-        ></textarea>
-
-        <div class="review-contact-buttons">
-
-            <a
-href="https://wa.me/2348109007611?text=Hello%20I%20need%20help%20with%20my%20order."
-target="_blank"
-class="contact-support-btn">
-
-                Message Support
-
-            </a>
-
-            <a
-            href="tel:+2348109007611"
-            class="call-support-btn">
-
-                Call Support
-
-            </a>
-
-        </div>
-
-        <button id="submit-one-star">
-
-            Submit Review
-
-        </button>
+      <button id="submit-one-star">Submit Review</button>
 
     </div>
 
-</div>
+  </div>
 
-<script src="/js/toast.js"></script>
+  <!-- FIX: added guard.js and route-guard.js — were missing,
+       meaning logged-out users could reach this page -->
+  <script src="/js/toast.js"></script>
+  <script type="module" src="/js/guard.js"></script>
+  <script type="module" src="/js/route-guard.js"></script>
+  <script type="module" src="/js/review.js"></script>
 
-    <script
-type="module"
-src="/js/review.js">
-</script>
 </body>
 </html>
