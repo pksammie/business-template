@@ -1,4 +1,3 @@
-```javascript
 import { db, auth } from "./firebase.js";
 
 import {
@@ -313,9 +312,7 @@ unlockMainButton();
 }
 
 }
-```
 
-```javascript
 /* =====================================================
    FORM SUBMIT
 ===================================================== */
@@ -485,9 +482,7 @@ lastChecked=this;
 );
 
 });
-```
 
-```javascript
 /* =====================================================
    CANCEL REVIEW
 ===================================================== */
@@ -589,4 +584,4 @@ unlockMainButton();
 unlockModalButton();
 
 });
-```
+
