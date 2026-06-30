@@ -21,6 +21,35 @@ const params    = new URLSearchParams(location.search);
 const orderId   = params.get("orderId");
 const productId = params.get("productId");
 
+async function loadProductPreview(){
+
+    const orderRef = doc(db,"cart_reservations",orderId);
+
+    const successOverlay =
+document.getElementById(
+"review-success-overlay"
+);
+
+    const snap = await getDoc(orderRef);
+
+    if(!snap.exists()) return;
+
+    const order = snap.data();
+
+    document.getElementById("preview-image").src =
+        order.productImage;
+
+    document.getElementById("preview-title").innerText =
+        order.productTitle;
+
+    document.getElementById("preview-variant").innerText =
+        `${order.productColor} • Size ${order.productSize}`;
+
+    document.getElementById("preview-price").innerText =
+        `₦${Number(order.total).toLocaleString()}`;
+
+}
+
 /* ─────────────────────────────────────────────────────────
    ELEMENTS
 ───────────────────────────────────────────────────────── */
@@ -170,9 +199,13 @@ async function submitReview(oneStarReason = "") {
       });
     }
 
-    showToast("Thank you for your review!");
+    successOverlay.style.display="flex";
 
-    setTimeout(() => { location.href = "/orders"; }, 1500);
+setTimeout(()=>{
+
+location.href="/orders";
+
+},1800);
 
     return true;
 

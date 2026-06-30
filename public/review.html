@@ -18,7 +18,23 @@
 
     <form id="review-form" class="review-form">
 
-      <h2>Leave A Review</h2>
+  <div id="review-product-preview" class="review-product-preview">
+
+    <img id="preview-image" src="" alt="Product">
+
+    <div class="review-product-info">
+
+      <h3 id="preview-title"></h3>
+
+      <p id="preview-variant"></p>
+
+      <p id="preview-price"></p>
+
+    </div>
+
+  </div>
+
+  <h2>Leave A Review</h2>
 
       <select id="review-rating">
         <option value="5">★★★★★ — Excellent</option>
@@ -117,6 +133,34 @@
     </div>
 
   </div>
+
+  <div id="review-success-overlay" class="review-success-overlay">
+
+    <div class="review-success-box">
+
+        <div class="success-circle">
+
+            <i class="fa-solid fa-circle-check"></i>
+
+        </div>
+
+        <h2>Review Submitted</h2>
+
+        <p>
+
+            Thank you for helping other customers.
+
+        </p>
+
+        <small>
+
+            Returning to your orders...
+
+        </small>
+
+    </div>
+
+</div>
 
   <!-- FIX: added guard.js and route-guard.js — were missing,
        meaning logged-out users could reach this page -->

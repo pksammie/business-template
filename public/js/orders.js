@@ -5,6 +5,7 @@ import {
   query,
   where,
   onSnapshot,
+  getDocs
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
@@ -22,6 +23,24 @@ onAuthStateChanged(auth, (user) => {
 
   loadOrders(user.uid);
 });
+
+async function hasUserReviewed(orderId, userId){
+
+    const reviewQuery = query(
+
+        collection(db,"reviews"),
+
+        where("orderId","==",orderId),
+
+        where("userId","==",userId)
+
+    );
+
+    const snap = await getDocs(reviewQuery);
+
+    return !snap.empty;
+
+}
 
 function loadOrders(userId) {
   const q = query(
@@ -70,8 +89,10 @@ id:docSnap.id,
 
     docs.sort((a, b) => b.createdAt - a.createdAt);
 
-    docs.forEach((order) => {
+    docs.forEach(async (order) => {
       const card = document.createElement("div");
+
+      const reviewed = await hasUserReviewed(order.id,userId);
 
       card.className = "order-card";
 
@@ -184,7 +205,7 @@ order.status==="Delivered"
 
 ?
 
-order.reviewSubmitted
+reviewed
 
 ?
 

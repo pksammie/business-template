@@ -632,6 +632,8 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/f
 document.addEventListener("DOMContentLoaded", () => {
   initializeLocationSelectors();
 
+  loadProductPreview();
+
   prefillSavedUserAddressMetadata();
 
   if (checkoutFormInstance) {
