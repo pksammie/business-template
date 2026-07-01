@@ -3,145 +3,98 @@ import { db, auth } from "./firebase.js";
 import {
   doc,
   getDoc,
-  addDoc,
-  collection,
+  setDoc,
   updateDoc,
   query,
   where,
   getDocs,
+  collection,
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 import { onAuthStateChanged } from
   "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
 
-/* ─────────────────────────────────────────────────────────
-   URL PARAMS
-───────────────────────────────────────────────────────── */
+/* ── URL PARAMS ───────────────────────────────────────────── */
 const params    = new URLSearchParams(location.search);
 const orderId   = params.get("orderId");
 const productId = params.get("productId");
 
-async function loadProductPreview(){
+/* ── ELEMENTS ─────────────────────────────────────────────── */
+const reviewForm        = document.getElementById("review-form");
+const reviewBox         = document.getElementById("review-text");
+const ratingSelect      = document.getElementById("review-rating");
+const counter           = document.getElementById("review-count");
+const oneStarModal      = document.getElementById("one-star-modal");
+const submitOneStarBtn  = document.getElementById("submit-one-star");
+const closeOneStarModal = document.getElementById("close-one-star-modal");
+const submitBtn         = reviewForm.querySelector('button[type="submit"]');
+const successOverlay    = document.getElementById("review-success-overlay");
 
-    const orderRef = doc(db,"cart_reservations",orderId);
-
-    const successOverlay =
-document.getElementById(
-"review-success-overlay"
-);
-
-    const snap = await getDoc(orderRef);
-
-    if(!snap.exists()) return;
-
-    const order = snap.data();
-
-    document.getElementById("preview-image").src =
-        order.productImage;
-
-    document.getElementById("preview-title").innerText =
-        order.productTitle;
-
-    document.getElementById("preview-variant").innerText =
-        `${order.productColor} • Size ${order.productSize}`;
-
-    document.getElementById("preview-price").innerText =
-        `₦${Number(order.total).toLocaleString()}`;
-
-}
-
-/* ─────────────────────────────────────────────────────────
-   ELEMENTS
-───────────────────────────────────────────────────────── */
-const reviewForm       = document.getElementById("review-form");
-const reviewBox        = document.getElementById("review-text");
-const ratingSelect     = document.getElementById("review-rating");
-const counter          = document.getElementById("review-count");
-const oneStarModal     = document.getElementById("one-star-modal");
-const submitOneStarBtn = document.getElementById("submit-one-star");
-const closeOneStarModal= document.getElementById("close-one-star-modal");
-const submitBtn        = reviewForm.querySelector('button[type="submit"]');
-
-/* ─────────────────────────────────────────────────────────
-   AUTH GATE — wait for Firebase Auth to resolve.
-   THE MAIN BUG: auth.currentUser is null on page load
-   because Firebase Auth is async. We must wait for it.
-───────────────────────────────────────────────────────── */
+/* ── AUTH — wait for Firebase, don't use auth.currentUser directly ── */
 let currentUser = null;
 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, user => {
   if (!user) {
-    // Not logged in — redirect to login, preserve return path
-    sessionStorage.setItem(
-      "redirectAfterLogin",
-      location.href
-    );
+    sessionStorage.setItem("redirectAfterLogin", location.href);
     location.href = "/login";
     return;
   }
   currentUser = user;
+  loadProductPreview();  /* load preview only after auth resolves */
 });
 
-/* ─────────────────────────────────────────────────────────
-   CHARACTER COUNTER
-───────────────────────────────────────────────────────── */
+/* ── PRODUCT PREVIEW ─────────────────────────────────────── */
+async function loadProductPreview() {
+  try {
+    const snap = await getDoc(doc(db, "cart_reservations", orderId));
+    if (!snap.exists()) return;
+
+    const order = snap.data();
+
+    const img = document.getElementById("preview-image");
+    const title = document.getElementById("preview-title");
+    const variant = document.getElementById("preview-variant");
+    const price = document.getElementById("preview-price");
+
+    if (img)     img.src          = order.productImage  || "";
+    if (title)   title.innerText  = order.productTitle  || "";
+    if (variant) variant.innerText= `${order.productColor || ""} • Size ${order.productSize || ""}`;
+    if (price)   price.innerText  = `₦${Number(order.total || 0).toLocaleString()}`;
+
+  } catch (err) {
+    console.error("Preview load error:", err);
+  }
+}
+
+/* ── CHARACTER COUNTER ───────────────────────────────────── */
 reviewBox.addEventListener("input", () => {
   counter.innerText = reviewBox.value.length;
 });
 
-/* ─────────────────────────────────────────────────────────
-   BUTTON STATE HELPERS
-───────────────────────────────────────────────────────── */
-function lockMainButton() {
-  submitBtn.disabled   = true;
-  submitBtn.innerText  = "Sending Review...";
-}
+/* ── BUTTON HELPERS ──────────────────────────────────────── */
+function lockMainButton()   { submitBtn.disabled = true;  submitBtn.innerText = "Sending..."; }
+function unlockMainButton() { submitBtn.disabled = false; submitBtn.innerText = "Submit Review"; }
+function lockModalButton()   { submitOneStarBtn.disabled = true;  submitOneStarBtn.innerText = "Sending..."; }
+function unlockModalButton() { submitOneStarBtn.disabled = false; submitOneStarBtn.innerText = "Submit Review"; }
 
-function unlockMainButton() {
-  submitBtn.disabled   = false;
-  submitBtn.innerText  = "Submit Review";
-}
-
-function lockModalButton() {
-  submitOneStarBtn.disabled  = true;
-  submitOneStarBtn.innerText = "Sending Review...";
-}
-
-function unlockModalButton() {
-  submitOneStarBtn.disabled  = false;
-  submitOneStarBtn.innerText = "Submit Review";
-}
-
-/* ─────────────────────────────────────────────────────────
-   CORE SUBMIT FUNCTION
-───────────────────────────────────────────────────────── */
+/* ── CORE SUBMIT ─────────────────────────────────────────── */
 async function submitReview(oneStarReason = "") {
 
-  // FIX 1: use currentUser set by onAuthStateChanged,
-  // NOT auth.currentUser (which is null on first load)
-  if (!currentUser) {
-    showToast("Please login first.");
-    return false;
-  }
+  if (!currentUser) { showToast("Please login first."); return false; }
 
   const rating     = Number(ratingSelect.value);
   const reviewText = reviewBox.value.trim();
 
-  // Validation
   if (reviewText.length < 20) {
     showToast("Please write at least 20 characters.");
     return false;
   }
 
-  // FIX 2: check the order exists AND is "Delivered"
-  // Prevents reviews on cancelled/pending orders
+  /* ── FETCH ORDER ── */
   const orderRef  = doc(db, "cart_reservations", orderId);
   const orderSnap = await getDoc(orderRef);
 
-  if (!orderSnap.exists()) {
-    showToast("Order could not be found.");
-    return false;
-  }
+  if (!orderSnap.exists()) { showToast("Order not found."); return false; }
 
   const order = orderSnap.data();
 
@@ -150,45 +103,41 @@ async function submitReview(oneStarReason = "") {
     return false;
   }
 
-  // Check for existing review
-  const existingQuery = query(
-    collection(db, "reviews"),
-    where("orderId",  "==", orderId),
-    where("userId",   "==", currentUser.uid)
-  );
-  const existingSnap = await getDocs(existingQuery);
+  /* ── DUPLICATE CHECK — use orderId as document ID so Firestore
+       itself blocks duplicates. No frontend race condition possible. ── */
+  const reviewRef = doc(db, "reviews", orderId);
+  const existing  = await getDoc(reviewRef);
 
-  if (!existingSnap.empty) {
-    showToast("You already reviewed this product.");
+  if (existing.exists()) {
+    showToast("You already reviewed this order.");
     return false;
   }
 
   try {
-    // Save review
-    await addDoc(collection(db, "reviews"), {
+    /* setDoc with orderId as the document ID — guaranteed no duplicate */
+    await setDoc(reviewRef, {
       productId,
       orderId,
-      userId:       currentUser.uid,
-      customerName: order.customerName,
+      userId:        currentUser.uid,
+      customerName:  order.customerName,
       rating,
       reviewText,
       oneStarReason,
-      createdAt: Date.now(),
-      likes:     0,
-      likedBy:   [],
-      edited:    false,
+      createdAt:     Date.now(),
+      likes:         0,
+      likedBy:       [],
+      edited:        false,
     });
 
-    // Mark order as reviewed
+    /* mark order reviewed */
     await updateDoc(orderRef, { reviewSubmitted: true });
 
-    // Update product rating stats
+    /* update product rating stats */
     const productRef  = doc(db, "products", productId);
     const productSnap = await getDoc(productRef);
 
     if (productSnap.exists()) {
-      const pd = productSnap.data();
-
+      const pd             = productSnap.data();
       const newReviewCount = (pd.reviewCount || 0) + 1;
       const newTotalRating = (pd.totalRating  || 0) + rating;
 
@@ -199,13 +148,16 @@ async function submitReview(oneStarReason = "") {
       });
     }
 
-    successOverlay.style.display="flex";
+    /* show success overlay */
+    if (successOverlay) {
+      successOverlay.style.display = "flex";
+      /* trigger CSS opacity transition on next frame */
+      requestAnimationFrame(() => {
+        successOverlay.classList.add("show");
+      });
+    }
 
-setTimeout(()=>{
-
-location.href="/orders";
-
-},1800);
+    setTimeout(() => { location.replace("/orders"); }, 1800);
 
     return true;
 
@@ -216,118 +168,69 @@ location.href="/orders";
   }
 }
 
-/* ─────────────────────────────────────────────────────────
-   FORM SUBMIT (normal — 2 to 5 stars)
-───────────────────────────────────────────────────────── */
-reviewForm.addEventListener("submit", async (e) => {
+/* ── FORM SUBMIT (2–5 stars) ─────────────────────────────── */
+reviewForm.addEventListener("submit", async e => {
   e.preventDefault();
 
-  const rating     = Number(ratingSelect.value);
   const reviewText = reviewBox.value.trim();
+  const rating     = Number(ratingSelect.value);
 
-  if (reviewText.length < 20) {
-    showToast("Please write at least 20 characters.");
-    return;
-  }
+  if (reviewText.length < 20) { showToast("Please write at least 20 characters."); return; }
 
-  // 1-star → open reason modal instead
-  if (rating === 1) {
-    oneStarModal.style.display = "flex";
-    return;
-  }
+  if (rating === 1) { oneStarModal.style.display = "flex"; return; }
 
   lockMainButton();
-
-  const success = await submitReview();
-
-  if (!success) unlockMainButton();
-  // if success → redirecting to /orders so no need to unlock
+  const ok = await submitReview();
+  if (!ok) unlockMainButton();
 });
 
-/* ─────────────────────────────────────────────────────────
-   ONE-STAR MODAL SUBMIT
-───────────────────────────────────────────────────────── */
+/* ── ONE-STAR MODAL SUBMIT ───────────────────────────────── */
 submitOneStarBtn.onclick = async () => {
+  const selectedRadio = document.querySelector('input[name="oneStarReason"]:checked');
+  const customReason  = document.getElementById("custom-one-star-reason").value.trim();
+  const reason        = customReason || (selectedRadio ? selectedRadio.value : "");
 
-  const selectedRadio  = document.querySelector('input[name="oneStarReason"]:checked');
-  const customReason   = document.getElementById("custom-one-star-reason").value.trim();
-  const selectedReason = customReason || (selectedRadio ? selectedRadio.value : "");
-
-  if (!selectedReason) {
-    showToast("Please tell us why you gave one star.");
-    return;
-  }
+  if (!reason) { showToast("Please tell us why you gave one star."); return; }
 
   lockModalButton();
   lockMainButton();
 
-  const success = await submitReview(selectedReason);
+  const ok = await submitReview(reason);
 
   unlockModalButton();
+  if (!ok) { unlockMainButton(); return; }
 
-  if (!success) {
-    unlockMainButton();
-    return;
-  }
-
-  // Reset and close modal on success (redirect handles the rest)
   document.querySelectorAll('input[name="oneStarReason"]').forEach(r => r.checked = false);
   document.getElementById("custom-one-star-reason").value = "";
   oneStarModal.style.display = "none";
 };
 
-/* ─────────────────────────────────────────────────────────
-   CLOSE ONE-STAR MODAL
-───────────────────────────────────────────────────────── */
-closeOneStarModal.onclick = () => {
-  oneStarModal.style.display = "none";
-};
+/* ── CLOSE ONE-STAR MODAL ────────────────────────────────── */
+closeOneStarModal.onclick = () => { oneStarModal.style.display = "none"; };
+oneStarModal.onclick = e => { if (e.target === oneStarModal) oneStarModal.style.display = "none"; };
 
-oneStarModal.onclick = (e) => {
-  if (e.target === oneStarModal) oneStarModal.style.display = "none";
-};
-
-/* ─────────────────────────────────────────────────────────
-   RADIO TOGGLE (click same radio to deselect)
-───────────────────────────────────────────────────────── */
+/* ── RADIO TOGGLE ────────────────────────────────────────── */
 let lastChecked = null;
-
 document.querySelectorAll('input[name="oneStarReason"]').forEach(radio => {
   radio.addEventListener("click", function () {
-    if (lastChecked === this) {
-      this.checked = false;
-      lastChecked  = null;
-    } else {
-      lastChecked = this;
-    }
+    if (lastChecked === this) { this.checked = false; lastChecked = null; }
+    else lastChecked = this;
   });
 });
 
-/* ─────────────────────────────────────────────────────────
-   CANCEL BUTTON
-───────────────────────────────────────────────────────── */
+/* ── CANCEL ──────────────────────────────────────────────── */
 document.getElementById("cancel-review-btn").addEventListener("click", () => {
-  if (submitBtn.disabled) {
-    showToast("Please wait until your review finishes submitting.");
-    return;
-  }
+  if (submitBtn.disabled) { showToast("Please wait until your review finishes submitting."); return; }
   location.href = "/orders";
 });
 
-/* ─────────────────────────────────────────────────────────
-   LEAVE PAGE GUARD (prevents accidental close mid-submit)
-───────────────────────────────────────────────────────── */
-window.addEventListener("beforeunload", (e) => {
-  if (submitBtn.disabled || submitOneStarBtn.disabled) {
-    e.preventDefault();
-    e.returnValue = "";
-  }
+/* ── LEAVE PAGE GUARD ────────────────────────────────────── */
+window.addEventListener("beforeunload", e => {
+  if (submitBtn.disabled || submitOneStarBtn.disabled) { e.preventDefault(); e.returnValue = ""; }
 });
 
-/* ─────────────────────────────────────────────────────────
-   GLOBAL ERROR CATCH
-───────────────────────────────────────────────────────── */
-window.addEventListener("unhandledrejection", (event) => {
+/* ── GLOBAL ERROR CATCH ──────────────────────────────────── */
+window.addEventListener("unhandledrejection", event => {
   console.error(event.reason);
   showToast("Something went wrong. Please try again.");
   unlockMainButton();

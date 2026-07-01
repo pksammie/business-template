@@ -545,11 +545,31 @@ justify-content:center;
 
 align-items:center;
 
-z-index:99999;
+z-index:999999;
 
 backdrop-filter:blur(8px);
 
 animation:fadeIn .35s;
+
+top: 0;
+
+left: 0;
+
+width: 100%;
+
+height: 100%;
+
+opacity: 0;
+
+transition: .35s;
+
+}
+
+.review-success-overlay.show{
+
+display:flex;
+
+opacity:1;
 
 }
 

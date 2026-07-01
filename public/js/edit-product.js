@@ -12,7 +12,6 @@ const form      = document.getElementById("edit-product-form");
 const uploadBox = document.getElementById("upload-image-box");
 
 let uploadedImageUrl = "";
-let currentSold      = 0; // ← track sold count so we never lose it
 
 async function loadProduct() {
   const snap = await getDoc(doc(db, "products", productId));
@@ -25,17 +24,13 @@ async function loadProduct() {
 
   const product = snap.data();
 
-  // Store sold count — we need it when saving
-  currentSold = product.sold || 0;
-
   document.getElementById("prod-title").value = product.title;
   document.getElementById("prod-price").value = product.price;
+  document.getElementById("stock-s").value = product.stock?.S || 0;
+document.getElementById("stock-m").value = product.stock?.M || 0;
+document.getElementById("stock-l").value = product.stock?.L || 0;
+document.getElementById("stock-xl").value = product.stock?.XL || 0;
 
-  // ── THE FIX ──────────────────────────────────────────────────
-  // Show the REMAINING stock (quantity - sold), NOT the raw quantity.
-  // When saving we add sold back so the total quantity stays correct.
-  const remaining = (product.quantity || 0) - currentSold;
-  document.getElementById("prod-quantity").value = remaining;
   // ─────────────────────────────────────────────────────────────
 
   document.getElementById("prod-desc").value = product.description;
@@ -92,23 +87,32 @@ form.addEventListener("submit", async e => {
 
   const colors = [...document.querySelectorAll("input[name='prod_colors']:checked")].map(el => el.value);
   const sizes  = [...document.querySelectorAll("input[name='prod_sizes']:checked")].map(el => el.value);
-
-  // The admin typed the REMAINING stock they want available.
-  // We store quantity = remaining + sold so the formula
-  // (quantity - sold) always gives the right available number.
-  const remainingInput = Number(document.getElementById("prod-quantity").value);
-  const newTotalQuantity = remainingInput + currentSold;
+  const stock = {
+    S: Number(document.getElementById("stock-s").value) || 0,
+    M: Number(document.getElementById("stock-m").value) || 0,
+    L: Number(document.getElementById("stock-l").value) || 0,
+    XL: Number(document.getElementById("stock-xl").value) || 0
+};
 
   await updateDoc(doc(db, "products", productId), {
-    title:       document.getElementById("prod-title").value,
-    price:       Number(document.getElementById("prod-price").value),
-    quantity:    newTotalQuantity,   // ← correct: remaining + sold
+
+    title: document.getElementById("prod-title").value,
+
+    price: Number(document.getElementById("prod-price").value),
+
+    stock,
+
     description: document.getElementById("prod-desc").value,
-    image:       uploadedImageUrl,
+
+    image: uploadedImageUrl,
+
     sizes,
+
     colors,
-    isEditing:   false,
-  });
+
+    isEditing: false
+
+});
 
   showToast("Product updated successfully.");
   location.href = "/admin";

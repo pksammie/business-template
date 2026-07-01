@@ -24,21 +24,21 @@ onAuthStateChanged(auth, (user) => {
   loadOrders(user.uid);
 });
 
-async function hasUserReviewed(orderId, userId){
+async function hasUserReviewed(orderId,userId){
 
-    const reviewQuery = query(
+const q=query(
 
-        collection(db,"reviews"),
+collection(db,"reviews"),
 
-        where("orderId","==",orderId),
+where("orderId","==",orderId),
 
-        where("userId","==",userId)
+where("userId","==",userId)
 
-    );
+);
 
-    const snap = await getDocs(reviewQuery);
+const snap=await getDocs(q);
 
-    return !snap.empty;
+return !snap.empty;
 
 }
 

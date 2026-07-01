@@ -34,6 +34,24 @@
 
 </div>
 
+<div id="live-order-notification" class="live-order-notification">
+
+    <div class="live-order-icon">
+        <i class="fa-solid fa-bell"></i>
+    </div>
+
+    <div class="live-order-content">
+
+        <h4>New Order</h4>
+
+        <p id="live-order-text">
+            Someone placed an order.
+        </p>
+
+    </div>
+
+</div>
+
 <div class="top-bar">
     <span>Terminal Console Workspace</span>
     <a href="/" class="view-store-btn">
@@ -82,7 +100,35 @@ View Store
 
     <input type="number" id="prod-price" placeholder="Price" required>
 
-    <input type="number" id="prod-quantity" placeholder="Stock Quantity" required>
+    <div class="stock-by-size-box">
+
+<h4>Stock Per Size</h4>
+
+<div class="stock-size-grid">
+
+<div class="stock-row">
+<label>S</label>
+<input type="number" id="stock-s" min="0" value="0">
+</div>
+
+<div class="stock-row">
+<label>M</label>
+<input type="number" id="stock-m" min="0" value="0">
+</div>
+
+<div class="stock-row">
+<label>L</label>
+<input type="number" id="stock-l" min="0" value="0">
+</div>
+
+<div class="stock-row">
+<label>XL</label>
+<input type="number" id="stock-xl" min="0" value="0">
+</div>
+
+</div>
+
+</div>
 
     <div id="upload-image-box" class="upload-box">
     <i class="fa-solid fa-cloud-arrow-up"></i>
@@ -209,6 +255,7 @@ id="uploaded-image-url">
 <script src="/js/toast.js"></script>
 <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
 <script type="module" src="/js/admin-panel.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
 </body>
 </html>

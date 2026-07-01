@@ -20,46 +20,40 @@ const params    = new URLSearchParams(location.search);
 const id        = params.get("id");
 const cartDocId = params.get("cartDocId");
 
-let product          = null;
-let addingToCart     = false;
-let reviews          = [];
-let visibleReviews   = 3;
-let editingReviewId  = null;
+let product         = null;
+let addingToCart    = false;
+let reviews         = [];
+let visibleReviews  = 3;
+let editingReviewId = null;
 
 const sizeWrapper    = document.getElementById("size-options-wrapper");
 const colorWrapper   = document.getElementById("color-options-wrapper");
 const descriptionBox = document.getElementById("decision-description");
 
-/* ─────────────────────────────────────────────────────────
-   STARS
-───────────────────────────────────────────────────────── */
+/* ── STARS ─────────────────────────────────────────────────── */
 function generateStars(rating) {
   let stars  = "";
   const full = Math.floor(rating);
   const half = rating - full >= 0.5;
-
   for (let i = 1; i <= 5; i++) {
-    if (i <= full)           stars += `<span class="star filled">★</span>`;
-    else if (i === full + 1 && half) stars += `<span class="star half">★</span>`;
-    else                     stars += `<span class="star empty">☆</span>`;
+    if (i <= full)                    stars += `<span class="star filled">★</span>`;
+    else if (i === full + 1 && half)  stars += `<span class="star half">★</span>`;
+    else                              stars += `<span class="star empty">☆</span>`;
   }
   return stars;
 }
 
 async function refreshProductRating() {
-    const snap = await getDoc(doc(db, "products", id));
-    const p = snap.data();
-
-    document.getElementById("product-stars").innerHTML =
-        generateStars(p.averageRating || 0);
-
-    document.getElementById("product-review-count").innerText =
-        `${p.reviewCount || 0} Reviews`;
+  const snap = await getDoc(doc(db, "products", id));
+  if (!snap.exists()) return;
+  const p = snap.data();
+  const starsEl = document.getElementById("product-stars");
+  const countEl = document.getElementById("product-review-count");
+  if (starsEl) starsEl.innerHTML     = generateStars(p.averageRating || 0);
+  if (countEl) countEl.innerText     = `${p.reviewCount || 0} Reviews`;
 }
 
-/* ─────────────────────────────────────────────────────────
-   REVIEWS — load (one copy, no duplicate)
-───────────────────────────────────────────────────────── */
+/* ── REVIEWS — LOAD ─────────────────────────────────────────── */
 function loadReviews() {
   const container = document.getElementById("reviews-container");
   if (!container) return;
@@ -77,14 +71,7 @@ function loadReviews() {
   });
 }
 
-/* ─────────────────────────────────────────────────────────
-   REVIEWS — render (one copy, no duplicate)
-   Changes vs old:
-   · Heart pop animation on like button
-   · "X people found this helpful" instead of "23 ❤️"
-   · Smooth fade-in animation on each card
-   · Edit opens a proper modal (not prompt())
-───────────────────────────────────────────────────────── */
+/* ── REVIEWS — RENDER ─────────────────────────────────────── */
 function renderReviews() {
   const container = document.getElementById("reviews-container");
   if (!container) return;
@@ -92,11 +79,7 @@ function renderReviews() {
   container.innerHTML = "";
 
   if (reviews.length === 0) {
-    container.innerHTML = `
-      <div class="no-review-card">
-        No reviews yet. Be the first to review this product.
-      </div>
-    `;
+    container.innerHTML = `<div class="no-review-card">No reviews yet. Be the first to review this product.</div>`;
     return;
   }
 
@@ -115,24 +98,20 @@ function renderReviews() {
       <div class="review-top-row">
         <div>
           <div class="review-stars">${generateStars(review.rating)}</div>
-          <div class="review-name">${review.customerName}</div>
+          <div class="review-name">${review.customerName || "Customer"}</div>
         </div>
-
         ${isOwner ? `
           <div class="review-menu-btn" onclick="toggleReviewMenu('${review.id}')">
             <i class="fa-solid fa-ellipsis-vertical"></i>
           </div>
-          <div id="menu-${review.id}" class="review-menu">
+          <div id="menu-${review.id}" class="review-menu" style="display:none;">
             <div onclick="openEditModal('${review.id}')">Edit</div>
             <div onclick="deleteReview('${review.id}')">Delete</div>
           </div>
         ` : ""}
       </div>
-
       <div class="verified-badge">✔ Verified Purchase</div>
-
       <p class="review-body">${review.reviewText}</p>
-
       <div class="review-footer">
         <button
           class="review-like-btn ${liked ? "liked" : ""}"
@@ -147,8 +126,7 @@ function renderReviews() {
           </span>
         </button>
       </div>
-
-      ${review.edited ? `<div class="review-edited">Edited</div>` : ""}
+      ${review.edited ? `<div class="review-edited-label">Edited</div>` : ""}
     `;
 
     container.appendChild(card);
@@ -156,21 +134,18 @@ function renderReviews() {
 
   if (visibleReviews < reviews.length) {
     const btn = document.createElement("button");
-    btn.className = "see-more-reviews-btn";
+    btn.className   = "see-more-reviews-btn";
     btn.textContent = "See More Reviews";
-    btn.onclick = () => window.showMoreReviews();
+    btn.onclick     = () => window.showMoreReviews();
     container.appendChild(btn);
   }
 }
 
-/* ─────────────────────────────────────────────────────────
-   EDIT REVIEW MODAL (replaces ugly prompt())
-───────────────────────────────────────────────────────── */
+/* ── EDIT REVIEW MODAL ────────────────────────────────────── */
 function injectEditModal() {
   if (document.getElementById("edit-review-modal")) return;
-
   const modal = document.createElement("div");
-  modal.id = "edit-review-modal";
+  modal.id        = "edit-review-modal";
   modal.className = "edit-review-modal-overlay";
   modal.innerHTML = `
     <div class="edit-review-modal-box">
@@ -178,7 +153,6 @@ function injectEditModal() {
         <i class="fa-solid fa-xmark"></i>
       </button>
       <h3>Edit Your Review</h3>
-
       <label style="font-size:13px;color:var(--text-muted);margin-bottom:6px;display:block;">Rating</label>
       <select id="edit-review-rating" class="edit-review-select">
         <option value="5">★★★★★ — Excellent</option>
@@ -187,68 +161,44 @@ function injectEditModal() {
         <option value="2">★★☆☆☆ — Poor</option>
         <option value="1">★☆☆☆☆ — Terrible</option>
       </select>
-
       <label style="font-size:13px;color:var(--text-muted);margin-bottom:6px;display:block;">Your Review</label>
-      <textarea
-        id="edit-review-text"
-        class="edit-review-textarea"
-        placeholder="Update your review (min 20 characters)..."
-        maxlength="1000"
-      ></textarea>
+      <textarea id="edit-review-text" class="edit-review-textarea" placeholder="Update your review (min 20 characters)..." maxlength="1000"></textarea>
       <div class="edit-review-counter"><span id="edit-char-count">0</span>/1000</div>
-
       <button class="edit-review-submit-btn" onclick="submitEditReview()">Save Changes</button>
     </div>
   `;
   document.body.appendChild(modal);
-
   document.getElementById("edit-review-text").addEventListener("input", e => {
     document.getElementById("edit-char-count").textContent = e.target.value.length;
   });
-
-  /* close on backdrop click */
-  modal.addEventListener("click", e => {
-    if (e.target === modal) closeEditModal();
-  });
+  modal.addEventListener("click", e => { if (e.target === modal) closeEditModal(); });
 }
 
 window.closeEditModal = function () {
-  const modal = document.getElementById("edit-review-modal");
-  if (modal) modal.style.display = "none";
+  const m = document.getElementById("edit-review-modal");
+  if (m) m.style.display = "none";
 };
 
 window.openEditModal = async function (reviewId) {
   injectEditModal();
   editingReviewId = reviewId;
-
   const snap   = await getDoc(doc(db, "reviews", reviewId));
   const review = snap.data();
-
-  document.getElementById("edit-review-rating").value = review.rating;
-  document.getElementById("edit-review-text").value   = review.reviewText;
-  document.getElementById("edit-char-count").textContent = review.reviewText.length;
-
+  document.getElementById("edit-review-rating").value      = review.rating;
+  document.getElementById("edit-review-text").value        = review.reviewText;
+  document.getElementById("edit-char-count").textContent   = review.reviewText.length;
   document.getElementById("edit-review-modal").style.display = "flex";
-
-  /* close any open menus */
   document.querySelectorAll(".review-menu").forEach(m => m.style.display = "none");
 };
 
 window.submitEditReview = async function () {
   const newText   = document.getElementById("edit-review-text").value.trim();
   const newRating = Number(document.getElementById("edit-review-rating").value);
+  if (newText.length < 20) { showToast("Review must be at least 20 characters."); return; }
 
-  if (newText.length < 20) {
-    showToast("Review must be at least 20 characters.");
-    return;
-  }
-
-  const submitBtn = document.querySelector(".edit-review-submit-btn");
-
-if (submitBtn.disabled) return;
-
-submitBtn.disabled = true;
-submitBtn.textContent = "Saving...";
+  const btn        = document.querySelector(".edit-review-submit-btn");
+  btn.disabled     = true;
+  btn.textContent  = "Saving...";
 
   try {
     const reviewSnap = await getDoc(doc(db, "reviews", editingReviewId));
@@ -264,47 +214,30 @@ submitBtn.textContent = "Saving...";
     const productRef  = doc(db, "products", id);
     const productSnap = await getDoc(productRef);
     const pd          = productSnap.data();
-
-    const newTotal   = (pd.totalRating || 0) - oldReview.rating + newRating;
-    const newAverage = newTotal / (pd.reviewCount || 1);
-
+    const newTotal    = (pd.totalRating || 0) - oldReview.rating + newRating;
+    const newAverage  = newTotal / (pd.reviewCount || 1);
     await updateDoc(productRef, { totalRating: newTotal, averageRating: newAverage });
 
+    showToast("Review updated.");
+    closeEditModal();
     await refreshProductRating();
-
-showToast("Review updated.");
-closeEditModal();
-
-editingReviewId = null;
-document.getElementById("edit-review-text").value = "";
-document.getElementById("edit-char-count").textContent = "0";
-
-}
-catch(err){
-
-   console.error(err);
-   showToast("Couldn't update review.");
-
   } finally {
-    submitBtn.disabled    = false;
-    submitBtn.textContent = "Save Changes";
+    btn.disabled    = false;
+    btn.textContent = "Save Changes";
   }
 };
 
-/* ─────────────────────────────────────────────────────────
-   LIKE with heart pop animation
-───────────────────────────────────────────────────────── */
+/* ── LIKE ─────────────────────────────────────────────────── */
 window.toggleLike = async function (reviewId, btn) {
   const user = auth.currentUser;
   if (!user) { showToast("Please login to like reviews."); return; }
 
-  const reviewRef = doc(db, "reviews", reviewId);
-  const review    = reviews.find(r => r.id === reviewId);
+  const reviewRef    = doc(db, "reviews", reviewId);
+  const review       = reviews.find(r => r.id === reviewId);
   if (!review) return;
 
   const alreadyLiked = (review.likedBy || []).includes(user.uid);
 
-  /* instant optimistic UI — heart pop */
   if (!alreadyLiked) {
     btn.classList.add("liked");
     const heart = btn.querySelector(".heart-icon");
@@ -314,11 +247,9 @@ window.toggleLike = async function (reviewId, btn) {
     btn.classList.remove("liked");
   }
 
-  const newLikes = alreadyLiked ? (review.likes || 1) - 1 : (review.likes || 0) + 1;
-
-  /* update local state immediately so the text updates on re-render */
-  review.likes   = newLikes;
-  review.likedBy = alreadyLiked
+  const newLikes   = alreadyLiked ? (review.likes || 1) - 1 : (review.likes || 0) + 1;
+  review.likes     = newLikes;
+  review.likedBy   = alreadyLiked
     ? (review.likedBy || []).filter(u => u !== user.uid)
     : [...(review.likedBy || []), user.uid];
 
@@ -329,16 +260,13 @@ window.toggleLike = async function (reviewId, btn) {
       : "Helpful";
   }
 
-  /* background Firestore write */
   await updateDoc(reviewRef, {
     likedBy: alreadyLiked ? arrayRemove(user.uid) : arrayUnion(user.uid),
     likes:   newLikes,
   });
 };
 
-/* ─────────────────────────────────────────────────────────
-   TOGGLE REVIEW MENU (3-dot)
-───────────────────────────────────────────────────────── */
+/* ── TOGGLE REVIEW MENU ───────────────────────────────────── */
 window.toggleReviewMenu = function (reviewId) {
   document.querySelectorAll(".review-menu").forEach(m => {
     if (m.id !== "menu-" + reviewId) m.style.display = "none";
@@ -347,58 +275,38 @@ window.toggleReviewMenu = function (reviewId) {
   if (menu) menu.style.display = menu.style.display === "block" ? "none" : "block";
 };
 
-/* close menus when clicking outside */
 document.addEventListener("click", e => {
   if (!e.target.closest(".review-menu-btn") && !e.target.closest(".review-menu")) {
     document.querySelectorAll(".review-menu").forEach(m => m.style.display = "none");
   }
 });
 
-/* ─────────────────────────────────────────────────────────
-   DELETE REVIEW
-───────────────────────────────────────────────────────── */
+/* ── DELETE REVIEW ────────────────────────────────────────── */
 window.deleteReview = function (reviewId) {
   showConfirmModal("Delete this review?", async () => {
     const reviewSnap = await getDoc(doc(db, "reviews", reviewId));
     if (!reviewSnap.exists()) return;
 
     const review = reviewSnap.data();
-
     await deleteDoc(doc(db, "reviews", reviewId));
 
-    /* update product rating stats */
     const productRef  = doc(db, "products", id);
     const productSnap = await getDoc(productRef);
     const pd          = productSnap.data();
+    const newCount    = Math.max(0, (pd.reviewCount || 1) - 1);
+    const newTotal    = Math.max(0, (pd.totalRating  || 0) - review.rating);
+    const newAverage  = newCount > 0 ? newTotal / newCount : 0;
 
-    const newCount   = Math.max(0, (pd.reviewCount || 1) - 1);
-    const newTotal   = Math.max(0, (pd.totalRating || 0) - review.rating);
-    const newAverage = newCount > 0 ? newTotal / newCount : 0;
-
-    await updateDoc(productRef, {
-      reviewCount:   newCount,
-      totalRating:   newTotal,
-      averageRating: newAverage,
-    });
-
+    await updateDoc(productRef, { reviewCount: newCount, totalRating: newTotal, averageRating: newAverage });
     await refreshProductRating();
-
     showToast("Review deleted.");
-    /* onSnapshot handles re-render */
   });
 };
 
-/* ─────────────────────────────────────────────────────────
-   SHOW MORE REVIEWS
-───────────────────────────────────────────────────────── */
-window.showMoreReviews = function () {
-  visibleReviews += 3;
-  renderReviews();
-};
+/* ── SHOW MORE ────────────────────────────────────────────── */
+window.showMoreReviews = function () { visibleReviews += 3; renderReviews(); };
 
-/* ─────────────────────────────────────────────────────────
-   LOAD PRODUCT
-───────────────────────────────────────────────────────── */
+/* ── LOAD PRODUCT ─────────────────────────────────────────── */
 async function load() {
   if (!id) return;
 
@@ -407,11 +315,10 @@ async function load() {
 
   product = snap.data();
 
-  /* stars + review count */
-  document.getElementById("product-stars").innerHTML =
-    generateStars(product.averageRating || 0);
-  document.getElementById("product-review-count").innerText =
-    `${product.reviewCount || 0} Reviews`;
+  const starsEl = document.getElementById("product-stars");
+  const countEl = document.getElementById("product-review-count");
+  if (starsEl) starsEl.innerHTML = generateStars(product.averageRating || 0);
+  if (countEl) countEl.innerText = `${product.reviewCount || 0} Reviews`;
 
   saveRecentlyViewed(id);
 
@@ -421,49 +328,66 @@ async function load() {
     return;
   }
 
-  const remaining = (product.quantity || 0) - (product.sold || 0);
-  const stockText = document.getElementById("stock-left");
-  stockText.textContent = `${remaining} available`;
+  /* ── STOCK: use per-size stock map if available ── */
+  const stock    = product.stock || {};
+  const hasSizes = Array.isArray(product.sizes) && !product.sizes.includes("None");
 
-  if      (remaining <= 0) stockText.style.color = "#ff4d4d";
-  else if (remaining < 4)  stockText.style.color = "orange";
-  else                     stockText.style.color = "lime";
+  /* total remaining across all sizes */
+  let totalRemaining;
+  if (hasSizes && Object.keys(stock).length > 0) {
+    totalRemaining = Object.values(stock).reduce((a, b) => a + (b || 0), 0);
+  } else {
+    totalRemaining = (product.quantity || 0) - (product.sold || 0);
+  }
+
+  const stockTextEl = document.getElementById("stock-left");
+  stockTextEl.textContent = totalRemaining > 0 ? `${totalRemaining} available` : "Out of stock";
+  stockTextEl.style.color = totalRemaining <= 0 ? "#ff4d4d" : totalRemaining < 4 ? "orange" : "lime";
 
   const soldBadge = document.getElementById("sold-out-badge");
   const addBtn    = document.querySelector(".add-to-cart-btn");
 
-  if (remaining <= 0) {
-    soldBadge.style.display = "inline-block";
-    addBtn.disabled         = true;
-    addBtn.textContent      = "Sold Out";
+  if (totalRemaining <= 0) {
+    if (soldBadge) soldBadge.style.display = "inline-block";
+    if (addBtn)    { addBtn.disabled = true; addBtn.textContent = "Sold Out"; }
   } else {
-    soldBadge.style.display = "none";
-    addBtn.disabled         = false;
-    addBtn.textContent      = "Add To Bag";
+    if (soldBadge) soldBadge.style.display = "none";
+    if (addBtn)    { addBtn.disabled = false; addBtn.textContent = "Add To Bag"; }
   }
 
-  document.getElementById("decision-title").textContent       = product.title;
-  document.getElementById("decision-price").textContent       = "₦" + Number(product.price).toLocaleString();
-  document.getElementById("decision-product-img").src         = product.image || "https://via.placeholder.com/600x600?text=No+Image";
-  descriptionBox.textContent                                  = product.description;
+  document.getElementById("decision-title").textContent = product.title;
+  document.getElementById("decision-price").textContent = "₦" + Number(product.price).toLocaleString();
+  document.getElementById("decision-product-img").src   = product.image || "https://via.placeholder.com/600x600?text=No+Image";
+  descriptionBox.textContent                            = product.description;
 
-  /* sizes */
+  /* ── SIZES with per-size stock labels ── */
   sizeWrapper.innerHTML = "";
   const sizes = Array.isArray(product.sizes) ? product.sizes : [];
+
   if (sizes.includes("None")) {
     sizeWrapper.style.display = "none";
   } else {
     sizeWrapper.style.display = "flex";
     sizes.forEach(size => {
+      const sizeStock = stock[size] ?? null;
+      const isOOS     = sizeStock !== null && sizeStock <= 0;
       sizeWrapper.innerHTML += `
-        <label class="size-radio-chip">
-          <input type="radio" name="size" value="${size}">
-          <span>${size}</span>
+        <label class="size-radio-chip ${isOOS ? "size-out-of-stock" : ""}">
+          <input type="radio" name="size" value="${size}" ${isOOS ? "disabled" : ""}>
+          <span>${size}${sizeStock !== null ? `<small class="size-stock-label">${isOOS ? "OOS" : sizeStock <= 3 ? `${sizeStock} left` : ""}</small>` : ""}</span>
         </label>`;
     });
   }
 
-  /* colors */
+  /* highlight selected size */
+  document.querySelectorAll('input[name="size"]').forEach(radio => {
+    radio.addEventListener("change", () => {
+      document.querySelectorAll(".size-radio-chip").forEach(c => c.classList.remove("selected"));
+      radio.parentElement.classList.add("selected");
+    });
+  });
+
+  /* ── COLORS ── */
   if (colorWrapper) {
     colorWrapper.innerHTML = "";
     const colors = Array.isArray(product.colors) ? product.colors : [];
@@ -486,9 +410,7 @@ async function load() {
   loadReviews();
 }
 
-/* ─────────────────────────────────────────────────────────
-   QTY
-───────────────────────────────────────────────────────── */
+/* ── QTY ───────────────────────────────────────────────────── */
 window.increaseQty = function () {
   const el = document.getElementById("item-quantity");
   el.value = Number(el.value) + 1;
@@ -499,9 +421,7 @@ window.decreaseQty = function () {
   if (Number(el.value) > 1) el.value = Number(el.value) - 1;
 };
 
-/* ─────────────────────────────────────────────────────────
-   ADD TO CART
-───────────────────────────────────────────────────────── */
+/* ── ADD TO CART ────────────────────────────────────────────── */
 window.submitToCartBag = async function () {
   if (addingToCart) return;
   addingToCart = true;
@@ -518,23 +438,15 @@ window.submitToCartBag = async function () {
       return;
     }
 
-    const latestProduct  = latestSnap.data();
-    const latestRemaining = (latestProduct.quantity || 0) - (latestProduct.sold || 0);
-
-    if (latestRemaining <= 0) { showToast("This product is sold out."); return; }
-
-    product = latestProduct;
-
+    const latestProduct = latestSnap.data();
+    if (latestProduct.isSuspended) { showToast("This product is unavailable."); return; }
     if (latestProduct.isEditing) {
       const age = Date.now() - (latestProduct.editingStartedAt || 0);
-      if (age < 600000) {
-        showToast("This product is currently being updated. Please try again shortly.");
-        return;
-      }
+      if (age < 600000) { showToast("This product is currently being updated. Please try again shortly."); return; }
       await updateDoc(doc(db, "products", id), { isEditing: false });
     }
 
-    if (latestProduct.isSuspended) { showToast("This product is unavailable."); return; }
+    product = latestProduct;
 
     const sizes  = Array.isArray(product.sizes)  ? product.sizes  : [];
     const colors = Array.isArray(product.colors) ? product.colors : [];
@@ -545,15 +457,22 @@ window.submitToCartBag = async function () {
     if (!sizes.includes("None")  && !selectedSize)  { showToast("Please select a size.");  return; }
     if (!colors.includes("None") && !selectedColor) { showToast("Please select a color."); return; }
 
-    const qty       = Number(document.getElementById("item-quantity").value);
-    const remaining = (product.quantity || 0) - (product.sold || 0);
+    const qty         = Number(document.getElementById("item-quantity").value);
+    const stock       = product.stock || {};
+    const hasSizeStock= selectedSize && stock[selectedSize.value] !== undefined;
+
+    /* check per-size stock if available, else fall back to legacy quantity-sold */
+    const remaining = hasSizeStock
+      ? (stock[selectedSize.value] || 0)
+      : (product.quantity || 0) - (product.sold || 0);
 
     if (remaining <= 0) {
       if (addBtn) { addBtn.disabled = true; addBtn.textContent = "Sold Out"; }
+      showToast("This size is out of stock.");
       return;
     }
 
-    if (qty > remaining) { showToast(`Only ${remaining} left in stock`); return; }
+    if (qty > remaining) { showToast(`Only ${remaining} left in stock for this size`); return; }
 
     const user = auth.currentUser;
     if (!user) { showToast("Please login first."); location.href = "/login"; return; }
@@ -603,30 +522,24 @@ window.submitToCartBag = async function () {
   }
 };
 
-/* ─────────────────────────────────────────────────────────
-   RECENTLY VIEWED
-───────────────────────────────────────────────────────── */
+/* ── RECENTLY VIEWED ────────────────────────────────────────── */
 function saveRecentlyViewed(productId) {
   let viewed = JSON.parse(localStorage.getItem("recentlyViewed")) || [];
-  viewed = viewed.filter(i => i !== productId);
+  viewed     = viewed.filter(i => i !== productId);
   viewed.unshift(productId);
-  viewed = viewed.slice(0, 8);
+  viewed     = viewed.slice(0, 8);
   localStorage.setItem("recentlyViewed", JSON.stringify(viewed));
 }
 
 async function loadRecentlyViewed() {
   const grid = document.getElementById("recently-viewed-grid");
   if (!grid) return;
-
   const viewed = JSON.parse(localStorage.getItem("recentlyViewed")) || [];
   grid.innerHTML = "";
-
   for (const productId of viewed) {
     if (productId === id) continue;
-
     const snap = await getDoc(doc(db, "products", productId));
     if (!snap.exists()) continue;
-
     const item = { id: snap.id, ...snap.data() };
     const card = document.createElement("div");
     card.className = "product-card";
@@ -645,25 +558,17 @@ async function loadRecentlyViewed() {
   }
 }
 
-/* ─────────────────────────────────────────────────────────
-   RELATED PRODUCTS
-───────────────────────────────────────────────────────── */
+/* ── RELATED PRODUCTS ────────────────────────────────────────── */
 async function loadRelatedProducts(currentProductId) {
   const relatedGrid = document.getElementById("related-products-grid");
   if (!relatedGrid) return;
-
   const snap     = await getDocs(collection(db, "products"));
   const products = [];
   snap.forEach(d => products.push({ id: d.id, ...d.data() }));
-
   relatedGrid.innerHTML = "";
   let count = 0;
-
   products.forEach(item => {
-    if (count >= 8)                    return;
-    if (item.id === currentProductId)  return;
-    if (item.isSuspended)              return;
-
+    if (count >= 8 || item.id === currentProductId || item.isSuspended) return;
     count++;
     const card = document.createElement("div");
     card.className = "product-card";
@@ -682,7 +587,5 @@ async function loadRelatedProducts(currentProductId) {
   });
 }
 
-/* ─────────────────────────────────────────────────────────
-   INIT
-───────────────────────────────────────────────────────── */
+/* ── INIT ───────────────────────────────────────────────────── */
 load();

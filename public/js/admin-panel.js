@@ -1,4 +1,7 @@
 import { auth, db } from "./firebase.js";
+
+import { fireLuxuryConfetti } from "./confetti.js";
+
 import {
   collection,
   getDocs,
@@ -14,6 +17,46 @@ import {
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
 
 let confirmCallback = null;
+let firstOrderLoad=true;
+const notificationSound = new Audio("/sounds/notification.mp3");
+
+function showLiveOrderNotification(customer){
+
+const popup=document.getElementById("live-order-notification");
+
+const text=document.getElementById("live-order-text");
+
+text.innerHTML=`${customer} just placed an order.`;
+
+popup.classList.add("show");
+
+notificationSound.currentTime=0;
+
+notificationSound.play().catch(()=>{});
+
+setTimeout(()=>{
+
+popup.classList.remove("show");
+
+},5000);
+
+}
+
+function celebrateDelivery(){
+
+    fireLuxuryConfetti();
+
+    const revenueCard=document.getElementById("revenue-count");
+
+    revenueCard.parentElement.classList.add("revenue-celebrate");
+
+    setTimeout(()=>{
+
+        revenueCard.parentElement.classList.remove("revenue-celebrate");
+
+    },900);
+
+}
 
 function showVanguardConfirm(message, callback) {
   confirmCallback = callback;
@@ -280,9 +323,26 @@ function loadInventory() {
         <p>₦${Number(p.price).toLocaleString()}</p>
 
         <small>
-            Stock:
-            ${(p.quantity || 0) - (p.sold || 0)}
-        </small>
+
+S:
+${p.stock?.S || 0}
+
+&nbsp;&nbsp;
+
+M:
+${p.stock?.M || 0}
+
+&nbsp;&nbsp;
+
+L:
+${p.stock?.L || 0}
+
+&nbsp;&nbsp;
+
+XL:
+${p.stock?.XL || 0}
+
+</small>
 
         <div class="admin-card-actions">
 
@@ -356,6 +416,24 @@ function loadOrders() {
           (order.productTitle || "").toLowerCase().includes(ordersSearchTerm)
         );
       });
+
+      if(!firstOrderLoad){
+
+snapshot.docChanges().forEach(change=>{
+
+if(change.type==="added"){
+
+const order=change.doc.data();
+
+showLiveOrderNotification(order.customerName);
+
+}
+
+});
+
+}
+
+firstOrderLoad=false;
 
       filteredOrders.forEach((order) => {
         body.innerHTML += `
@@ -559,41 +637,71 @@ window.startDelivery = async function(id) {
 };
 
 window.approveOrder = async function (id) {
-  const reservationRef = doc(db, "cart_reservations", id);
 
-  const reservationSnap = await getDoc(reservationRef);
+    showVanguardConfirm("Approve this order?", async () => {
 
-  if (!reservationSnap.exists()) return;
+        const reservationRef = doc(db,"cart_reservations",id);
 
-  const reservation = reservationSnap.data();
+        const reservationSnap = await getDoc(reservationRef);
 
-  const productRef = doc(db, "products", reservation.productId);
+        if(!reservationSnap.exists()) return;
 
-  const productSnap = await getDoc(productRef);
+        const reservation = reservationSnap.data();
 
-  if (!productSnap.exists()) return;
+        if(reservation.stockDeducted){
 
-  const product = productSnap.data();
+            showToast("Stock has already been deducted.");
 
-  const remaining = (product.quantity || 0) - (product.sold || 0);
+            return;
 
-  if (remaining < reservation.quantity) {
-    showToast("Not enough stock left.");
+        }
 
-    return;
-  }
+        const productRef = doc(db,"products",reservation.productId);
 
-  await updateDoc(productRef, {
-    sold: increment(reservation.quantity),
-  });
+        const productSnap = await getDoc(productRef);
 
-  await updateDoc(reservationRef, {
-    status: "Approved",
+        if(!productSnap.exists()){
 
-    stockDeducted: true,
-  });
+            showToast("Product no longer exists.");
 
-  showToast("Order approved.");
+            return;
+
+        }
+
+        const product = productSnap.data();
+
+        const size = reservation.productSize;
+
+        const currentStock = product.stock?.[size] || 0;
+
+        if(currentStock < reservation.quantity){
+
+            showToast("Not enough stock remaining.");
+
+            return;
+
+        }
+
+        await updateDoc(productRef,{
+
+            [`stock.${size}`]: increment(-reservation.quantity),
+
+            sold: increment(reservation.quantity)
+
+        });
+
+        await updateDoc(reservationRef,{
+
+            status:"Approved",
+
+            stockDeducted:true
+
+        });
+
+        showToast("Order approved.");
+
+    });
+
 };
 
 window.deliverOrder = async function (id) {
@@ -605,91 +713,105 @@ window.deliverOrder = async function (id) {
     },
   );
 
-  showToast("Order delivered.");
+  celebrateDelivery();
+
+showToast("Order Delivered Successfully!");
+
 };
 
-window.cancelOrder = async function (id) {
-  showVanguardConfirm(
-    "Cancel this order?",
+window.cancelOrder = async function(id){
 
-    async () => {
-      const reservationRef = doc(db, "cart_reservations", id);
+showVanguardConfirm(
 
-      const reservationSnap = await getDoc(reservationRef);
+"Cancel this order?",
 
-      if (!reservationSnap.exists()) {
-        return;
-      }
+async()=>{
 
-      const reservation = reservationSnap.data();
+const reservationRef=doc(db,"cart_reservations",id);
 
-      if (reservation.stockDeducted) {
-        const productRef = doc(db, "products", reservation.productId);
+const reservationSnap=await getDoc(reservationRef);
 
-        const productSnap = await getDoc(productRef);
+if(!reservationSnap.exists()) return;
 
-        if (productSnap.exists()) {
-          await updateDoc(
-            productRef,
+const reservation=reservationSnap.data();
 
-            {
-              sold: increment(-reservation.quantity),
-            },
-          );
-        }
-      }
+if(reservation.stockDeducted){
 
-      await updateDoc(
-        reservationRef,
+const productRef=doc(db,"products",reservation.productId);
 
-        {
-          status: "Cancelled",
+await updateDoc(productRef,{
 
-          stockDeducted: false,
-        },
-      );
+[`stock.${reservation.productSize}`]:
 
-      showToast("Order cancelled.");
-    },
-  );
-};
+increment(reservation.quantity),
 
-window.deleteOrder = function (id) {
-  showVanguardConfirm("Delete this order?", async () => {
-    const reservationRef = doc(db, "cart_reservations", id);
+sold:
 
-    const reservationSnap = await getDoc(reservationRef);
+increment(-reservation.quantity)
 
-    if (!reservationSnap.exists()) {
-      showToast("Order not found.");
+});
 
-      return;
-    }
+}
 
-    const reservation = reservationSnap.data();
+await updateDoc(reservationRef,{
 
-    /*
-            If this order was approved,
-            restore the stock first.
-            */
+status:"Cancelled",
 
-    if (reservation.status === "Approved") {
-      const productRef = doc(db, "products", reservation.productId);
+stockDeducted:false
 
-      const productSnap = await getDoc(productRef);
+});
 
-      if (productSnap.exists()) {
-        await updateDoc(productRef, {
-          sold: increment(-reservation.quantity),
-        });
-      }
-    }
+showToast("Order cancelled.");
 
-    await deleteDoc(reservationRef);
+}
 
-    showToast("Order deleted.");
-  });
-};
+);
+
+}
+
+window.deleteOrder=function(id){
+
+showVanguardConfirm(
+
+"Delete this order?",
+
+async()=>{
+
+const reservationRef=doc(db,"cart_reservations",id);
+
+const reservationSnap=await getDoc(reservationRef);
+
+if(!reservationSnap.exists()) return;
+
+const reservation=reservationSnap.data();
+
+if(reservation.stockDeducted){
+
+const productRef=doc(db,"products",reservation.productId);
+
+await updateDoc(productRef,{
+
+[`stock.${reservation.productSize}`]:
+
+increment(reservation.quantity),
+
+sold:
+
+increment(-reservation.quantity)
+
+});
+
+}
+
+await deleteDoc(reservationRef);
+
+showToast("Order deleted.");
+
+}
+
+);
+
+}
 
 /* ---------------- ADD PRODUCT ---------------- */
 
@@ -699,7 +821,12 @@ adminForm.addEventListener("submit", async (e) => {
   const title = document.getElementById("prod-title").value;
   const price = Number(document.getElementById("prod-price").value);
   const description = document.getElementById("prod-desc").value;
-  const quantity = Number(document.getElementById("prod-quantity").value);
+  const stock = {
+    S: Number(document.getElementById("stock-s").value || 0),
+    M: Number(document.getElementById("stock-m").value || 0),
+    L: Number(document.getElementById("stock-l").value || 0),
+    XL: Number(document.getElementById("stock-xl").value || 0),
+};
 
   const colors = [
     ...document.querySelectorAll("input[name='prod_colors']:checked"),
@@ -724,7 +851,7 @@ adminForm.addEventListener("submit", async (e) => {
     description,
     sizes: finalSizes,
     colors: finalColors,
-    quantity,
+    stock,
     sold: 0,
     reviewCount:0,
     averageRating:0,
@@ -769,7 +896,7 @@ window.editProduct = async function (id) {
     editingStartedAt: Date.now(),
   });
 
-  location.href = `/edit-product.html?id=${id}`;
+  location.href = `/edit-product?id=${id}`;
 };
 
 const ordersSearchInput = document.getElementById("orders-search");

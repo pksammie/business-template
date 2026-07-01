@@ -12,6 +12,8 @@ import {
   getDocs,
   deleteDoc,
   setDoc,
+  updateDoc,
+  increment
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 const orderSummaryWrapper = document.getElementById("checkout-summary-target");
@@ -490,15 +492,20 @@ if(selectedIds.length){
         return;
       }
 
-      const remaining = (productData.quantity || 0) - (productData.sold || 0);
+      const sizeStock =
+  productData.stock?.[item.size] || 0;
 
-      if (item.quantity > remaining) {
-        showToast(`Only ${remaining} of ${item.title} remain in stock.`);
+if (item.quantity > sizeStock) {
 
-        resetCheckoutState();
+  showToast(
+    `Only ${sizeStock} ${item.size} size(s) of ${item.title} remain in stock.`
+  );
 
-        return;
-      }
+  resetCheckoutState();
+
+  return;
+}
+
     }
 
     // Save profile to LocalStorage if check option is ticked
@@ -510,49 +517,79 @@ if(selectedIds.length){
     }
 
     for (const item of cart) {
-      await addDoc(collection(db, "cart_reservations"), {
-        /* CUSTOMER */
 
-        userId: user.uid,
+    const reservationRef = await addDoc(
+        collection(db, "cart_reservations"),
+        {
 
-        customerName: `${addressProfile.first_name} ${addressProfile.last_name}`,
+            userId: user.uid,
 
-        phone: addressProfile.phone,
+            customerName:
+                `${addressProfile.first_name} ${addressProfile.last_name}`,
 
-        address: {
-          country: addressProfile.country,
-          state: addressProfile.state,
-          city: addressProfile.city,
-          address: addressProfile.address,
-        },
+            phone: addressProfile.phone,
 
-        /* PRODUCT SNAPSHOT */
+            address: {
+                country: addressProfile.country,
+                state: addressProfile.state,
+                city: addressProfile.city,
+                address: addressProfile.address,
+            },
 
-        productId: item.productId,
+            productId: item.productId,
 
-        productTitle: item.title,
+            productTitle: item.title,
 
-        productImage: item.image,
+            productImage: item.image,
 
-        productPrice: item.price,
+            productPrice: item.price,
 
-        productSize: item.size,
+            productSize: item.size,
 
-        productColor: item.color,
+            productColor: item.color,
 
-        quantity: item.quantity,
+            quantity: item.quantity,
 
-        total: item.price * item.quantity,
+            total: item.price * item.quantity,
 
-        /* ORDER */
+            status: "Pending",
 
-        status: "Pending",
+            stockDeducted: true,
 
-        stockDeducted: false,
+            createdAt: Date.now()
+        }
+    );
 
-        createdAt: Date.now(),
-      });
+
+
+    //------------------------------------
+    // RESERVE INVENTORY
+    //------------------------------------
+
+    const productRef = doc(db,"products",item.productId);
+
+    const productSnap = await getDoc(productRef);
+
+    if(productSnap.exists()){
+
+        const product = productSnap.data();
+
+        const stock = product.stock || {};
+
+        stock[item.size] =
+            Math.max(
+                0,
+                (stock[item.size] || 0) - item.quantity
+            );
+
+        await updateDoc(productRef,{
+            stock
+        });
+
     }
+
+}
+
     // --- WHATSAPP ORDER COMPILER STRING BUILDER ---
     let messageText = `*NEW INCOMING ORDER - TIME-LESS* \n\n`;
     messageText += `*CUSTOMER DETAILS:*\n\n`;
@@ -632,7 +669,9 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/f
 document.addEventListener("DOMContentLoaded", () => {
   initializeLocationSelectors();
 
-  loadProductPreview();
+  if (typeof loadProductPreview === "function") {
+    loadProductPreview();
+}
 
   prefillSavedUserAddressMetadata();
 
