@@ -161,7 +161,7 @@ function initializeLocationSelectors() {
   let stateDropdown;
   let cityDropdown;
 
-  createSearchSelect({
+  const countryDropdown = createSearchSelect({
     container: countryContainer,
 
     placeholder: "Select Country",
@@ -251,6 +251,16 @@ function initializeLocationSelectors() {
       cityInput.value = city.name;
     },
   });
+
+  return {
+
+    countryDropdown,
+
+    stateDropdown,
+
+    cityDropdown
+
+};
 }
 
 function createSearchDropdown({
@@ -667,13 +677,14 @@ if (item.quantity > sizeStock) {
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-  initializeLocationSelectors();
+  const selectors =
+    initializeLocationSelectors();
 
   if (typeof loadProductPreview === "function") {
     loadProductPreview();
 }
 
-  prefillSavedUserAddressMetadata();
+prefillSavedUserAddressMetadata(selectors);
 
   if (checkoutFormInstance) {
     checkoutFormInstance.addEventListener(

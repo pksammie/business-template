@@ -419,15 +419,15 @@ function loadOrders() {
 
       if(!firstOrderLoad){
 
-snapshot.docChanges().forEach(change=>{
+snap.docChanges().forEach(change => {
 
-if(change.type==="added"){
+    if(change.type === "added"){
 
-const order=change.doc.data();
+        const order = change.doc.data();
 
-showLiveOrderNotification(order.customerName);
+        showLiveOrderNotification(order.customerName);
 
-}
+    }
 
 });
 
@@ -650,7 +650,9 @@ window.approveOrder = async function (id) {
 
         if(reservation.stockDeducted){
 
-            showToast("Stock has already been deducted.");
+            showToast(
+"This order has already been approved."
+);
 
             return;
 
@@ -896,7 +898,8 @@ window.editProduct = async function (id) {
     editingStartedAt: Date.now(),
   });
 
-  location.href = `/edit-product?id=${id}`;
+  location.href =
+`/edit-product.html?id=${id}`;
 };
 
 const ordersSearchInput = document.getElementById("orders-search");

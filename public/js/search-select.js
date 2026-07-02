@@ -153,5 +153,23 @@ placeholder="Search..."
 
       render(items);
     },
+
+    select(name) {
+
+    const item = items.find(i => i.name === name);
+
+    if (!item) return;
+
+    const label = wrapper.querySelector(
+        ".search-select-placeholder, .search-select-value"
+    );
+
+    label.textContent = item.name;
+
+    label.className = "search-select-value";
+
+    onSelect(item);
+
+}
   };
 }

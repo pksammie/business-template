@@ -55,7 +55,8 @@ loadProduct();
 /* ── IMAGE UPLOAD ─────────────────────────────────────────── */
 uploadBox.onclick = () => {
   cloudinary.openUploadWidget(
-    { cloudName: "dzkyhxdy9", uploadPreset: "transformations", multiple: false },
+    { cloudName: "dzkyhxdy9", uploadPreset:
+"products", multiple: false },
     (error, result) => {
       if (!error && result && result.event === "success") {
         uploadedImageUrl = result.info.secure_url;
