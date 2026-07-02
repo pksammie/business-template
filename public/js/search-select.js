@@ -98,78 +98,98 @@ placeholder="Search..."
   });
 
   return {
+
     clear() {
       search.value = "";
 
-      const placeholderElement = wrapper.querySelector(
-        ".search-select-placeholder, .search-select-value",
+      const placeholderElement =
+      wrapper.querySelector(
+      ".search-select-placeholder, .search-select-value"
       );
 
-      if (placeholderElement) {
-        placeholderElement.textContent = placeholder;
+      placeholderElement.textContent =
+      placeholder;
 
-        placeholderElement.className = "search-select-placeholder";
-      }
+      placeholderElement.className =
+      "search-select-placeholder";
 
       render(items);
     },
 
     enable() {
-      wrapper.classList.remove("search-select-disabled");
+      wrapper.classList.remove(
+      "search-select-disabled"
+      );
     },
 
     disable() {
-      wrapper.classList.add("search-select-disabled");
+
+      wrapper.classList.add(
+      "search-select-disabled"
+      );
 
       wrapper.classList.remove("open");
 
       search.value = "";
 
-      const placeholderElement = wrapper.querySelector(
-        ".search-select-placeholder, .search-select-value",
+      const placeholderElement =
+      wrapper.querySelector(
+      ".search-select-placeholder, .search-select-value"
       );
 
-      if (placeholderElement) {
-        placeholderElement.textContent = placeholder;
+      placeholderElement.textContent =
+      placeholder;
 
-        placeholderElement.className = "search-select-placeholder";
-      }
+      placeholderElement.className =
+      "search-select-placeholder";
+
     },
 
     setPlaceholder(text) {
-      const placeholderElement = wrapper.querySelector(
-        ".search-select-placeholder, .search-select-value",
+
+      const placeholderElement =
+      wrapper.querySelector(
+      ".search-select-placeholder, .search-select-value"
       );
 
-      if (placeholderElement) {
-        placeholderElement.textContent = text;
+      placeholderElement.textContent =
+      text;
 
-        placeholderElement.className = "search-select-placeholder";
-      }
+      placeholderElement.className =
+      "search-select-placeholder";
+
     },
 
     setItems(newItems) {
+
       items = newItems;
 
       render(items);
+
     },
 
-    select(name) {
+    select(name){
 
-    const item = items.find(i => i.name === name);
+      const item =
+      items.find(i => i.name === name);
 
-    if (!item) return;
+      if(!item) return;
 
-    const label = wrapper.querySelector(
-        ".search-select-placeholder, .search-select-value"
-    );
+      const label =
+      wrapper.querySelector(
+      ".search-select-placeholder, .search-select-value"
+      );
 
-    label.textContent = item.name;
+      label.textContent =
+      item.name;
 
-    label.className = "search-select-value";
+      label.className =
+      "search-select-value";
 
-    onSelect(item);
+      onSelect(item);
 
-}
-  };
+    }
+
+};
+
 }

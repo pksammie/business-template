@@ -30,9 +30,13 @@ text.innerHTML=`${customer} just placed an order.`;
 
 popup.classList.add("show");
 
-notificationSound.currentTime=0;
+if(audioUnlocked){
 
-notificationSound.play().catch(()=>{});
+    notificationSound.currentTime = 0;
+
+    notificationSound.play();
+
+}
 
 setTimeout(()=>{
 
@@ -41,6 +45,26 @@ popup.classList.remove("show");
 },5000);
 
 }
+
+let audioUnlocked = false;
+
+document.addEventListener("click", () => {
+
+    if(audioUnlocked) return;
+
+    notificationSound.play()
+        .then(() => {
+
+            notificationSound.pause();
+
+            notificationSound.currentTime = 0;
+
+            audioUnlocked = true;
+
+        })
+        .catch(()=>{});
+
+}, { once:true });
 
 function celebrateDelivery(){
 

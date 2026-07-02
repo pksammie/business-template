@@ -225,9 +225,7 @@ document.getElementById("cancel-review-btn").addEventListener("click", () => {
 });
 
 /* ── LEAVE PAGE GUARD ────────────────────────────────────── */
-window.addEventListener("beforeunload", e => {
-  if (submitBtn.disabled || submitOneStarBtn.disabled) { e.preventDefault(); e.returnValue = ""; }
-});
+
 
 /* ── GLOBAL ERROR CATCH ──────────────────────────────────── */
 window.addEventListener("unhandledrejection", event => {

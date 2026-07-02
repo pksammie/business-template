@@ -319,24 +319,68 @@ autocomplete="off"
 }
 
 // Prefill form values if persistence checkbox data was saved from a past session
-function prefillSavedUserAddressMetadata() {
-  const cachedAddress = JSON.parse(
-    localStorage.getItem("vanguard_saved_customer_profile"),
-  );
-  if (cachedAddress && checkoutFormInstance) {
-    checkoutFormInstance.elements["country"].value =
-      cachedAddress.country || "";
+function prefillSavedUserAddressMetadata(selectors) {
+
+    const cachedAddress = JSON.parse(
+        localStorage.getItem("vanguard_saved_customer_profile")
+    );
+
+    if(!cachedAddress || !checkoutFormInstance) return;
+
     checkoutFormInstance.elements["first_name"].value =
-      cachedAddress.first_name || "";
+        cachedAddress.first_name || "";
+
     checkoutFormInstance.elements["last_name"].value =
-      cachedAddress.last_name || "";
+        cachedAddress.last_name || "";
+
     checkoutFormInstance.elements["address"].value =
-      cachedAddress.address || "";
-    checkoutFormInstance.elements["city"].value = cachedAddress.city || "";
-    checkoutFormInstance.elements["state"].value = cachedAddress.state || "";
-    checkoutFormInstance.elements["phone"].value = cachedAddress.phone || "";
+        cachedAddress.address || "";
+
+    checkoutFormInstance.elements["phone"].value =
+        cachedAddress.phone || "";
+
     checkoutFormInstance.elements["save_info"].checked = true;
-  }
+
+    if(!selectors) return;
+
+    const {
+        countryDropdown,
+        stateDropdown,
+        cityDropdown
+    } = selectors;
+
+    if(cachedAddress.country){
+
+        countryDropdown.select(
+            cachedAddress.country
+        );
+
+    }
+
+    setTimeout(()=>{
+
+        if(cachedAddress.state){
+
+            stateDropdown.select(
+                cachedAddress.state
+            );
+
+        }
+
+        setTimeout(()=>{
+
+            if(cachedAddress.city){
+
+                cityDropdown.select(
+                    cachedAddress.city
+                );
+
+            }
+
+        },200);
+
+    },200);
+
 }
 
 // Compile all user info and launch the formatted WhatsApp message
@@ -503,7 +547,7 @@ if(selectedIds.length){
       }
 
       const sizeStock =
-  productData.stock?.[item.size] || 0;
+Number(productData.stock?.[item.size] ?? 0);
 
 if (item.quantity > sizeStock) {
 
@@ -526,79 +570,35 @@ if (item.quantity > sizeStock) {
       );
     }
 
-    for (const item of cart) {
-
-    const reservationRef = await addDoc(
-        collection(db, "cart_reservations"),
-        {
-
-            userId: user.uid,
-
-            customerName:
-                `${addressProfile.first_name} ${addressProfile.last_name}`,
-
-            phone: addressProfile.phone,
-
-            address: {
-                country: addressProfile.country,
-                state: addressProfile.state,
-                city: addressProfile.city,
-                address: addressProfile.address,
-            },
-
-            productId: item.productId,
-
-            productTitle: item.title,
-
-            productImage: item.image,
-
-            productPrice: item.price,
-
-            productSize: item.size,
-
-            productColor: item.color,
-
-            quantity: item.quantity,
-
-            total: item.price * item.quantity,
-
-            status: "Pending",
-
-            stockDeducted: true,
-
-            createdAt: Date.now()
-        }
-    );
-
-
-
-    //------------------------------------
-    // RESERVE INVENTORY
-    //------------------------------------
-
-    const productRef = doc(db,"products",item.productId);
-
-    const productSnap = await getDoc(productRef);
-
-    if(productSnap.exists()){
-
-        const product = productSnap.data();
-
-        const stock = product.stock || {};
-
-        stock[item.size] =
-            Math.max(
-                0,
-                (stock[item.size] || 0) - item.quantity
-            );
-
-        await updateDoc(productRef,{
-            stock
-        });
-
+const reservationPromises = cart.map(item => {
+  return addDoc(
+    collection(db, "cart_reservations"),
+    {
+      userId: user.uid,
+      customerName: `${addressProfile.first_name} ${addressProfile.last_name}`,
+      phone: addressProfile.phone,
+      address: {
+        country: addressProfile.country,
+        state: addressProfile.state,
+        city: addressProfile.city,
+        address: addressProfile.address,
+      },
+      productId: item.productId,
+      productTitle: item.title,
+      productImage: item.image,
+      productPrice: item.price,
+      productSize: item.size,
+      productColor: item.color,
+      quantity: item.quantity,
+      total: item.price * item.quantity,
+      status: "Pending",
+      stockDeducted: false,
+      createdAt: Date.now(),
     }
+  );
+});
 
-}
+await Promise.all(reservationPromises);
 
     // --- WHATSAPP ORDER COMPILER STRING BUILDER ---
     let messageText = `*NEW INCOMING ORDER - TIME-LESS* \n\n`;
@@ -700,4 +700,8 @@ prefillSavedUserAddressMetadata(selectors);
 
     await renderCheckoutOverview();
   });
+});
+
+window.addEventListener("pageshow", () => {
+    resetCheckoutState();
 });
