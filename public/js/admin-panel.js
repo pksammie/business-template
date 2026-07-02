@@ -18,7 +18,7 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/f
 
 let confirmCallback = null;
 let firstOrderLoad=true;
-const notificationSound = new Audio("/sounds/notification.mp3");
+const notificationSound = new Audio("/sounds/notification.wav");
 
 function showLiveOrderNotification(customer){
 
