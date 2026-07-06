@@ -24,4 +24,23 @@ const googleProvider = new GoogleAuthProvider();
 
 const db = getFirestore(app);
 
-export { app, db, auth, googleProvider };
+/* ---------- ADMIN STATUS ---------- */
+
+let adminStatus = false;
+
+function setAdminStatus(value) {
+    adminStatus = value;
+}
+
+function getAdminStatus() {
+    return adminStatus;
+}
+
+export {
+    app,
+    db,
+    auth,
+    googleProvider,
+    setAdminStatus,
+    getAdminStatus
+};

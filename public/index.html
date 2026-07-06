@@ -92,13 +92,35 @@
           <span class="auth-divider">/</span>
           <a href="/register" class="auth-btn highlight">Sign Up</a>
         </div>
-        <a href="/cart" class="custom-cart-anchor">
-          <span class="cart-label-word">Cart</span>
-          <div class="cart-icon-wrapper">
+        <div class="nav-user-icons">
+
+    <a href="/notifications.html" class="notification-anchor">
+
+        <div class="notification-icon-wrapper">
+
+            <i class="fa-regular fa-bell"></i>
+
+            <span id="notification-badge">0</span>
+
+        </div>
+
+    </a>
+
+    <a href="/cart" class="custom-cart-anchor">
+
+        <span class="cart-label-word">Cart</span>
+
+        <div class="cart-icon-wrapper">
+
             <i class="fa-solid fa-bag-shopping"></i>
+
             <span id="cart-count">0</span>
-          </div>
-        </a>
+
+        </div>
+
+    </a>
+
+</div>
       </div>
     </header>
 
@@ -280,55 +302,9 @@
 
     </div>
 
-    <div class="testimonial-grid">
-
-        <div class="testimonial-card">
-
-            <div class="stars">
-                ★★★★★
-            </div>
-
-            <p>
-                Quality exceeded my expectations.
-            </p>
-
-            <h4>
-                — Customer
-            </h4>
-
-        </div>
-
-        <div class="testimonial-card">
-
-            <div class="stars">
-                ★★★★★
-            </div>
-
-            <p>
-                The packaging felt premium.
-            </p>
-
-            <h4>
-                — Customer
-            </h4>
-
-        </div>
-
-        <div class="testimonial-card">
-
-            <div class="stars">
-                ★★★★★
-            </div>
-
-            <p>
-                Exactly what I ordered.
-            </p>
-
-            <h4>
-                — Customer
-            </h4>
-
-        </div>
+    <div
+        class="homepage-review-carousel"
+        id="homepage-review-carousel">
 
     </div>
 
@@ -340,11 +316,29 @@
         <div class="thin-accent-line"></div>
       </div>
 
-      <div class="search-wrapper">
-        <input type="text" id="search-input" placeholder="Search products..." />
-      </div>
+      <div class="products-toolbar">
 
-      <div class="products-grid" id="products-grid"></div>
+    <div class="search-wrapper">
+
+        <input
+            type="text"
+            id="search-input"
+            placeholder="Search products..."
+        />
+
+    </div>
+
+</div>
+
+<div
+    class="products-grid"
+    id="products-grid">
+</div>
+
+<div
+    class="pagination"
+    id="product-pagination">
+</div>
     </main>
 
     <div id="logoutModal" class="logout-modal">
@@ -376,6 +370,8 @@
     <!-- FIXED: Added an explicit version timestamp query parameter to bypass hidden terminal script bindings -->
     <script type="module" src="/js/index.js?v=2"></script>
     <script type="module" src="/js/auth-state.js"></script>
+    <script type="module" src="/js/admin-notification.js"></script>
+    <script type="module" src="/js/user-notifications.js"></script>
 
     <script type="module" src="/js/route-guard.js"></script>
     <script type="module" src="/js/guard.js"></script>

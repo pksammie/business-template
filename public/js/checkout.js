@@ -598,7 +598,38 @@ const reservationPromises = cart.map(item => {
   );
 });
 
-await Promise.all(reservationPromises);
+const reservationRefs = await Promise.all(reservationPromises);
+
+for (let i = 0; i < cart.length; i++) {
+
+    const item = cart[i];
+
+    const reservationRef = reservationRefs[i];
+
+    await addDoc(
+        collection(db, "admin_notifications"),
+        {
+
+            type: "order",
+
+            reservationId: reservationRef.id,
+
+            productId: item.productId,
+
+            productTitle: item.title,
+
+            productImage: item.image,
+
+            customerName: `${addressProfile.first_name} ${addressProfile.last_name}`,
+
+            createdAt: Date.now(),
+
+            read: false
+
+        }
+    );
+
+} 
 
     // --- WHATSAPP ORDER COMPILER STRING BUILDER ---
     let messageText = `*NEW INCOMING ORDER - TIME-LESS* \n\n`;

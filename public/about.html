@@ -225,3 +225,137 @@
   }
 }
 
+Phase 1
+
+✔ Admin actions automatically create notifications.
+
+When admin
+
+approves
+cancels
+starts delivery
+delivers
+
+the user instantly gets a Firestore notification.
+
+Phase 2
+
+A global notification listener.
+
+No matter where the customer is
+
+Home
+
+Products
+
+Orders
+
+Cart
+
+Checkout
+
+they'll immediately see
+
+──────────────
+
+✓ Order Approved
+
+Your Rolex Explorer has been approved.
+
+Click to view
+
+──────────────
+
+Exactly like the admin notification.
+
+Phase 3
+
+Notification page
+
+🔔 Notifications
+
+● 4 unread
+
+────────────────
+
+Order Approved
+
+Rolex Explorer
+
+Today
+5:42 PM
+
+View details
+
+────────────────
+
+Delivery Started
+
+Nike Air Force
+
+Yesterday
+3:16 PM
+
+View details
+Phase 4
+
+When clicking
+
+View details
+
+it expands
+
+IMAGE
+
+Rolex Explorer
+
+Status
+Approved
+
+Date
+
+July 6
+
+Time
+
+5:42 PM
+
+Message
+
+Your order has been approved and is now being prepared.
+
+Only then
+
+read:true
+
+gets updated.
+
+Phase 5
+
+Unread badge
+
+The bell icon becomes
+
+🔔 4
+
+live.
+
+The number disappears automatically as notifications are read.
+
+Phase 6
+
+Cart loading skeleton
+
+Instead of
+
+(blank)
+
+the customer immediately sees
+
+Loading your cart...
+
+□□□□□□□□□
+□□□□□□□□□
+□□□□□□□□□
+
+until Firebase finishes loading.

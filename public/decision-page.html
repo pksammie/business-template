@@ -78,8 +78,38 @@
       <div class="decision-split-container">
         <!-- IMAGE -->
         <div class="decision-media-pane">
-          <img id="decision-product-img" class="decision-product-image" />
+
+    <div class="product-gallery">
+
+        <button
+            class="gallery-arrow left"
+            id="gallery-prev"
+        >
+            <i class="fa-solid fa-chevron-left"></i>
+        </button>
+
+        <div
+            class="gallery-slider"
+            id="gallery-slider"
+        >
+
         </div>
+
+        <button
+            class="gallery-arrow right"
+            id="gallery-next"
+        >
+            <i class="fa-solid fa-chevron-right"></i>
+        </button>
+
+        <div
+            class="gallery-dots"
+            id="gallery-dots"
+        ></div>
+
+    </div>
+
+</div>
 
         <!-- DETAILS -->
         <div class="decision-meta-pane">
@@ -232,5 +262,7 @@ margin-bottom:80px;
     <script type="module" src="/js/cart-count.js"></script>
     <script src="/js/modal.js"></script>
     <script src="/js/toast.js"></script>
+    <script type="module" src="/js/admin-notification.js"></script>
+    
   </body>
 </html>

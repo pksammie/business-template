@@ -6,6 +6,8 @@ import {
     collection,
     query,
     orderBy,
+    where,
+    limit,
     onSnapshot
 }
 from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
@@ -22,6 +24,10 @@ document.getElementById("cart-count");
 const searchInput =
 document.getElementById("search-input");
 
+/* ---------------- HOMEPAGE FEATURED REVIEW CAROUSEL ---------------- */
+/* Single source of truth: shows the latest FEATURED reviews only.
+   (See loadHomepageReviews() / renderHomepageReviews() further below,
+   which target the actual #homepage-review-carousel element in index.html) */
 
 /* ---------------- MOBILE MENU ---------------- */
 
@@ -97,9 +103,15 @@ function renderProducts(products) {
                 ? Number(product.price)
                 : 0;
 
-        const image =
-            product.image ||
-            "https://via.placeholder.com/600x600?text=No+Image";
+        const productImages =
+    Array.isArray(product.images) &&
+    product.images.length > 0
+        ? product.images
+        : [product.image];
+
+const image =
+    productImages[0] ||
+    "https://via.placeholder.com/600x600?text=No+Image";
 
         const stock = product.stock || {};
 
@@ -224,11 +236,25 @@ else if(remainingStock <= 3){
         card.innerHTML = `
             ${suspensionMaskOverlay}
 
-            <img
-                src="${image}"
-                alt="${title}"
-                class="product-image"
-            >
+            <div class="product-image-container">
+
+    <img
+        src="${image}"
+        alt="${title}"
+        class="product-image"
+    >
+
+    ${
+        productImages.length > 1
+        ? `
+        <div class="image-count-badge">
+            1 / ${productImages.length}
+        </div>
+        `
+        : ""
+    }
+
+</div>
 
             <div class="product-info">
 
@@ -361,11 +387,172 @@ if (searchInput) {
 
 }
 
+let homepageReviews = [];
+let reviewPointer = 0;
+let reviewRotationTimer = null;
+
+function loadHomepageReviews(){
+
+    const carousel =
+    document.getElementById("homepage-review-carousel");
+
+    if(!carousel) return;
+
+    /* Latest FEATURED reviews only (per spec), newest first */
+    const q = query(
+        collection(db,"reviews"),
+        where("featured","==",true),
+        orderBy("createdAt","desc"),
+        limit(20)
+    );
+
+    onSnapshot(q,(snapshot)=>{
+
+        homepageReviews = [];
+
+        snapshot.forEach(docSnap=>{
+            homepageReviews.push({
+                id: docSnap.id,
+                ...docSnap.data()
+            });
+        });
+
+        reviewPointer = 0;
+
+        if(homepageReviews.length===0){
+            carousel.innerHTML = `<p class="no-review-message">No featured reviews yet.</p>`;
+            return;
+        }
+
+        renderHomepageReviews();
+
+    });
+
+}
+
+function renderHomepageReviews() {
+
+    const carousel =
+    document.getElementById("homepage-review-carousel");
+
+    if (!carousel || homepageReviews.length === 0) return;
+
+    carousel.innerHTML = "";
+
+    const sortedReviews = [...homepageReviews].sort((a,b)=>
+
+        (b.likes || b.helpfulCount || 0) -
+
+        (a.likes || a.helpfulCount || 0)
+
+    );
+
+    const visible = Math.min(3, sortedReviews.length);
+
+    for(let i=0;i<visible;i++){
+
+        const review =
+        sortedReviews[
+            (reviewPointer+i)%sortedReviews.length
+        ];
+
+        const card =
+        document.createElement("div");
+
+        card.className =
+        "homepage-review-card";
+
+        card.innerHTML = `
+
+<div class="homepage-review-top">
+
+    <div class="homepage-stars">
+
+        ${generateStars(review.rating||0)}
+
+    </div>
+
+    <div class="homepage-helpful">
+
+        <i class="fa-solid fa-heart"></i>
+
+        ${review.likes || review.helpfulCount || 0}
+
+    </div>
+
+</div>
+
+<div class="homepage-review-product">
+
+<img
+src="${review.productImage || "/images/placeholder.jpg"}"
+alt="Product">
+
+</div>
+
+<p class="homepage-review-text">
+
+"${review.reviewText || ""}"
+
+</p>
+
+<div class="homepage-review-footer">
+
+<h4>
+
+${review.customerName || "Verified Customer"}
+
+</h4>
+
+<span>
+
+Purchased
+
+<strong>
+
+${review.productTitle || "Luxury Product"}
+
+</strong>
+
+</span>
+
+</div>
+
+`;
+
+        carousel.appendChild(card);
+
+    }
+
+}
+
+function startHomepageReviewRotation(){
+
+    if(reviewRotationTimer) return; /* never stack duplicate intervals */
+
+    reviewRotationTimer = setInterval(()=>{
+
+        if(homepageReviews.length<=3) return;
+
+        reviewPointer++;
+
+        if(reviewPointer>=homepageReviews.length) reviewPointer = 0;
+
+        renderHomepageReviews();
+
+    },6000);
+
+}
+
 /* ---------------- INIT ---------------- */
 
-async function initStorefront() {
+async function initStorefront(){
 
     await loadStorefrontGrid();
+
+    loadHomepageReviews();
+
+    startHomepageReviewRotation();
 
 }
 

@@ -100,31 +100,107 @@ View Store
 
     <input type="number" id="prod-price" placeholder="Price" required>
 
-    <div class="stock-by-size-box">
+    <div class="admin-option-box">
 
-<h4>Stock Per Size</h4>
+<h4>Available Sizes & Stock</h4>
 
-<div class="stock-size-grid">
+<div class="size-stock-row">
 
-<div class="stock-row">
-<label>S</label>
-<input type="number" id="stock-s" min="0" value="0">
+<label>
+
+<input type="checkbox" name="prod_sizes" value="S">
+
+S
+
+</label>
+
+<input
+type="number"
+class="size-stock-input"
+data-size="S"
+placeholder="Stock"
+min="0"
+value="0">
+
 </div>
 
-<div class="stock-row">
-<label>M</label>
-<input type="number" id="stock-m" min="0" value="0">
+<div class="size-stock-row">
+
+<label>
+
+<input type="checkbox" name="prod_sizes" value="M">
+
+M
+
+</label>
+
+<input
+type="number"
+class="size-stock-input"
+data-size="M"
+placeholder="Stock"
+min="0"
+value="0">
+
 </div>
 
-<div class="stock-row">
-<label>L</label>
-<input type="number" id="stock-l" min="0" value="0">
+<div class="size-stock-row">
+
+<label>
+
+<input type="checkbox" name="prod_sizes" value="L">
+
+L
+
+</label>
+
+<input
+type="number"
+class="size-stock-input"
+data-size="L"
+placeholder="Stock"
+min="0"
+value="0">
+
 </div>
 
-<div class="stock-row">
-<label>XL</label>
-<input type="number" id="stock-xl" min="0" value="0">
+<div class="size-stock-row">
+
+<label>
+
+<input type="checkbox" name="prod_sizes" value="XL">
+
+XL
+
+</label>
+
+<input
+type="number"
+class="size-stock-input"
+data-size="XL"
+placeholder="Stock"
+min="0"
+value="0">
+
 </div>
+
+<div class="size-stock-row">
+
+<label>
+
+<input type="checkbox" name="prod_sizes" value="None">
+
+No Sizes (single stock)
+
+</label>
+
+<input
+type="number"
+class="size-stock-input"
+data-size="None"
+placeholder="Stock"
+min="0"
+value="0">
 
 </div>
 
@@ -138,27 +214,6 @@ View Store
 <input
 type="hidden"
 id="uploaded-image-url">
-
-    <!-- SIZE -->
-<div class="admin-option-box">
-
-<h4>Available Sizes</h4>
-
-<div class="checkbox-grid" aria-required="true">
-
-<label><input type="checkbox" name="prod_sizes" value="S"> S</label>
-
-<label><input type="checkbox" name="prod_sizes" value="M"> M</label>
-
-<label><input type="checkbox" name="prod_sizes" value="L"> L</label>
-
-<label><input type="checkbox" name="prod_sizes" value="XL"> XL</label>
-
-<label><input type="checkbox" name="prod_sizes" value="None"> None</label>
-
-</div>
-
-</div>
 
     <!-- COLORS -->
 <div class="admin-option-box">
@@ -201,6 +256,18 @@ id="uploaded-image-url">
 
 <h3>Live Products</h3>
 <br>
+<div class="orders-search-wrapper">
+
+<i class="fa-solid fa-magnifying-glass"></i>
+
+<input
+id="products-search"
+placeholder="Search products...">
+
+</div>
+
+<div id="products-pagination" class="pagination"></div>
+<br>
 <div class="table-scroll">
 
 <div id="admin-inventory-table-body" class="products-cards-grid"></div>
@@ -213,6 +280,7 @@ id="uploaded-image-url">
     Customer Orders
 </h2>
 <br>
+
 <div class="table-scroll customer-orders-scroll">
 
     <div class="orders-search-wrapper">
@@ -228,6 +296,31 @@ id="uploaded-image-url">
 </div>
     
 <div id="orders-body" class="orders-cards-grid"></div>
+
+<div id="orders-pagination" class="admin-pagination"></div>
+
+<section style="margin-top:60px;">
+
+<h2>Customer Reviews</h2>
+
+<br>
+<div class="orders-search-wrapper">
+
+<i class="fa-solid fa-magnifying-glass"></i>
+
+<input
+    id="reviews-search"
+    placeholder="Search reviews...">
+
+</div>
+
+<div id="reviews-pagination" class="pagination"></div>
+<br>
+<div id="admin-reviews-grid" class="orders-cards-grid">
+
+</div>
+
+</section>
 
 </main>
 
@@ -255,6 +348,7 @@ id="uploaded-image-url">
 <script src="/js/toast.js"></script>
 <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
 <script type="module" src="/js/admin-panel.js"></script>
+<script type="module" src="/js/admin-notification.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
 </body>

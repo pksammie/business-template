@@ -40,55 +40,87 @@
 
 <h4>Stock Per Size</h4>
 
-<div class="stock-grid">
+<div class="admin-option-box">
 
-<div>
+<h4>Available Sizes & Stock</h4>
 
-<label>S</label>
+<div class="size-stock-row">
+
+<label>
+
+<input type="checkbox" name="prod_sizes" value="S">
+
+S
+
+</label>
 
 <input
 type="number"
-id="stock-s"
+class="size-stock-input"
+data-size="S"
+placeholder="Stock"
 min="0"
 value="0">
 
 </div>
 
-<div>
+<div class="size-stock-row">
 
-<label>M</label>
+<label>
+
+<input type="checkbox" name="prod_sizes" value="M">
+
+M
+
+</label>
 
 <input
 type="number"
-id="stock-m"
+class="size-stock-input"
+data-size="M"
+placeholder="Stock"
 min="0"
 value="0">
 
 </div>
 
-<div>
+<div class="size-stock-row">
 
-<label>L</label>
+<label>
+
+<input type="checkbox" name="prod_sizes" value="L">
+
+L
+
+</label>
 
 <input
 type="number"
-id="stock-l"
+class="size-stock-input"
+data-size="L"
+placeholder="Stock"
 min="0"
 value="0">
 
 </div>
 
-<div>
+<div class="size-stock-row">
 
-<label>XL</label>
+<label>
+
+<input type="checkbox" name="prod_sizes" value="XL">
+
+XL
+
+</label>
 
 <input
 type="number"
-id="stock-xl"
+class="size-stock-input"
+data-size="XL"
+placeholder="Stock"
 min="0"
 value="0">
-
-</div>
 
 </div>
 
@@ -195,6 +227,7 @@ value="0">
     </main>
 
     <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
+    <script type="module" src="/js/admin-notification.js"></script>
 
     <script type="module" src="/js/edit-product.js"></script>
     <script src="/js/toast.js"></script>

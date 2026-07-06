@@ -3,22 +3,80 @@ import { auth, db } from "./firebase.js";
 import { fireLuxuryConfetti } from "./confetti.js";
 
 import {
-  collection,
-  getDocs,
-  addDoc,
-  doc,
-  deleteDoc,
-  getDoc,
-  updateDoc,
-  increment,
-  onSnapshot,
-} from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+collection,
+getDocs,
+addDoc,
+doc,
+deleteDoc,
+getDoc,
+updateDoc,
+increment,
+onSnapshot,
+query,
+orderBy,
+serverTimestamp
+}
+from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
 
 let confirmCallback = null;
 let firstOrderLoad=true;
+let allOrders = [];
+let filteredOrders = [];
+let currentOrdersPage = 1;
+let allProducts = [];
+let filteredProducts = [];
+let currentProductsPage = 1;
+
+const PRODUCTS_PER_PAGE = 12;
+
+let productSearchTerm = "";
+
+let allReviews=[];
+
+let filteredReviews=[];
+
+let reviewSearchTerm="";
+
+let currentReviewPage=1;
+
+const REVIEWS_PER_PAGE=8;
+
+const stockValues = {
+    S:0,
+    M:0,
+    L:0,
+    XL:0
+};
+const ORDERS_PER_PAGE = 10;
 const notificationSound = new Audio("/sounds/notification.wav");
+
+async function createUserNotification(order, status, message) {
+
+    await addDoc(collection(db, "user_notifications"), {
+
+        userId: order.userId,
+
+        orderId: order.id,
+
+        productId: order.productId,
+
+        productTitle: order.productTitle,
+
+        productImage: order.productImage,
+
+        status,
+
+        message,
+
+        read: false,
+
+        createdAt: serverTimestamp()
+
+    });
+
+}
 
 function showLiveOrderNotification(customer){
 
@@ -155,7 +213,7 @@ onAuthStateChanged(auth, async (user) => {
 const adminForm = document.getElementById("admin-product-form");
 const tableBody = document.getElementById("admin-inventory-table-body");
 
-let uploadedImageUrl = "";
+let uploadedImageUrls = [];
 let ordersSearchTerm = "";
 
 const uploadBox = document.getElementById("upload-image-box");
@@ -163,32 +221,73 @@ const uploadBox = document.getElementById("upload-image-box");
 if (uploadBox) {
   uploadBox.onclick = () => {
     cloudinary.openUploadWidget(
-      {
-        cloudName: "dzkyhxdy9",
+{
+    cloudName: "dzkyhxdy9",
+    uploadPreset: "products",
+    multiple: true,
+    maxFiles: 8
+},
+(error, result) => {
 
-        uploadPreset: "products",
+    if(error) return;
 
-        multiple: false,
-      },
+    if(result.event === "success"){
 
-      (error, result) => {
-        if (!error && result && result.event === "success") {
-          uploadedImageUrl = result.info.secure_url;
+        uploadedImageUrls.push(result.info.secure_url);
 
-          uploadBox.innerHTML = `
-<img
-src="${uploadedImageUrl}"
-style="
-width:100%;
-height:180px;
-object-fit:cover;
-border-radius:8px;
-">
-`;
-        }
-      },
-    );
+        renderUploadedImages();
+
+    }
+
+});
   };
+}
+
+function renderUploadedImages(){
+
+    uploadBox.innerHTML = "";
+
+    uploadedImageUrls.forEach((url,index)=>{
+
+        uploadBox.innerHTML += `
+
+        <div class="uploaded-image-item">
+
+            <img
+                src="${url}"
+                class="uploaded-image-preview"
+            >
+
+            <button
+                type="button"
+                class="remove-upload-image"
+                onclick="removeUploadedImage(${index},event)"
+            >
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+        `;
+
+    });
+
+}
+
+window.removeUploadedImage = function(index,event){
+
+    if(event){
+
+        event.stopPropagation();
+
+    }
+
+    uploadedImageUrls.splice(index,1);
+
+    renderUploadedImages();
+
 }
 
 /* ---------------- NONE LOGIC CONTROL ---------------- */
@@ -213,6 +312,8 @@ sizeBoxes.forEach((box) => {
     }
   });
 });
+
+const sizeCheckboxes = document.querySelectorAll('input[name="prod_sizes"]');
 
 // colors
 const colorBoxes = document.querySelectorAll('input[name="prod_colors"]');
@@ -303,108 +404,205 @@ function loadInventory() {
     (snap) => {
       tableBody.innerHTML = "";
 
-      const products = [];
+      allProducts = [];
 
       snap.forEach((docSnap) => {
-        products.push({
+        allProducts.push({
           id: docSnap.id,
           ...docSnap.data(),
         });
       });
 
-      products.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+      allProducts.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
 
-      products.forEach((p) => {
-        const card = document.createElement("div");
+      filteredProducts = allProducts.filter(product=>{
 
-        card.className = "product-admin-card";
+    if(!productSearchTerm) return true;
+
+    return (
+
+        (product.title||"")
+        .toLowerCase()
+        .includes(productSearchTerm)
+
+    );
+
+});
+
+renderProductsPage(currentProductsPage);
+
+    },
+  );
+}
+
+function renderProductsPage(page){
+
+    tableBody.innerHTML="";
+
+    currentProductsPage=page;
+
+    const start=(page-1)*PRODUCTS_PER_PAGE;
+
+    const end=start+PRODUCTS_PER_PAGE;
+
+    const pageProducts=filteredProducts.slice(start,end);
+
+    pageProducts.forEach((p)=>{
+
+        const card=document.createElement("div");
+
+        card.className="product-admin-card";
 
         card.innerHTML = `
-    <img src="${p.image}" class="admin-card-image">
+<img src="${p.image}" class="admin-card-image">
 
-    <div class="admin-card-content">
+<div class="admin-card-content">
 
-        <h4>${p.title}</h4>
+<h4>${p.title}</h4>
 
-        <div class="product-rating">
+<div class="product-rating">
 
-    <span class="rating-stars">
+<span class="rating-stars">
+${generateStars(p.averageRating || 0)}
+</span>
 
-        ${generateStars(
-    p.averageRating || 0
-)}
-
-    </span>
-
-    <span class="rating-count">
-
-        (${p.reviewCount || 0})
-
-    </span>
+<span class="rating-count">
+(${p.reviewCount || 0})
+</span>
 
 </div>
 
-        <p>₦${Number(p.price).toLocaleString()}</p>
+<p>₦${Number(p.price).toLocaleString()}</p>
 
-        <small>
-
-S:
-${p.stock?.S || 0}
-
+<small>
+S:${p.stock?.S||0}
 &nbsp;&nbsp;
-
-M:
-${p.stock?.M || 0}
-
+M:${p.stock?.M||0}
 &nbsp;&nbsp;
-
-L:
-${p.stock?.L || 0}
-
+L:${p.stock?.L||0}
 &nbsp;&nbsp;
-
-XL:
-${p.stock?.XL || 0}
-
+XL:${p.stock?.XL||0}
 </small>
 
-        <div class="admin-card-actions">
+<div class="admin-card-actions">
 
-<button
-onclick="editProduct('${p.id}')"
-class="edit-btn">
-
+<button onclick="editProduct('${p.id}')" class="edit-btn">
 Edit
+</button>
+
+<button
+onclick="toggleSuspension('${p.id}',${p.isSuspended?false:true})"
+class="${p.isSuspended?"unsuspend-btn":"suspend-btn"}">
+
+${p.isSuspended?"Unsuspend":"Suspend"}
 
 </button>
 
 <button
-onclick="toggleSuspension('${p.id}',
-${p.isSuspended ? false : true}
-)"
-class="${p.isSuspended ? "unsuspend-btn" : "suspend-btn"}">
+onclick="deleteProduct('${p.id}')"
+class="delete-btn">
 
-${p.isSuspended ? "Unsuspend" : "Suspend"}
+Delete
 
 </button>
-
-    <button
-    onclick="deleteProduct('${p.id}')"
-    class="delete-btn">
-
-    Delete
-
-    </button>
 
 </div>
 
-    </div>
+</div>
 `;
 
         tableBody.appendChild(card);
-      });
-    },
-  );
+
+    });
+
+    renderProductsPagination();
+
+}
+
+function renderProductsPagination(){
+
+    const container=document.getElementById("products-pagination");
+
+    if(!container) return;
+
+    const totalPages=Math.ceil(filteredProducts.length/PRODUCTS_PER_PAGE);
+
+    if(totalPages<=1){
+
+        container.innerHTML="";
+
+        return;
+
+    }
+
+    let html="";
+
+    html+=`
+    <button
+    ${currentProductsPage===1?"disabled":""}
+    onclick="changeProductsPage(${currentProductsPage-1})">
+    ‹
+    </button>
+    `;
+
+    for(let i=1;i<=totalPages;i++){
+
+        html+=`
+        <button
+        class="${i===currentProductsPage?"active":""}"
+        onclick="changeProductsPage(${i})">
+        ${i}
+        </button>
+        `;
+
+    }
+
+    html+=`
+    <button
+    ${currentProductsPage===totalPages?"disabled":""}
+    onclick="changeProductsPage(${currentProductsPage+1})">
+    ›
+    </button>
+    `;
+
+    container.innerHTML=html;
+
+}
+
+window.changeProductsPage=function(page){
+
+    renderProductsPage(page);
+
+}
+
+const productSearch=document.getElementById("products-search");
+
+if(productSearch){
+
+productSearch.addEventListener("input",()=>{
+
+productSearchTerm=
+
+productSearch.value
+
+.toLowerCase()
+
+.trim();
+
+filteredProducts = allProducts.filter(product => {
+
+    if(!productSearchTerm) return true;
+
+    return (product.title || "")
+        .toLowerCase()
+        .includes(productSearchTerm);
+
+});
+
+renderProductsPage(1);
+
+});
+
 }
 
 function loadOrders() {
@@ -427,19 +625,31 @@ function loadOrders() {
         });
       });
 
-      orders.sort((a, b) => b.createdAt - a.createdAt);
+      orders.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
 
-      const filteredOrders = orders.filter((order) => {
-        if (!ordersSearchTerm) {
-          return true;
-        }
+allOrders = orders;
 
-        return (
-          (order.customerName || "").toLowerCase().includes(ordersSearchTerm) ||
-          (order.phone || "").toLowerCase().includes(ordersSearchTerm) ||
-          (order.productTitle || "").toLowerCase().includes(ordersSearchTerm)
-        );
-      });
+filteredOrders = allOrders.filter(order=>{
+
+    if(!ordersSearchTerm) return true;
+
+    return(
+
+        (order.customerName||"").toLowerCase().includes(ordersSearchTerm)
+
+        ||
+
+        (order.phone||"").toLowerCase().includes(ordersSearchTerm)
+
+        ||
+
+        (order.productTitle||"").toLowerCase().includes(ordersSearchTerm)
+
+    );
+
+});
+
+renderOrdersPage(currentOrdersPage);
 
       if(!firstOrderLoad){
 
@@ -459,203 +669,200 @@ snap.docChanges().forEach(change => {
 
 firstOrderLoad=false;
 
-      filteredOrders.forEach((order) => {
-        body.innerHTML += `
-<div class="order-admin-card">
-
-    <div class="order-status">
-        <span style="
-            display:inline-block;
-            padding:6px 12px;
-            border-radius:20px;
-            font-size:12px;
-            font-weight:700;
-            background:
-${
-  order.status === "Pending"
-    ? "#c5a880"
-    : order.status === "Approved"
-      ? "#28a745"
-      : order.status === "Delivery In Progress"
-        ? "#ff9800"
-        : order.status === "Delivered"
-          ? "#17a2b8"
-          : "#ff4d4d"
-};
-            color:
-            ${order.status === "Pending" ? "#000" : "#fff"};
-        ">
-            ${order.status || "Pending"}
-        </span>
-    </div>
-
-    <div class="order-customer">
-        <strong>Customer:</strong><br>
-        ${order.customerName}
-    </div>
-
-    <div class="order-phone">
-        <strong>Phone:</strong><br>
-        ${order.phone}
-    </div>
-
-    <div class="order-product" style="
-        display:flex;
-        align-items:center;
-        gap:12px;
-        margin-top:15px;
-    ">
-
-        <img
-            src="${order.productImage || "/images/placeholder.jpg"}"
-            style="
-                width:70px;
-                height:70px;
-                object-fit:cover;
-                border-radius:10px;
-                flex-shrink:0;
-            "
-        >
-
-        <div>
-            <div style="
-                font-weight:600;
-                margin-bottom:5px;
-            ">
-                ${order.productTitle}
-            </div>
-
-            <small style="color:var(--text-muted);">
-                ${order.productColor || "N/A"}
-                •
-                ${order.productSize || "N/A"}
-            </small>
-        </div>
-
-    </div>
-
-    <div style="margin-top:15px;">
-        <strong>Quantity:</strong>
-        ${order.quantity}
-    </div>
-
-    <div style="
-        margin-top:20px;
-        display:flex;
-        flex-wrap:wrap;
-        gap:10px;
-    ">
-
-        ${
-          order.status === "Pending"
-            ? `
-                <button
-                    onclick="approveOrder('${order.id}')"
-                    style="
-                        flex:1;
-                        min-width:120px;
-                        background:#28a745;
-                        color:white;
-                        border:none;
-                        padding:12px;
-                        border-radius:8px;
-                        cursor:pointer;
-                    "
-                >
-                    Approve
-                </button>
-
-                <button
-                    onclick="cancelOrder('${order.id}')"
-                    style="
-                        flex:1;
-                        min-width:120px;
-                        background:#ff4d4d;
-                        color:white;
-                        border:none;
-                        padding:12px;
-                        border-radius:8px;
-                        cursor:pointer;
-                    "
-                >
-                    Cancel
-                </button>
-            `
-            : order.status === "Approved"
-  ? `
-      <button
-          onclick="startDelivery('${order.id}')"
-          style="
-              width:100%;
-              background:#ff9800;
-              color:white;
-              border:none;
-              padding:12px;
-              border-radius:8px;
-              cursor:pointer;
-          "
-      >
-          Delivery In Progress
-      </button>
-    `
-    : order.status === "Delivery In Progress"
-  ? `
-      <button
-          onclick="deliverOrder('${order.id}')"
-          style="
-              width:100%;
-              background:#17a2b8;
-              color:white;
-              border:none;
-              padding:12px;
-              border-radius:8px;
-              cursor:pointer;
-          "
-      >
-          Mark as Delivered
-      </button>
-    `
-              : order.status === "Delivered"
-                ? `
-<div style="
-    width:100%;
-    text-align:center;
-    color:#17a2b8;
-    font-weight:700;
-    padding:12px;
-">
-    ✓ Delivered
-</div>
-`
-                : `
-<div style="
-    width:100%;
-    text-align:center;
-    color:#ff4d4d;
-    font-weight:700;
-    padding:12px;
-">
-    ✕ Cancelled
-</div>
-`
-        }
-
-    </div>
-
-</div>
-`;
-      });
     },
   );
 }
 
-window.startDelivery = async function(id) {
-  await updateDoc(
-    doc(db, "cart_reservations", id),
-    {
-      status: "Delivery In Progress"
+function renderOrdersPage(page) {
+    const body = document.getElementById("orders-body");
+    body.innerHTML = "";
+
+    currentOrdersPage = page;
+    const start = (page - 1) * ORDERS_PER_PAGE;
+    const end = start + ORDERS_PER_PAGE;
+    const pageOrders = filteredOrders.slice(start, end);
+
+    pageOrders.forEach(order => {
+        body.innerHTML += renderOrderCard(order);
+    });
+
+    renderOrdersPagination();
+}
+
+function renderOrderCard(order) {
+    return `
+    <div class="order-admin-card">
+        <div class="order-status">
+            <span style="
+                display:inline-block;
+                padding:6px 12px;
+                border-radius:20px;
+                font-size:12px;
+                font-weight:700;
+                background:${getStatusColor(order.status)};
+                color: ${getStatusTextColor(order.status)};
+            ">
+                ${order.status || "Pending"}
+            </span>
+        </div>
+        <div class="order-customer">
+            <strong>Customer:</strong><br>
+            ${order.customerName}
+        </div>
+        <div class="order-phone">
+            <strong>Phone:</strong><br>
+            ${order.phone}
+        </div>
+        <div class="order-product" style="display:flex; align-items:center; gap:12px; margin-top:15px;">
+            <img
+src="${order.productImage || "/images/placeholder.jpg"}"
+                style="
+                    width:70px;
+                    height:70px;
+                    object-fit:cover;
+                    border-radius:10px;
+                    flex-shrink:0;
+                "
+            >
+            <div>
+                <div style="font-weight:600; margin-bottom:5px;">
+                    ${order.productTitle}
+                </div>
+                <small style="color:var(--text-muted);">
+                    ${order.productColor || "N/A"} • ${order.productSize || "N/A"}
+                </small>
+            </div>
+        </div>
+        <div style="margin-top:15px;">
+            <strong>Quantity:</strong> ${order.quantity}
+        </div>
+        <div style="margin-top:20px; display:flex; flex-wrap:wrap; gap:10px;">
+            ${renderActionButtons(order)}
+        </div>
+    </div>`;
+}
+
+function getStatusColor(status) {
+    switch(status) {
+        case "Pending": return "#c5a880";
+        case "Approved": return "#28a745";
+        case "Delivery In Progress": return "#ff9800";
+        case "Delivered": return "#17a2b8";
+        case "Cancelled": return "#ff4d4d";
+        default: return "#ccc";
     }
-  );
+}
+
+function getStatusTextColor(status) {
+    if (status === "Pending") return "#000";
+    return "#fff";
+}
+
+function renderActionButtons(order) {
+    if(order.status === "Pending") {
+        return `
+            <button onclick="approveOrder('${order.id}')" style="flex:1; min-width:120px; background:#28a745; color:white; border:none; padding:12px; border-radius:8px; cursor:pointer;">Approve</button>
+            <button onclick="cancelOrder('${order.id}')" style="flex:1; min-width:120px; background:#ff4d4d; color:white; border:none; padding:12px; border-radius:8px; cursor:pointer;">Cancel</button>
+        `;
+    }
+    if(order.status === "Approved") {
+        return `
+            <button onclick="startDelivery('${order.id}')" style="width:100%; background:#ff9800; color:white; border:none; padding:12px; border-radius:8px; cursor:pointer;">Delivery In Progress</button>
+        `;
+    }
+    if(order.status === "Delivery In Progress") {
+        return `
+            <button onclick="deliverOrder('${order.id}')" style="width:100%; background:#17a2b8; color:white; border:none; padding:12px; border-radius:8px; cursor:pointer;">Mark as Delivered</button>
+        `;
+    }
+    if(order.status === "Delivered") {
+        return `<div style="width:100%; text-align:center; color:#17a2b8; font-weight:700; padding:12px;">✓ Delivered</div>`;
+    }
+    if(order.status === "Cancelled") {
+        return `<div style="width:100%; text-align:center; color:#ff4d4d; font-weight:700; padding:12px;">✕ Cancelled</div>`;
+    }
+}
+
+function renderOrdersPagination(){
+
+    const container = document.getElementById("orders-pagination");
+
+    const totalPages = Math.ceil(filteredOrders.length / ORDERS_PER_PAGE);
+
+    if(totalPages <= 1){
+
+        container.innerHTML = "";
+
+        return;
+
+    }
+
+    let html = "";
+
+    html += `
+    <button
+    ${currentOrdersPage===1?"disabled":""}
+    onclick="changeOrdersPage(${currentOrdersPage-1})">
+    ‹
+    </button>
+    `;
+
+    for(let i=1;i<=totalPages;i++){
+
+        html += `
+        <button
+        class="${i===currentOrdersPage?"active":""}"
+        onclick="changeOrdersPage(${i})">
+        ${i}
+        </button>
+        `;
+
+    }
+
+    html += `
+    <button
+    ${currentOrdersPage===totalPages?"disabled":""}
+    onclick="changeOrdersPage(${currentOrdersPage+1})">
+    ›
+    </button>
+    `;
+
+    container.innerHTML = html;
+
+}
+
+window.changeOrdersPage = function(page){
+
+    renderOrdersPage(page);
+
+}
+
+window.startDelivery = async function(id) {
+  const reservationRef = doc(db,"cart_reservations",id);
+
+const reservationSnap = await getDoc(reservationRef);
+
+const reservation = reservationSnap.data();
+
+await updateDoc(
+reservationRef,
+{
+status:"Delivery In Progress"
+}
+);
+
+await createUserNotification(
+
+{
+...reservation,
+id
+},
+
+"Delivery In Progress",
+
+"Your order is on its way."
+
+);
 
   showToast("Order is now on delivery.");
 };
@@ -724,6 +931,19 @@ window.approveOrder = async function (id) {
 
         });
 
+        await createUserNotification(
+
+    {
+        ...reservation,
+        id
+    },
+
+    "Approved",
+
+    "Your order has been approved."
+
+);
+
         showToast("Order approved.");
 
     });
@@ -731,13 +951,31 @@ window.approveOrder = async function (id) {
 };
 
 window.deliverOrder = async function (id) {
-  await updateDoc(
-    doc(db, "cart_reservations", id),
+  const reservationRef = doc(db,"cart_reservations",id);
 
-    {
-      status: "Delivered",
-    },
-  );
+const reservationSnap = await getDoc(reservationRef);
+
+const reservation = reservationSnap.data();
+
+await updateDoc(
+reservationRef,
+{
+status:"Delivered"
+}
+);
+
+await createUserNotification(
+
+{
+...reservation,
+id
+},
+
+"Delivered",
+
+"Your order has been delivered."
+
+);
 
   celebrateDelivery();
 
@@ -786,6 +1024,19 @@ status:"Cancelled",
 stockDeducted:false
 
 });
+
+await createUserNotification(
+
+    {
+        ...reservation,
+        id
+    },
+
+    "Cancelled",
+
+    "Unfortunately your order was cancelled."
+
+);
 
 showToast("Order cancelled.");
 
@@ -848,10 +1099,9 @@ adminForm.addEventListener("submit", async (e) => {
   const price = Number(document.getElementById("prod-price").value);
   const description = document.getElementById("prod-desc").value;
   const stock = {
-    S: Number(document.getElementById("stock-s").value || 0),
-    M: Number(document.getElementById("stock-m").value || 0),
-    L: Number(document.getElementById("stock-l").value || 0),
-    XL: Number(document.getElementById("stock-xl").value || 0),
+
+    ...stockValues
+
 };
 
   const colors = [
@@ -865,15 +1115,20 @@ adminForm.addEventListener("submit", async (e) => {
   const finalColors = colors.includes("None") ? ["None"] : colors;
   const finalSizes = sizes.includes("None") ? ["None"] : sizes;
 
-  if (!uploadedImageUrl) {
-    showToast("Please upload a product image.");
+  if(uploadedImageUrls.length === 0){
+
+    showToast("Please upload at least one product image.");
+
     return;
-  }
+
+}
 
   await addDoc(collection(db, "products"), {
     title,
     price,
-    image: uploadedImageUrl,
+    image: uploadedImageUrls[0],
+
+images: uploadedImageUrls,
     description,
     sizes: finalSizes,
     colors: finalColors,
@@ -891,13 +1146,19 @@ adminForm.addEventListener("submit", async (e) => {
 
   adminForm.reset();
 
-  uploadedImageUrl = "";
+  uploadedImageUrls = [];
 
   /* Reset upload box */
   uploadBox.innerHTML = `
-    <i class="fa-solid fa-cloud-arrow-up"></i>
-    <p>Upload Product Image</p>
+<div class="upload-placeholder">
+
+<i class="fa-solid fa-cloud-arrow-up"></i>
+
+<p>Upload Product Images</p>
+
+</div>
 `;
+
 });
 
 /* ---------------- DELETE ---------------- */
@@ -932,12 +1193,359 @@ if (ordersSearchInput) {
   ordersSearchInput.addEventListener("input", () => {
     ordersSearchTerm = ordersSearchInput.value.toLowerCase().trim();
 
-    loadOrders();
+    filteredOrders = allOrders.filter(order => {
+
+    if(!ordersSearchTerm) return true;
+
+    return (
+        (order.customerName || "").toLowerCase().includes(ordersSearchTerm) ||
+        (order.phone || "").toLowerCase().includes(ordersSearchTerm) ||
+        (order.productTitle || "").toLowerCase().includes(ordersSearchTerm)
+    );
+
+});
+
+renderOrdersPage(1);
   });
+}
+
+function loadReviews(){
+
+const grid=document.getElementById("admin-reviews-grid");
+
+if(!grid) return;
+
+const q=query(
+
+collection(db,"reviews"),
+
+orderBy("createdAt","desc")
+
+);
+
+onSnapshot(q,(snapshot)=>{
+
+allReviews=[];
+
+snapshot.forEach(docSnap=>{
+
+allReviews.push({
+id:docSnap.id,
+...docSnap.data()
+});
+
+});
+
+filteredReviews = allReviews.filter(review => {
+
+    if(!reviewSearchTerm) return true;
+
+    return (
+        (review.customerName || "").toLowerCase().includes(reviewSearchTerm) ||
+        (review.productTitle || "").toLowerCase().includes(reviewSearchTerm) ||
+        (review.reviewText || "").toLowerCase().includes(reviewSearchTerm)
+    );
+
+});
+
+renderReviewsPage(currentReviewPage);
+
+});
+
+}
+
+function renderReviewsPage(page){
+
+const grid=document.getElementById("admin-reviews-grid");
+
+if(!grid) return;
+
+grid.innerHTML="";
+
+currentReviewPage=page;
+
+const start=(page-1)*REVIEWS_PER_PAGE;
+
+const end=start+REVIEWS_PER_PAGE;
+
+const pageReviews=filteredReviews.slice(start,end);
+
+pageReviews.forEach(review=>{
+
+grid.innerHTML+=renderReviewCard(review);
+
+});
+
+renderReviewsPagination();
+
+}
+
+function renderReviewsPagination(){
+
+const container=document.getElementById("reviews-pagination");
+
+if(!container) return;
+
+const totalPages=Math.ceil(filteredReviews.length/REVIEWS_PER_PAGE);
+
+if(totalPages<=1){
+
+container.innerHTML="";
+
+return;
+
+}
+
+let html="";
+
+html+=`
+<button
+${currentReviewPage===1?"disabled":""}
+onclick="changeReviewPage(${currentReviewPage-1})">
+‹
+</button>
+`;
+
+for(let i=1;i<=totalPages;i++){
+
+html+=`
+<button
+class="${i===currentReviewPage?"active":""}"
+onclick="changeReviewPage(${i})">
+${i}
+</button>
+`;
+
+}
+
+html+=`
+<button
+${currentReviewPage===totalPages?"disabled":""}
+onclick="changeReviewPage(${currentReviewPage+1})">
+›
+</button>
+`;
+
+container.innerHTML=html;
+
+}
+
+window.changeReviewPage=function(page){
+
+renderReviewsPage(page);
+
+}
+
+const reviewSearchInput=document.getElementById("reviews-search");
+
+if(reviewSearchInput){
+
+reviewSearchInput.addEventListener("input",()=>{
+
+reviewSearchTerm=
+
+reviewSearchInput.value
+
+.toLowerCase()
+
+.trim();
+
+filteredReviews = allReviews.filter(review => {
+
+    if(!reviewSearchTerm) return true;
+
+    return (
+        (review.customerName || "").toLowerCase().includes(reviewSearchTerm) ||
+        (review.productTitle || "").toLowerCase().includes(reviewSearchTerm) ||
+        (review.reviewText || "").toLowerCase().includes(reviewSearchTerm)
+    );
+
+});
+
+renderReviewsPage(1);
+
+});
+
+}
+
+function renderReviewCard(review){
+
+return `
+
+<div class="order-admin-card">
+
+<div style="display:flex;justify-content:space-between;align-items:center;">
+
+<h3>
+
+${review.customerName || "Customer"}
+
+</h3>
+
+${
+review.featured
+
+?
+
+`<span style="
+background:#d4af37;
+padding:6px 12px;
+border-radius:20px;
+font-size:12px;
+font-weight:bold;
+color:black;
+">
+★ Featured
+</span>`
+
+:
+
+""
+
+}
+
+</div>
+
+<br>
+
+<p>
+
+<strong>Product:</strong>
+
+${review.productTitle || ""}
+
+</p>
+
+<br>
+
+<p>
+
+<strong>Rating:</strong>
+
+${"★".repeat(review.rating)}
+
+</p>
+
+<br>
+
+<p>
+
+${review.reviewText}
+
+</p>
+
+${
+review.adminReply
+
+?
+
+`
+
+<div style="
+margin-top:20px;
+padding:15px;
+background:#191919;
+border-left:3px solid #d4af37;
+">
+
+<strong>Admin Reply</strong>
+
+<br><br>
+
+${review.adminReply}
+
+</div>
+
+`
+
+:
+
+""
+
+}
+
+<div style="
+display:flex;
+gap:10px;
+margin-top:20px;
+">
+
+<button
+onclick="toggleFeaturedReview('${review.id}',${review.featured ? false : true})"
+style="
+flex:1;
+padding:12px;
+background:${review.featured ? "#444" : "#c5a880"};
+color:${review.featured ? "#fff" : "#111"};
+border:none;
+border-radius:10px;
+cursor:pointer;
+">
+
+${review.featured ? "Remove Featured" : "Feature Review"}
+
+</button>
+
+</div>
+
+</div>
+
+`;
+
+}
+
+window.toggleFeaturedReview=async function(id,state){
+
+showVanguardConfirm(
+
+state
+
+?
+
+"Feature this review?"
+
+:
+
+"Remove featured review?",
+
+async()=>{
+
+await updateDoc(
+
+doc(db,"reviews",id),
+
+{
+
+featured:state
+
+}
+
+);
+
+showToast(
+
+state
+
+?
+
+"Review featured."
+
+:
+
+"Removed from featured."
+
+);
+
+}
+
+);
+
 }
 
 loadInventory();
 
 loadOrders();
+
+loadReviews();
 
 loadDashboardStats();

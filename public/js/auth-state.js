@@ -1,4 +1,9 @@
-import { auth, db } from "./firebase.js";
+import {
+    auth,
+    db,
+    setAdminStatus
+} from "./firebase.js";
+import "./admin-notification.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
@@ -125,10 +130,36 @@ confirmLogout.addEventListener("click", async () => {
 }
 
 onAuthStateChanged(auth, async user => {
-  if (!user) { hideAdminUI(); return; }
+  if (!user) {
+
+    setAdminStatus(false);
+
+    window.dispatchEvent(
+    new CustomEvent("admin-status-ready", {
+        detail:{
+            isAdmin:false
+        }
+    })
+);
+
+    hideAdminUI();
+
+    return;
+
+}
 
   const adminDoc = await getDoc(doc(db, "admins", user.uid));
   const isAdmin  = adminDoc.exists();
+
+  setAdminStatus(isAdmin);
+
+  window.dispatchEvent(
+    new CustomEvent("admin-status-ready", {
+        detail: {
+            isAdmin
+        }
+    })
+);
 
   if (adminLinkContainer) adminLinkContainer.innerHTML = "";
 

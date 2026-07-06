@@ -11,6 +11,9 @@ import {
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
 
 const container = document.getElementById("orders-container");
+const params = new URLSearchParams(location.search);
+
+const openOrderId = params.get("open");
 
 onAuthStateChanged(auth, (user) => {
   if (!user) {
@@ -87,6 +90,43 @@ id:docSnap.id,
 });
     });
 
+    if(openOrderId){
+
+setTimeout(()=>{
+
+const card=document.getElementById(`order-${openOrderId}`);
+
+if(card){
+
+card.scrollIntoView({
+
+behavior:"smooth",
+
+block:"center"
+
+});
+
+card.classList.add("flash-order");
+
+/*
+If your orders have a "View Details"
+button, automatically click it.
+*/
+
+const detailsBtn = card.querySelector(".view-details-btn");
+
+if(detailsBtn){
+
+detailsBtn.click();
+
+}
+
+}
+
+},400);
+
+}
+
     docs.sort((a, b) => b.createdAt - a.createdAt);
 
     docs.forEach(async (order) => {
@@ -95,6 +135,8 @@ id:docSnap.id,
       const reviewed = await hasUserReviewed(order.id,userId);
 
       card.className = "order-card";
+
+card.id = `order-${order.id}`;
 
       let statusText;
       let statusClass;

@@ -9,6 +9,7 @@ import {
   where,
   getDocs,
   collection,
+  addDoc
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 import { onAuthStateChanged } from
@@ -115,19 +116,75 @@ async function submitReview(oneStarReason = "") {
 
   try {
     /* setDoc with orderId as the document ID — guaranteed no duplicate */
-    await setDoc(reviewRef, {
-      productId,
-      orderId,
-      userId:        currentUser.uid,
-      customerName:  order.customerName,
-      rating,
-      reviewText,
-      oneStarReason,
-      createdAt:     Date.now(),
-      likes:         0,
-      likedBy:       [],
-      edited:        false,
-    });
+    await setDoc(reviewRef,{
+    productId,
+    orderId,
+
+    productTitle: order.productTitle,
+
+    productImage: order.productImage,
+
+    customerName: order.customerName,
+
+    userId: currentUser.uid,
+
+    rating,
+
+    reviewText,
+
+    oneStarReason,
+
+    createdAt: Date.now(),
+
+    likes:0,
+
+    likedBy:[],
+
+    edited:false,
+
+    verifiedPurchase: true,
+
+    featured:false,
+
+    adminReply:"",
+
+    adminReplyDate:null,
+
+    reportCount:0,
+
+    reportedBy:[],
+
+    images:[]
+});
+
+/* ─────────────────────────────
+   CREATE ADMIN NOTIFICATION
+───────────────────────────── */
+
+await addDoc(
+    collection(db, "admin_notifications"),
+    {
+
+        type: "review",
+
+        reviewId: orderId,
+
+        productId,
+
+        productTitle: order.productTitle,
+
+        productImage: order.productImage,
+
+        customerName: order.customerName,
+
+        rating,
+
+        createdAt: Date.now(),
+
+        read: false
+
+    }
+);
 
     /* mark order reviewed */
     await updateDoc(orderRef, { reviewSubmitted: true });

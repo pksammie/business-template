@@ -11,7 +11,7 @@ const productId = params.get("id");
 const form      = document.getElementById("edit-product-form");
 const uploadBox = document.getElementById("upload-image-box");
 
-let uploadedImageUrl = "";
+let uploadedImages = [];
 
 async function loadProduct() {
   const snap = await getDoc(doc(db, "products", productId));
@@ -35,11 +35,17 @@ document.getElementById("stock-xl").value = product.stock?.XL || 0;
 
   document.getElementById("prod-desc").value = product.description;
 
-  uploadedImageUrl = product.image;
+  uploadedImages = [...(product.images || [])];
 
-  uploadBox.innerHTML = `
-    <img src="${product.image}" style="width:100%;height:180px;object-fit:cover;border-radius:8px;">
-  `;
+// Backward compatibility
+if (
+uploadedImages.length === 0 &&
+product.image
+){
+    uploadedImages.push(product.image);
+}
+
+renderImageGallery();
 
   document.querySelectorAll('input[name="prod_sizes"]').forEach(box => {
     box.checked = (product.sizes || []).includes(box.value);
@@ -52,21 +58,121 @@ document.getElementById("stock-xl").value = product.stock?.XL || 0;
 
 loadProduct();
 
-/* ── IMAGE UPLOAD ─────────────────────────────────────────── */
-uploadBox.onclick = () => {
-  cloudinary.openUploadWidget(
-    { cloudName: "dzkyhxdy9", uploadPreset:
-"products", multiple: false },
-    (error, result) => {
-      if (!error && result && result.event === "success") {
-        uploadedImageUrl = result.info.secure_url;
-        uploadBox.innerHTML = `
-          <img src="${uploadedImageUrl}" style="width:100%;height:180px;object-fit:cover;border-radius:8px;">
-        `;
-      }
-    }
-  );
+function renderImageGallery(){
+
+uploadBox.innerHTML = "";
+
+uploadedImages.forEach((url,index)=>{
+
+const imageCard=document.createElement("div");
+
+imageCard.className="uploaded-image-card";
+
+imageCard.innerHTML=`
+
+<img
+src="${url}"
+class="uploaded-image-preview"
+>
+
+<button
+type="button"
+class="remove-image-btn"
+data-index="${index}">
+
+<i class="fa-solid fa-xmark"></i>
+
+</button>
+
+`;
+
+uploadBox.appendChild(imageCard);
+
+});
+
+const addButton=document.createElement("div");
+
+addButton.className="upload-image-placeholder";
+
+addButton.innerHTML=`
+
+<i class="fa-solid fa-plus"></i>
+
+<p>Add Image</p>
+
+`;
+
+uploadBox.appendChild(addButton);
+
+addButton.onclick=openUploader;
+
+document.querySelectorAll(".remove-image-btn")
+
+.forEach(button=>{
+
+button.onclick=()=>{
+
+const index=Number(button.dataset.index);
+
+uploadedImages.splice(index,1);
+
+renderImageGallery();
+
 };
+
+});
+
+}
+
+function openUploader(){
+
+if(uploadedImages.length>=8){
+
+showToast("Maximum of 8 images allowed.");
+
+return;
+
+}
+
+cloudinary.openUploadWidget(
+
+{
+
+cloudName:"dzkyhxdy9",
+
+uploadPreset:"products",
+
+multiple:false
+
+},
+
+(error,result)=>{
+
+if(
+
+!error &&
+
+result &&
+
+result.event==="success"
+
+){
+
+uploadedImages.push(
+
+result.info.secure_url
+
+);
+
+renderImageGallery();
+
+}
+
+}
+
+);
+
+}
 
 /* ── RELEASE LOCK ON LEAVE ────────────────────────────────── */
 window.addEventListener("beforeunload", async () => {
@@ -105,7 +211,9 @@ form.addEventListener("submit", async e => {
 
     description: document.getElementById("prod-desc").value,
 
-    image: uploadedImageUrl,
+    images: uploadedImages,
+
+image: uploadedImages[0] || "",
 
     sizes,
 

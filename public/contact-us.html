@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/index.css" />
+    <title>Document</title>
+</head>
+<body>
+    <section class="timeless-contact">
+    <div class="contact-grid-bg"></div>
+    <div class="contact-scanline"></div>
+
+    <div class="contact-content">
+        <span class="contact-glitch-tag" data-text="GET IN TOUCH">GET IN TOUCH</span>
+        <h2 class="contact-title" data-text="LET'S BUILD SOMETHING">LET'S BUILD SOMETHING</h2>
+        <p class="contact-sub">Questions, collaborations, or just want to say hi? I'm always online.</p>
+
+        <div class="contact-card">
+            <div class="contact-holo-ring"></div>
+            <i class="fa-solid fa-phone contact-icon"></i>
+            <h3>Call / WhatsApp Me</h3>
+            <a href="tel:+2348109007611" class="contact-number">0810 900 7611</a>
+            <p style="color:var(--text-muted);font-size:13px;margin-top:8px;">Available 9am - 9pm Daily</p>
+
+            <a href="https://wa.me/2348109007611" target="_blank" class="contact-btn">
+                <span>CHAT ON WHATSAPP</span>
+                <i class="fa-brands fa-whatsapp"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- BATTLE INTRO -->
+<div id="battle-intro">
+    <div class="camera-shake">
+        <div class="battle-arena"></div>
+        
+        <!-- WARRIOR 1 - GOLD -->
+        <div class="warrior warrior-1">
+            <div class="power-aura"></div>
+            <div class="fighter">⚡</div>
+        </div>
+        
+        <!-- WARRIOR 2 - DARK -->
+        <div class="warrior warrior-2">
+            <div class="power-aura"></div>
+            <div class="fighter">🖤</div>
+        </div>
+
+        <!-- POWER BLASTS -->
+        <div class="blast blast-1"></div>
+        <div class="blast blast-2"></div>
+        <div class="blast blast-3"></div>
+
+        <!-- WINNER SCENE -->
+        <div class="winner-scene">
+            <div class="winner-fighter">⚡</div>
+            <div class="number-carried">0810 900 7611</div>
+        </div>
+
+        <div class="battle-text">THE BATTLE FOR CONTACT</div>
+    </div>
+</div>
+
+<script>
+// Skip button
+document.getElementById('battle-intro').addEventListener('click', endBattle);
+
+function endBattle(){
+    const intro = document.getElementById('battle-intro');
+    intro.style.opacity = '0';
+    setTimeout(()=>{intro.style.display='none';},1000);
+}
+
+// Auto end after 12 seconds and scroll to contact
+setTimeout(()=>{
+    endBattle();
+    document.querySelector('.timeless-contact').scrollIntoView({behavior:'smooth'});
+}, 12000);
+</script>
+
+<script>
+// Typewriter + Restart animation for Contact Title
+function runContactAnimation(){
+    const title = document.querySelector('.contact-title');
+    if(!title) return;
+    const text = title.getAttribute('data-text');
+    title.innerHTML = '';
+    let i = 0;
+    const typing = setInterval(()=>{
+        title.innerHTML += text[i];
+        i++;
+        if(i >= text.length) clearInterval(typing);
+    }, 80);
+}
+
+// Run once on load
+window.addEventListener('load', ()=>{
+    setTimeout(runContactAnimation, 2500); // runs after your loader
+});
+
+// Re-run animation when user scrolls back to section
+const contactObserver = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+        if(entry.isIntersecting){
+            runContactAnimation();
+        }
+    })
+},{threshold:0.5});
+const contactSec = document.querySelector('.timeless-contact');
+if(contactSec) contactObserver.observe(contactSec);
+</script>
+</body>
+</html>
