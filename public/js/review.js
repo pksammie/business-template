@@ -146,11 +146,13 @@ async function submitReview(oneStarReason = "") {
 
     featured:false,
 
-    adminReply:"",
+approved: rating === 1 ? false : true,
 
-    adminReplyDate:null,
+adminReply:"",
 
-    reportCount:0,
+adminReplyDate:null,
+
+reportCount:0,
 
     reportedBy:[],
 

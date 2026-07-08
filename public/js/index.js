@@ -388,8 +388,13 @@ if (searchInput) {
 }
 
 let homepageReviews = [];
-let reviewPointer = 0;
-let reviewRotationTimer = null;
+let reviewIndex = 1;
+let reviewTimer = null;
+let isDragging = false;
+let startX = 0;
+let currentTranslate = 0;
+let prevTranslate = 0;
+
 
 function loadHomepageReviews(){
 
@@ -417,7 +422,7 @@ function loadHomepageReviews(){
             });
         });
 
-        reviewPointer = 0;
+        reviewIndex = 1;
 
         if(homepageReviews.length===0){
             carousel.innerHTML = `<p class="no-review-message">No featured reviews yet.</p>`;
@@ -432,67 +437,67 @@ function loadHomepageReviews(){
 
 function renderHomepageReviews() {
 
-    const carousel =
-    document.getElementById("homepage-review-carousel");
+    const carousel = document.getElementById("homepage-review-carousel");
 
-    if (!carousel || homepageReviews.length === 0) return;
+    if (!carousel) return;
 
-    carousel.innerHTML = "";
+    if (homepageReviews.length === 0) {
 
-    const sortedReviews = [...homepageReviews].sort((a,b)=>
+        carousel.innerHTML =
+        `<p class="no-review-message">No featured reviews yet.</p>`;
 
-        (b.likes || b.helpfulCount || 0) -
+        return;
 
-        (a.likes || a.helpfulCount || 0)
+    }
 
-    );
+    const reviews = [...homepageReviews];
 
-    const visible = Math.min(3, sortedReviews.length);
+    const firstClone = reviews[0];
+    const lastClone = reviews[reviews.length - 1];
 
-    for(let i=0;i<visible;i++){
+    const slides = [lastClone, ...reviews, firstClone];
 
-        const review =
-        sortedReviews[
-            (reviewPointer+i)%sortedReviews.length
-        ];
+    carousel.innerHTML = `
+        <div class="homepage-review-track"></div>
+    `;
 
-        const card =
-        document.createElement("div");
+    const track = carousel.querySelector(".homepage-review-track");
 
-        card.className =
-        "homepage-review-card";
+    slides.forEach(review => {
+
+        const card = document.createElement("div");
+
+        card.className = "homepage-review-card";
 
         card.innerHTML = `
 
 <div class="homepage-review-top">
 
-    <div class="homepage-stars">
+<div class="homepage-stars">
 
-        ${generateStars(review.rating||0)}
+${generateStars(review.rating||0)}
 
-    </div>
+</div>
 
-    <div class="homepage-helpful">
+<div class="homepage-helpful">
 
-        <i class="fa-solid fa-heart"></i>
+<i class="fa-solid fa-heart"></i>
 
-        ${review.likes || review.helpfulCount || 0}
+${review.likes || 0}
 
-    </div>
+</div>
 
 </div>
 
 <div class="homepage-review-product">
 
-<img
-src="${review.productImage || "/images/placeholder.jpg"}"
-alt="Product">
+<img src="${review.productImage}">
 
 </div>
 
 <p class="homepage-review-text">
 
-"${review.reviewText || ""}"
+"${review.reviewText}"
 
 </p>
 
@@ -500,47 +505,247 @@ alt="Product">
 
 <h4>
 
-${review.customerName || "Verified Customer"}
+${review.customerName}
 
 </h4>
 
 <span>
 
-Purchased
-
-<strong>
-
-${review.productTitle || "Luxury Product"}
-
-</strong>
+✔ Verified Purchase
 
 </span>
 
-</div>
+${
+review.adminReply
+?
+`<div class="homepage-admin-reply">
 
+<strong>Admin</strong>
+
+<p>${review.adminReply}</p>
+
+</div>`
+:
+""
+}
+
+</div>
 `;
 
-        carousel.appendChild(card);
+        track.appendChild(card);
+
+    });
+
+    const cardWidth =
+track.querySelector(".homepage-review-card").offsetWidth + 25;
+
+    track.style.transition = "none";
+
+    track.style.transform =
+`translateX(-${cardWidth}px)`;
+
+    reviewIndex = 1;
+
+    prevTranslate = -cardWidth;
+
+    currentTranslate = prevTranslate;
+
+    requestAnimationFrame(()=>{
+
+        track.style.transition =
+"transform .6s ease";
+
+    });
+
+    clearInterval(reviewTimer);
+
+    reviewTimer = setInterval(()=>{
+
+        if(isDragging) return;
+
+        reviewIndex++;
+
+        moveCarousel();
+
+    },5000);
+
+    track.onmouseenter = ()=>clearInterval(reviewTimer);
+
+    track.onmouseleave = ()=>{
+
+        clearInterval(reviewTimer);
+
+        reviewTimer = setInterval(()=>{
+
+            if(isDragging) return;
+
+            reviewIndex++;
+
+            moveCarousel();
+
+        },5000);
+
+    };
+
+    track.addEventListener("transitionend",()=>{
+
+        if(reviewIndex===0){
+
+            track.style.transition="none";
+
+            reviewIndex=reviews.length;
+
+            track.style.transform=
+`translateX(-${cardWidth*reviewIndex}px)`;
+
+        }
+
+        if(reviewIndex===reviews.length+1){
+
+            track.style.transition="none";
+
+            reviewIndex=1;
+
+            track.style.transform=
+`translateX(-${cardWidth}px)`;
+
+        }
+
+    });
+
+    function moveCarousel(){
+
+        track.style.transition="transform .6s ease";
+
+        currentTranslate=
+-(cardWidth*reviewIndex);
+
+        prevTranslate=currentTranslate;
+
+        track.style.transform=
+`translateX(${currentTranslate}px)`;
 
     }
 
+    /* desktop drag */
+
+    track.onmousedown=(e)=>{
+
+        isDragging=true;
+
+        startX=e.clientX;
+
+        track.style.transition="none";
+
+    };
+
+    window.onmousemove=(e)=>{
+
+        if(!isDragging) return;
+
+        const delta=e.clientX-startX;
+
+        track.style.transform=
+`translateX(${prevTranslate+delta}px)`;
+
+    };
+
+    window.onmouseup=(e)=>{
+
+        if(!isDragging) return;
+
+        isDragging=false;
+
+        const moved=e.clientX-startX;
+
+        if(moved<-80){
+
+            reviewIndex++;
+
+        }
+
+        else if(moved>80){
+
+            reviewIndex--;
+
+        }
+
+        moveCarousel();
+
+    };
+
+    /* mobile swipe */
+
+    track.addEventListener("touchstart",(e)=>{
+
+        isDragging=true;
+
+        startX=e.touches[0].clientX;
+
+        track.style.transition="none";
+
+    });
+
+    track.addEventListener("touchmove",(e)=>{
+
+        if(!isDragging) return;
+
+        const delta=e.touches[0].clientX-startX;
+
+        track.style.transform=
+`translateX(${prevTranslate+delta}px)`;
+
+    });
+
+    track.addEventListener("touchend",(e)=>{
+
+        isDragging=false;
+
+        const end=e.changedTouches[0].clientX;
+
+        const moved=end-startX;
+
+        if(moved<-80){
+
+            reviewIndex++;
+
+        }
+
+        else if(moved>80){
+
+            reviewIndex--;
+
+        }
+
+        moveCarousel();
+
+    });
+
 }
 
-function startHomepageReviewRotation(){
+/* ---------------- SCROLL REVEAL ---------------- */
 
-    if(reviewRotationTimer) return; /* never stack duplicate intervals */
+const revealTargets = document.querySelectorAll(".reveal");
 
-    reviewRotationTimer = setInterval(()=>{
+if (revealTargets.length) {
 
-        if(homepageReviews.length<=3) return;
+    const revealObserver = new IntersectionObserver((entries) => {
 
-        reviewPointer++;
+        entries.forEach(entry => {
 
-        if(reviewPointer>=homepageReviews.length) reviewPointer = 0;
+            if (entry.isIntersecting) {
 
-        renderHomepageReviews();
+                entry.target.classList.add("active");
 
-    },6000);
+                revealObserver.unobserve(entry.target);
+
+            }
+
+        });
+
+    }, { threshold: 0.15 });
+
+    revealTargets.forEach(target => revealObserver.observe(target));
 
 }
 
@@ -551,8 +756,6 @@ async function initStorefront(){
     await loadStorefrontGrid();
 
     loadHomepageReviews();
-
-    startHomepageReviewRotation();
 
 }
 

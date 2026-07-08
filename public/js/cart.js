@@ -9,6 +9,9 @@ import {
   addDoc,
   getDoc,
   onSnapshot,
+  query,
+  orderBy,
+  limit,
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
@@ -75,24 +78,6 @@ async function renderTabularCart() {
     const user = auth.currentUser;
     if (!user) return;
 
-    const snap = await getDocs(
-  collection(db, "users", user.uid, "cart")
-);
-
-    firestoreCart = [];
-
-    /* ── Step 1: load items + availability ── */
-    for (const docSnap of snap.docs) {
-      const cartItem = { firestoreId: docSnap.id, ...docSnap.data() };
-      try {
-        const pSnap = await getDoc(doc(db, "products", cartItem.productId));
-        if (!pSnap.exists() || pSnap.data().isSuspended) {
-          cartItem.isUnavailable = true;
-        }
-      } catch (err) { console.error(err); }
-      firestoreCart.push(cartItem);
-    }
-
     /* ── Step 2: sync price / title / image (partial updateDoc only) ── */
     let cartUpdated = false;
     for (const item of firestoreCart) {
@@ -122,11 +107,11 @@ async function renderTabularCart() {
 
     if (!cartItemsContainer) return;
 
-    if (cartUpdated) {
-      showToast("Cart refreshed with latest product info.");
-      setTimeout(() => renderTabularCart(), 150);
-      return;
-    }
+    if(cartUpdated){
+
+    showToast("Cart refreshed with latest product info.");
+
+}
 
     /* ── Step 3: render ── */
     if (firestoreCart.length === 0) {
@@ -169,9 +154,9 @@ async function renderTabularCart() {
           <div class="cart-card-meta">Size: ${item.size} &nbsp;|&nbsp; Color: ${item.color}</div>
 
           <div class="qty-control">
-            <button onclick="event.stopPropagation(); decreaseCartQty(${index})" class="luxury-qty-btn">−</button>
+            <button onclick="event.stopPropagation(); increaseCartQty('${item.firestoreId}')" class="luxury-qty-btn">−</button>
             <span class="qty-number">${item.quantity}</span>
-            <button onclick="event.stopPropagation(); increaseCartQty(${index})" class="luxury-qty-btn">+</button>
+            <button onclick="event.stopPropagation(); increaseCartQty('${item.firestoreId}')" class="luxury-qty-btn">+</button>
           </div>
 
           <div class="cart-line-total">Total: ₦${lineTotal.toLocaleString()}</div>
@@ -250,6 +235,17 @@ async function renderTabularCart() {
       cartItemsContainer.appendChild(card);
     });
 
+    selectedCheckoutItems =
+
+selectedCheckoutItems.filter(id=>
+
+    firestoreCart.some(item=>
+
+        item.firestoreId===id
+
+    )
+
+);
     subtotalLabel.innerText = `₦${total.toLocaleString()}`;
     updateSelectAllBtn();
 
@@ -301,38 +297,81 @@ function exitEditMode(){
 /* ─────────────────────────────────────────────────────────
    QTY CONTROLS  — FIX: guard against undefined index
 ───────────────────────────────────────────────────────── */
-window.modifyLineQuantity = async function (index, newQty) {
-  const item = firestoreCart[index];
-  if (!item) return; /* guard — prevents the console error */
 
-  const qty = Number(newQty);
-  if (isNaN(qty) || qty < 1) return;
 
-  /* optimistic UI update */
-  item.quantity = qty;
-  const qtyEls = cartItemsContainer?.querySelectorAll(".qty-number");
-  if (qtyEls && qtyEls[index]) qtyEls[index].textContent = qty;
+window.increaseCartQty = async function(id){
 
-  try {
-    await updateDoc(
-      doc(db, "users", auth.currentUser.uid, "cart", item.firestoreId),
-      { quantity: qty }
+    const item = firestoreCart.find(
+
+        i=>i.firestoreId===id
+
     );
-  } catch (err) { console.error(err); }
-};
 
-window.increaseCartQty = async function (index) {
-  const item = firestoreCart[index];
-  if (!item) return;
-  await modifyLineQuantity(index, item.quantity + 1);
-};
+    if(!item) return;
 
-window.decreaseCartQty = async function (index) {
-  const item = firestoreCart[index];
-  if (!item) return;
-  if (item.quantity <= 1) return;
-  await modifyLineQuantity(index, item.quantity - 1);
-};
+    await updateDoc(
+
+        doc(
+
+            db,
+
+            "users",
+
+            auth.currentUser.uid,
+
+            "cart",
+
+            id
+
+        ),
+
+        {
+
+            quantity:item.quantity+1
+
+        }
+
+    );
+
+}
+
+window.decreaseCartQty = async function(id){
+
+    const item = firestoreCart.find(
+
+        i=>i.firestoreId===id
+
+    );
+
+    if(!item) return;
+
+    if(item.quantity<=1) return;
+
+    await updateDoc(
+
+        doc(
+
+            db,
+
+            "users",
+
+            auth.currentUser.uid,
+
+            "cart",
+
+            id
+
+        ),
+
+        {
+
+            quantity:item.quantity-1
+
+        }
+
+    );
+
+}
 
 /* ─────────────────────────────────────────────────────────
    REMOVE
@@ -531,14 +570,71 @@ window.actionProceedCheckout = function () {
    setDoc re-fire loop that was duplicating items.
 ───────────────────────────────────────────────────────── */
 onAuthStateChanged(auth, user => {
-  if (!user) return;
-  if (cartListenerStarted) return;
-  cartListenerStarted = true;
 
-  onSnapshot(collection(db, "users", user.uid, "cart"), () => {
-    if (editMode) return; /* don't interrupt edit mode */
-    renderTabularCart();
-  });
+    if (!user) return;
+
+    if (cartListenerStarted) return;
+
+    cartListenerStarted = true;
+
+    onSnapshot(
+
+        collection(db, "users", user.uid, "cart"),
+
+        async(snapshot)=>{
+
+            if(editMode) return;
+
+            firestoreCart=[];
+
+            for(const docSnap of snapshot.docs){
+
+                const cartItem={
+
+                    firestoreId:docSnap.id,
+
+                    ...docSnap.data()
+
+                };
+
+                try{
+
+                    const productSnap=await getDoc(
+                        doc(db,"products",cartItem.productId)
+                    );
+
+                    if(
+
+                        !productSnap.exists()
+
+                        ||
+
+                        productSnap.data().isSuspended
+
+                    ){
+
+                        cartItem.isUnavailable=true;
+
+                    }
+
+                }
+
+                catch(err){
+
+                    console.error(err);
+
+                }
+
+                firestoreCart.push(cartItem);
+
+            }
+
+            renderTabularCart();
+
+        }
+
+    );
+
 });
 
 /* ─────────────────────────────────────────────────────────
@@ -546,36 +642,70 @@ onAuthStateChanged(auth, user => {
 ───────────────────────────────────────────────────────── */
 const restoreBtn = document.getElementById("restore-cart-btn");
 if (restoreBtn) {
+  const restoreBtnOriginalHTML = restoreBtn.innerHTML;
+
   restoreBtn.addEventListener("click", async () => {
+
+    const user = auth.currentUser;
+    if (!user) { showToast("Please log in first."); return; }
+
     const range = document.getElementById("restore-range").value;
-    const backupsSnap = await getDocs(
-      collection(db, "users", auth.currentUser.uid, "cart_backups")
-    );
 
-    let backups = [];
-    backupsSnap.forEach(d => backups.push(d.data()));
+    restoreBtn.disabled = true;
+    restoreBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Restoring...`;
 
-    const now = Date.now();
-    backups = backups.filter(b => {
-      if (range === "all") return true;
-      return now - b.createdAt <= Number(range) * 60 * 60 * 1000;
-    });
+    try {
+      const backupsQuery = query(
+        collection(db, "users", user.uid, "cart_backups"),
+        orderBy("createdAt", "desc"),
+        limit(20)
+      );
 
-    if (backups.length === 0) { showToast("No cart backups found."); return; }
-    backups.sort((a, b) => b.createdAt - a.createdAt);
+      const backupsSnap = await getDocs(backupsQuery);
 
-    for (const item of backups[0].items) {
-      await addDoc(collection(db, "users", auth.currentUser.uid, "cart"), {
-        productId: item.productId,
-        title:     item.title,
-        image:     item.image,
-        price:     item.price,
-        quantity:  item.quantity,
-        size:      item.size,
-        color:     item.color,
+      const now = Date.now();
+      const windowMs = Number(range) * 60 * 60 * 1000;
+
+      let latestBackup = null;
+
+      backupsSnap.forEach(docSnap => {
+        if (latestBackup) return;
+        const data = docSnap.data();
+        if (now - (data.createdAt || 0) <= windowMs) {
+          latestBackup = data;
+        }
       });
+
+      if (!latestBackup || !Array.isArray(latestBackup.items) || latestBackup.items.length === 0) {
+        showToast(
+          range === "1"
+            ? "No cart backup found in the last hour."
+            : "No cart backup found in the last 24 hours."
+        );
+        return;
+      }
+
+      for (const item of latestBackup.items) {
+        await addDoc(collection(db, "users", user.uid, "cart"), {
+          productId: item.productId,
+          title:     item.title,
+          image:     item.image,
+          price:     item.price,
+          quantity:  item.quantity,
+          size:      item.size,
+          color:     item.color,
+        });
+      }
+
+      showToast("Cart restored.");
+      renderTabularCart();
+
+    } catch (err) {
+      console.error(err);
+      showToast("Couldn't restore your cart. Please try again.");
+    } finally {
+      restoreBtn.disabled = false;
+      restoreBtn.innerHTML = restoreBtnOriginalHTML;
     }
-    showToast("Cart restored.");
-    renderTabularCart();
   });
 }

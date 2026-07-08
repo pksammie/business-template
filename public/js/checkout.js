@@ -717,6 +717,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
 prefillSavedUserAddressMetadata(selectors);
 
+  const checkoutLoadingOverlay =
+    document.getElementById("checkout-loading-overlay");
+
+  if (checkoutLoadingOverlay) {
+    checkoutLoadingOverlay.classList.add("hide");
+
+    setTimeout(() => {
+      checkoutLoadingOverlay.remove();
+    }, 400);
+  }
+
   if (checkoutFormInstance) {
     checkoutFormInstance.addEventListener(
       "submit",

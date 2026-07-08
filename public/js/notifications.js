@@ -100,23 +100,29 @@ createCard(notification)
 
 });
 
-if(openId){
+if(openId && !autoOpened){
 
-const card=document.getElementById(`notif-${openId}`);
+    autoOpened = true;
 
-if(card){
+    requestAnimationFrame(()=>{
 
-card.querySelector("button").click();
+        const card=document.getElementById(`notif-${openId}`);
 
-card.scrollIntoView({
+        if(card){
 
-behavior:"smooth",
+            card.click();
 
-block:"center"
+            card.scrollIntoView({
 
-});
+                behavior:"smooth",
 
-}
+                block:"center"
+
+            });
+
+        }
+
+    });
 
 }
 
@@ -132,48 +138,31 @@ const params = new URLSearchParams(location.search);
 
 const openId = params.get("id");
 
-if(openId){
-
-setTimeout(()=>{
-
-const card=document.getElementById(`notif-${openId}`);
-
-if(card){
-
-card.click();
-
-card.scrollIntoView({
-
-behavior:"smooth",
-
-block:"center"
-
-});
-
-}
-
-},500);
-
-}
+let autoOpened = false;
 
 function createCard(notification){
 
 const card=document.createElement("div");
 
-card.className =
-`notification-card ${notification.read ? "" : "unread"}`;
+card.id=`notif-${notification.id}`;
 
-card.id = `notif-${notification.id}`;
+card.className=`notification-card ${notification.read ? "" : "unread"}`;
 
 card.innerHTML=`
 
 <div class="notification-top">
+
+<div class="notification-image-wrapper">
 
 <img
 
 src="${notification.productImage}"
 
 class="notification-image">
+
+${notification.read ? "" : `<span class="unread-dot"></span>`}
+
+</div>
 
 <div class="notification-info">
 
@@ -267,25 +256,72 @@ const details=
 
 card.querySelector(".notification-details");
 
-card.querySelector("button").onclick=async()=>{
+async function toggleNotification() {
 
-details.classList.toggle("show");
+    const isOpen = details.classList.contains("show");
 
-if(!notification.read){
+    if (isOpen) {
 
-await updateDoc(
+        details.classList.remove("show");
 
-doc(db,"user_notifications",notification.id),
+    } else {
 
-{
+        details.classList.add("show");
 
-read:true
+    }
 
-}
+    const btn = card.querySelector("button");
 
+    btn.innerText = details.classList.contains("show")
+        ? "Close Details"
+        : "View Details";
+
+    if (!notification.read) {
+
+        card.classList.remove("unread");
+
+        card.querySelector(".unread-dot")?.remove();
+
+        notification.read = true;
+
+        await updateDoc(
+    doc(db, "user_notifications", notification.id),
+    {
+        read: true
+    }
 );
 
+// reopen after Firestore rebuilds
+
+setTimeout(() => {
+
+    const rebuilt = document.getElementById(`notif-${notification.id}`);
+
+    if(!rebuilt) return;
+
+    const rebuiltDetails =
+        rebuilt.querySelector(".notification-details");
+
+    rebuiltDetails.classList.add("show");
+
+    rebuilt.classList.remove("unread");
+
+    rebuilt.querySelector(".notification-action button").innerText =
+        "Close Details";
+
+},150);
+
+    }
+
 }
+
+card.addEventListener("click", toggleNotification);
+
+card.querySelector("button").onclick=(e)=>{
+
+    e.stopPropagation();
+
+    toggleNotification();
 
 };
 

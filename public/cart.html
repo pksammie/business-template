@@ -38,7 +38,12 @@
       <div class="cart-layout">
 
         <!-- LEFT: item cards -->
-        <div id="cart-items-container" class="cart-cards-grid"></div>
+        <div id="cart-items-container" class="cart-cards-grid">
+          <div class="cart-loading-state">
+            <div class="cart-loading-spinner"></div>
+            <p>Loading your bag...</p>
+          </div>
+        </div>
 
         <!-- RIGHT: sticky summary -->
         <div class="cart-summary-panel">
@@ -79,9 +84,6 @@
               <select id="restore-range">
                 <option value="1">Last Hour</option>
                 <option value="24">Last 24 Hours</option>
-                <option value="168">Last 7 Days</option>
-                <option value="720">Last Month</option>
-                <option value="all">All Time</option>
               </select>
             </div>
           </div>

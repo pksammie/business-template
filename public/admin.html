@@ -207,8 +207,10 @@ value="0">
 </div>
 
     <div id="upload-image-box" class="upload-box">
-    <i class="fa-solid fa-cloud-arrow-up"></i>
-    <p>Upload Product Image</p>
+    <div class="upload-placeholder">
+        <i class="fa-solid fa-cloud-arrow-up"></i>
+        <p>Upload Product Image</p>
+    </div>
 </div>
 
 <input
@@ -266,11 +268,11 @@ placeholder="Search products...">
 
 </div>
 
-<div id="products-pagination" class="pagination"></div>
-<br>
 <div class="table-scroll">
 
 <div id="admin-inventory-table-body" class="products-cards-grid"></div>
+<br>
+<div id="products-pagination" class="admin-pagination"></div>
 
 </div>
 
@@ -314,11 +316,11 @@ placeholder="Search products...">
 
 </div>
 
-<div id="reviews-pagination" class="pagination"></div>
-<br>
-<div id="admin-reviews-grid" class="orders-cards-grid">
 
+<div id="admin-reviews-grid" class="orders-cards-grid">
 </div>
+
+<div id="reviews-pagination" class="admin-pagination"></div>
 
 </section>
 

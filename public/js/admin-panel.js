@@ -88,13 +88,7 @@ text.innerHTML=`${customer} just placed an order.`;
 
 popup.classList.add("show");
 
-if(audioUnlocked){
-
-    notificationSound.currentTime = 0;
-
-    notificationSound.play();
-
-}
+playNotification();
 
 setTimeout(()=>{
 
@@ -218,8 +212,50 @@ let ordersSearchTerm = "";
 
 const uploadBox = document.getElementById("upload-image-box");
 
+let cloudinaryWidgetLoading = false;
+
+function showUploadLoader(){
+
+    cloudinaryWidgetLoading = true;
+
+    let overlay = uploadBox.querySelector(".upload-loading-overlay");
+
+    if(!overlay){
+
+        overlay = document.createElement("div");
+
+        overlay.className = "upload-loading-overlay";
+
+        overlay.innerHTML = `
+            <div class="upload-spinner"></div>
+            <p>Opening uploader...</p>
+        `;
+
+        uploadBox.appendChild(overlay);
+
+    }
+
+    overlay.style.display = "flex";
+
+}
+
+function hideUploadLoader(){
+
+    cloudinaryWidgetLoading = false;
+
+    const overlay = uploadBox.querySelector(".upload-loading-overlay");
+
+    if(overlay) overlay.style.display = "none";
+
+}
+
 if (uploadBox) {
   uploadBox.onclick = () => {
+
+    if(cloudinaryWidgetLoading) return;
+
+    showUploadLoader();
+
     cloudinary.openUploadWidget(
 {
     cloudName: "dzkyhxdy9",
@@ -229,7 +265,19 @@ if (uploadBox) {
 },
 (error, result) => {
 
-    if(error) return;
+    if(result && (result.event === "show" || result.event === "display-changed")){
+
+        hideUploadLoader();
+
+    }
+
+    if(error){
+
+        hideUploadLoader();
+
+        return;
+
+    }
 
     if(result.event === "success"){
 
@@ -239,13 +287,36 @@ if (uploadBox) {
 
     }
 
+    if(result.event === "close"){
+
+        hideUploadLoader();
+
+    }
+
 });
+
+    /* failsafe in case the widget doesn't fire a show/display event */
+    setTimeout(hideUploadLoader, 6000);
+
   };
 }
 
 function renderUploadedImages(){
 
     uploadBox.innerHTML = "";
+
+    if(uploadedImageUrls.length === 0){
+
+        uploadBox.innerHTML = `
+            <div class="upload-placeholder">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <p>Upload Product Image</p>
+            </div>
+        `;
+
+        return;
+
+    }
 
     uploadedImageUrls.forEach((url,index)=>{
 
@@ -261,6 +332,7 @@ function renderUploadedImages(){
             <button
                 type="button"
                 class="remove-upload-image"
+                index="remove-upload-image"
                 onclick="removeUploadedImage(${index},event)"
             >
 
@@ -369,10 +441,47 @@ function loadDashboardStats() {
 
       document.getElementById("pending-count").innerText = pending;
 
-      document.getElementById("revenue-count").innerText =
-        `₦${revenue.toLocaleString()}`;
+      const revenueEl = document.getElementById("revenue-count");
+
+      const fullFormatted = `₦${revenue.toLocaleString()}`;
+
+      if (revenue >= 10_000_000) {
+
+        revenueEl.innerText = `₦${formatCompactRevenue(revenue)}`;
+
+        revenueEl.title = fullFormatted;
+
+        revenueEl.classList.add("revenue-abbreviated");
+
+      } else {
+
+        revenueEl.innerText = fullFormatted;
+
+        revenueEl.removeAttribute("title");
+
+        revenueEl.classList.remove("revenue-abbreviated");
+
+      }
     },
   );
+}
+
+function formatCompactRevenue(amount){
+
+    const formatted = new Intl.NumberFormat("en-US", {
+
+        notation: "compact",
+
+        compactDisplay: "short",
+
+        maximumFractionDigits: 1
+
+    }).format(amount);
+
+    return formatted
+        .replace("K","k")
+        .replace("M","m")
+        .replace("B","b");
 }
 
 function generateStars(rating){
@@ -1370,119 +1479,96 @@ renderReviewsPage(1);
 
 function renderReviewCard(review){
 
+const isPending = review.approved === false;
+
 return `
 
-<div class="order-admin-card">
+<div class="order-admin-card review-admin-card-item">
 
-<div style="display:flex;justify-content:space-between;align-items:center;">
+<div class="review-card-header">
 
-<h3>
-
-${review.customerName || "Customer"}
-
-</h3>
+<h3>${review.customerName || "Customer"}</h3>
 
 ${
-review.featured
-
+(isPending || review.featured)
 ?
+`
+<div class="review-badges-row">
 
-`<span style="
-background:#d4af37;
-padding:6px 12px;
-border-radius:20px;
-font-size:12px;
-font-weight:bold;
-color:black;
-">
-★ Featured
-</span>`
+${isPending ? `<span class="review-status-badge pending-badge"><i class="fa-solid fa-hourglass-half"></i> Pending Approval</span>` : ""}
 
+${review.featured ? `<span class="review-status-badge featured-badge"><i class="fa-solid fa-star"></i> Featured</span>` : ""}
+
+</div>
+`
 :
-
 ""
-
 }
 
 </div>
 
-<br>
+<p><strong>Product:</strong> ${review.productTitle || ""}</p>
 
-<p>
+<p><strong>Rating:</strong> <span class="review-card-stars">${"★".repeat(review.rating)}${"☆".repeat(5 - review.rating)}</span></p>
 
-<strong>Product:</strong>
-
-${review.productTitle || ""}
-
-</p>
-
-<br>
-
-<p>
-
-<strong>Rating:</strong>
-
-${"★".repeat(review.rating)}
-
-</p>
-
-<br>
-
-<p>
-
-${review.reviewText}
-
-</p>
+<p class="review-card-text">${review.reviewText}</p>
 
 ${
 review.adminReply
-
 ?
-
 `
+<div class="admin-review-reply-box">
 
-<div style="
-margin-top:20px;
-padding:15px;
-background:#191919;
-border-left:3px solid #d4af37;
-">
+<strong><i class="fa-solid fa-reply"></i> Admin Reply</strong>
 
-<strong>Admin Reply</strong>
-
-<br><br>
-
-${review.adminReply}
+<p>${review.adminReply}</p>
 
 </div>
-
 `
-
 :
-
-""
-
-}
-
-<div style="
-display:flex;
-gap:10px;
-margin-top:20px;
-">
+`
+<textarea
+id="reply-${review.id}"
+class="admin-reply-textarea"
+placeholder="Write admin reply..."></textarea>
 
 <button
-onclick="toggleFeaturedReview('${review.id}',${review.featured ? false : true})"
-style="
-flex:1;
-padding:12px;
-background:${review.featured ? "#444" : "#c5a880"};
-color:${review.featured ? "#fff" : "#111"};
-border:none;
-border-radius:10px;
-cursor:pointer;
-">
+class="post-reply-btn"
+onclick="replyToReview('${review.id}')">
+Post Reply
+</button>
+`
+}
+
+<div class="review-admin-actions">
+
+${
+isPending
+?
+`
+<button
+class="approve-review-btn"
+onclick="approveReview('${review.id}')">
+<i class="fa-solid fa-check"></i> Approve
+</button>
+`
+:
+""
+}
+
+<button
+class="feature-review-btn ${review.featured ? "remove-featured" : ""}"
+onclick="toggleFeaturedReview('${review.id}',${review.featured ? false : true})">
 
 ${review.featured ? "Remove Featured" : "Feature Review"}
+
+</button>
+
+<button
+class="reply-review-btn"
+onclick="replyToReview('${review.id}')">
+
+Reply
 
 </button>
 
@@ -1491,6 +1577,68 @@ ${review.featured ? "Remove Featured" : "Feature Review"}
 </div>
 
 `;
+
+}
+
+window.approveReview = async function(id){
+
+showVanguardConfirm(
+
+"Approve this review?",
+
+async()=>{
+
+await updateDoc(
+
+doc(db,"reviews",id),
+
+{
+
+approved:true
+
+}
+
+);
+
+showToast("Review approved.");
+
+}
+
+);
+
+}
+
+window.replyToReview = async function(id){
+
+const textarea =
+document.getElementById(`reply-${id}`);
+
+const reply =
+textarea.value.trim();
+
+if(!reply){
+
+showToast("Write a reply first.");
+
+return;
+
+}
+
+await updateDoc(
+
+doc(db,"reviews",id),
+
+{
+
+adminReply:reply,
+
+adminReplyDate:Date.now()
+
+}
+
+);
+
+showToast("Reply posted.");
 
 }
 

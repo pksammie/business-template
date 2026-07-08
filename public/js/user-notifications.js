@@ -63,6 +63,40 @@ id:change.doc.id,
 
 });
 
+const notificationSound = new Audio("/sounds/notification.wav");
+
+function unlockAudio(){
+
+    if(window.__timelessAudioUnlocked) return;
+
+    notificationSound.play()
+
+        .then(()=>{
+
+            notificationSound.pause();
+
+            notificationSound.currentTime = 0;
+
+            window.__timelessAudioUnlocked = true;
+
+        })
+
+        .catch(()=>{});
+
+}
+
+document.addEventListener("click", unlockAudio, { once:true });
+
+function playNotification(){
+
+    if(!window.__timelessAudioUnlocked) return;
+
+    notificationSound.currentTime = 0;
+
+    notificationSound.play().catch(()=>{});
+
+}
+
 function updateBadge(snapshot){
 
 const badge=document.getElementById("notification-badge");
@@ -133,11 +167,19 @@ requestAnimationFrame(()=>{
 
 toast.classList.add("show");
 
+if(audioUnlocked){
+
+    notificationSound.currentTime = 0;
+
+    notificationSound.play().catch(()=>{});
+
+}
+
 });
 
 toast.onclick=()=>{
 
-location.href=`/notifications?id=${notification.id}`;
+location.href=`/notifications.html?id=${notification.id}`;
 
 };
 

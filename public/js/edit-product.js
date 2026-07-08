@@ -26,10 +26,13 @@ async function loadProduct() {
 
   document.getElementById("prod-title").value = product.title;
   document.getElementById("prod-price").value = product.price;
-  document.getElementById("stock-s").value = product.stock?.S || 0;
-document.getElementById("stock-m").value = product.stock?.M || 0;
-document.getElementById("stock-l").value = product.stock?.L || 0;
-document.getElementById("stock-xl").value = product.stock?.XL || 0;
+  document.querySelectorAll(".size-stock-input").forEach(input => {
+
+    const size = input.dataset.size;
+
+    input.value = product.stock?.[size] || 0;
+
+});
 
   // ─────────────────────────────────────────────────────────────
 
@@ -47,9 +50,12 @@ product.image
 
 renderImageGallery();
 
-  document.querySelectorAll('input[name="prod_sizes"]').forEach(box => {
-    box.checked = (product.sizes || []).includes(box.value);
-  });
+document.querySelectorAll('input[name="prod_sizes"]').forEach(box => {
+
+    box.checked =
+        (product.sizes || []).includes(box.value);
+
+});
 
   document.querySelectorAll('input[name="prod_colors"]').forEach(box => {
     box.checked = (product.colors || []).includes(box.value);
@@ -78,6 +84,7 @@ class="uploaded-image-preview"
 <button
 type="button"
 class="remove-image-btn"
+id="remove-image-btn"
 data-index="${index}">
 
 <i class="fa-solid fa-xmark"></i>
@@ -124,6 +131,43 @@ renderImageGallery();
 
 }
 
+let cloudinaryWidgetLoading = false;
+
+function showUploadLoader(){
+
+    cloudinaryWidgetLoading = true;
+
+    let overlay = uploadBox.querySelector(".upload-loading-overlay");
+
+    if(!overlay){
+
+        overlay = document.createElement("div");
+
+        overlay.className = "upload-loading-overlay";
+
+        overlay.innerHTML = `
+            <div class="upload-spinner"></div>
+            <p>Opening uploader...</p>
+        `;
+
+        uploadBox.appendChild(overlay);
+
+    }
+
+    overlay.style.display = "flex";
+
+}
+
+function hideUploadLoader(){
+
+    cloudinaryWidgetLoading = false;
+
+    const overlay = uploadBox.querySelector(".upload-loading-overlay");
+
+    if(overlay) overlay.style.display = "none";
+
+}
+
 function openUploader(){
 
 if(uploadedImages.length>=8){
@@ -133,6 +177,10 @@ showToast("Maximum of 8 images allowed.");
 return;
 
 }
+
+if(cloudinaryWidgetLoading) return;
+
+showUploadLoader();
 
 cloudinary.openUploadWidget(
 
@@ -148,15 +196,21 @@ multiple:false
 
 (error,result)=>{
 
-if(
+if(result && (result.event === "show" || result.event === "display-changed")){
 
-!error &&
+    hideUploadLoader();
 
-result &&
+}
 
-result.event==="success"
+if(error){
 
-){
+    hideUploadLoader();
+
+    return;
+
+}
+
+if(result.event==="success"){
 
 uploadedImages.push(
 
@@ -168,9 +222,17 @@ renderImageGallery();
 
 }
 
+if(result.event==="close"){
+
+    hideUploadLoader();
+
+}
+
 }
 
 );
+
+setTimeout(hideUploadLoader, 6000);
 
 }
 
@@ -194,12 +256,47 @@ form.addEventListener("submit", async e => {
 
   const colors = [...document.querySelectorAll("input[name='prod_colors']:checked")].map(el => el.value);
   const sizes  = [...document.querySelectorAll("input[name='prod_sizes']:checked")].map(el => el.value);
-  const stock = {
-    S: Number(document.getElementById("stock-s").value) || 0,
-    M: Number(document.getElementById("stock-m").value) || 0,
-    L: Number(document.getElementById("stock-l").value) || 0,
-    XL: Number(document.getElementById("stock-xl").value) || 0
-};
+  const stock = {};
+
+document.querySelectorAll(".size-stock-input").forEach(input => {
+
+    stock[input.dataset.size] =
+        Number(input.value) || 0;
+
+});
+
+const sizeBoxes =
+document.querySelectorAll('input[name="prod_sizes"]');
+
+sizeBoxes.forEach(box=>{
+
+box.addEventListener("change",()=>{
+
+const noneBox=document.querySelector(
+'input[name="prod_sizes"][value="None"]'
+);
+
+if(box.value==="None" && box.checked){
+
+sizeBoxes.forEach(cb=>{
+
+if(cb!==noneBox){
+
+cb.checked=false;
+
+}
+
+});
+
+}else{
+
+noneBox.checked=false;
+
+}
+
+});
+
+});
 
   await updateDoc(doc(db, "products", productId), {
 
