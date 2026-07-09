@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Report an Issue</title>
+<link rel="stylesheet" href="/css/index.css" />
+<link rel="stylesheet" href="/css/complaint.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+<script src="/js/theme-init.js"></script>
+
+<header class="complaint-header">
+<a href="/" class="back-btn">
+<i class="fa fa-arrow-left"></i>
+</a>
+<div>
+<h1>Report an Issue</h1>
+<p class="complaint-sub">Tell us what went wrong and we'll get back to you.</p>
+</div>
+</header>
+
+<main class="complaint-main">
+
+<form id="complaint-form" class="complaint-form">
+
+<label for="complaint-order">Related order (optional)</label>
+<select id="complaint-order">
+<option value="">General complaint (not about a specific order)</option>
+</select>
+
+<label for="complaint-subject">Subject</label>
+<input type="text" id="complaint-subject" placeholder="Briefly summarize your issue" required>
+
+<label for="complaint-message">Message</label>
+<textarea id="complaint-message" placeholder="Describe your issue in detail..." required></textarea>
+
+<button type="submit">Submit Complaint</button>
+
+</form>
+
+<section class="complaint-history">
+
+<h2>Your Past Complaints</h2>
+
+<div id="complaints-loading" class="complaint-loader">
+<div class="complaint-spinner"></div>
+<p>Loading...</p>
+</div>
+
+<div id="complaints-empty" class="complaint-empty-state" style="display:none;">
+<i class="fa-regular fa-comment-dots"></i>
+<p>You haven't filed any complaints yet.</p>
+</div>
+
+<div id="complaints-list"></div>
+
+</section>
+
+</main>
+
+<script type="module" src="/js/complaint.js"></script>
+<script src="/js/toast.js"></script>
+
+</body>
+</html>

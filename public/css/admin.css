@@ -1852,3 +1852,18 @@ color:#fff;
 .upload-image-placeholder:hover {
   border-color: var(--primary-color);
 }
+/* =========================
+   COMPLAINTS BADGE
+========================= */
+
+.complaints-badge{
+display:inline-block;
+background:#e07a7a;
+color:#111;
+font-size:12px;
+font-weight:700;
+padding:3px 10px;
+border-radius:12px;
+margin-left:10px;
+vertical-align:middle;
+}

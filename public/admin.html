@@ -11,6 +11,7 @@
 </head>
 
 <body id="admin-body">
+<script src="/js/theme-init.js"></script>
 
 <div id="admin-loading-screen">
 
@@ -324,6 +325,17 @@ placeholder="Search products...">
 
 </section>
 
+<section style="margin-top:60px;">
+
+<h2>Complaints <span id="complaints-open-badge" class="complaints-badge" style="display:none;"></span></h2>
+
+<br>
+
+<div id="admin-complaints-grid" class="orders-cards-grid">
+</div>
+
+</section>
+
 </main>
 
 <!-- Vanguard Confirm Modal -->
@@ -351,7 +363,6 @@ placeholder="Search products...">
 <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
 <script type="module" src="/js/admin-panel.js"></script>
 <script type="module" src="/js/admin-notification.js"></script>
-<script type="module" src="/js/user-notifications.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
 </body>

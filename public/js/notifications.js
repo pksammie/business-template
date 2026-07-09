@@ -7,7 +7,9 @@ where,
 orderBy,
 onSnapshot,
 doc,
-updateDoc
+updateDoc,
+deleteDoc,
+writeBatch
 }
 from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
@@ -24,6 +26,317 @@ const loadingState = document.getElementById("notifications-loading");
 
 const unreadCount = document.getElementById("unread-count");
 
+const deleteAllBtn = document.getElementById("delete-all-btn");
+
+const selectionToolbar = document.getElementById("selection-toolbar");
+
+const selectionCount = document.getElementById("selection-count");
+
+const selectionCancelBtn = document.getElementById("selection-cancel-btn");
+
+const selectionSelectAllBtn = document.getElementById("selection-select-all-btn");
+
+const selectionDeleteBtn = document.getElementById("selection-delete-btn");
+
+const contextMenu = document.getElementById("notif-context-menu");
+
+const contextSelectBtn = document.getElementById("context-select-btn");
+
+const contextDeleteBtn = document.getElementById("context-delete-btn");
+
+let currentUid = null;
+
+/* ---------------- SELECTION MODE STATE ---------------- */
+
+let selectionMode = false;
+
+let selectedIds = new Set();
+
+let latestNotifications = []; // the notifications from the most recent snapshot
+
+let longPressTimer = null;
+
+let suppressNextClick = false;
+
+let contextTargetId = null;
+
+function enterSelectionMode(initialId){
+
+    selectionMode = true;
+
+    if(initialId) selectedIds.add(initialId);
+
+    container.classList.add("selection-active");
+
+    updateSelectionUI();
+
+}
+
+function exitSelectionMode(){
+
+    selectionMode = false;
+
+    selectedIds.clear();
+
+    container.classList.remove("selection-active");
+
+    selectionToolbar.classList.remove("show");
+
+    document.querySelectorAll(".notification-card.notif-selected")
+        .forEach(c => c.classList.remove("notif-selected"));
+
+}
+
+function toggleSelected(id, cardEl){
+
+    if(selectedIds.has(id)){
+
+        selectedIds.delete(id);
+
+        cardEl?.classList.remove("notif-selected");
+
+    }else{
+
+        selectedIds.add(id);
+
+        cardEl?.classList.add("notif-selected");
+
+    }
+
+    if(selectedIds.size === 0){
+
+        exitSelectionMode();
+
+    }else{
+
+        updateSelectionUI();
+
+    }
+
+}
+
+function updateSelectionUI(){
+
+    if(!selectionMode) return;
+
+    selectionToolbar.classList.add("show");
+
+    selectionCount.innerText = `${selectedIds.size} selected`;
+
+    const allSelected =
+        latestNotifications.length > 0 &&
+        latestNotifications.every(n => selectedIds.has(n.id));
+
+    selectionSelectAllBtn.innerText = allSelected ? "Deselect All" : "Select All";
+
+}
+
+selectionCancelBtn.addEventListener("click", () => {
+
+    exitSelectionMode();
+
+});
+
+selectionSelectAllBtn.addEventListener("click", () => {
+
+    const allSelected =
+        latestNotifications.length > 0 &&
+        latestNotifications.every(n => selectedIds.has(n.id));
+
+    if(allSelected){
+
+        selectedIds.clear();
+
+        exitSelectionMode();
+
+    }else{
+
+        latestNotifications.forEach(n => selectedIds.add(n.id));
+
+        document.querySelectorAll(".notification-card")
+            .forEach(c => c.classList.add("notif-selected"));
+
+        updateSelectionUI();
+
+    }
+
+});
+
+selectionDeleteBtn.addEventListener("click", () => {
+
+    if(selectedIds.size === 0) return;
+
+    const ids = [...selectedIds];
+
+    window.showConfirmModal(
+        `Delete ${ids.length} notification${ids.length > 1 ? "s" : ""}?`,
+        async () => {
+
+            try {
+
+                const batch = writeBatch(db);
+
+                ids.forEach(id => {
+                    batch.delete(doc(db, "user_notifications", id));
+                });
+
+                await batch.commit();
+
+                showToast("Notifications deleted.");
+
+            } catch (err) {
+
+                console.error(err);
+
+                showToast("Couldn't delete notifications.");
+
+            }
+
+            exitSelectionMode();
+
+        }
+    );
+
+});
+
+deleteAllBtn.addEventListener("click", () => {
+
+    if(latestNotifications.length === 0){
+
+        showToast("No notifications to delete.");
+
+        return;
+
+    }
+
+    window.showConfirmModal(
+        "Delete all notifications? This cannot be undone.",
+        async () => {
+
+            try {
+
+                const batch = writeBatch(db);
+
+                latestNotifications.forEach(n => {
+                    batch.delete(doc(db, "user_notifications", n.id));
+                });
+
+                await batch.commit();
+
+                showToast("All notifications deleted.");
+
+            } catch (err) {
+
+                console.error(err);
+
+                showToast("Couldn't delete notifications.");
+
+            }
+
+            exitSelectionMode();
+
+        }
+    );
+
+});
+
+/* ---------------- CONTEXT MENU (RIGHT CLICK) ---------------- */
+
+function openContextMenu(x, y, id){
+
+    contextTargetId = id;
+
+    contextMenu.style.left = `${x}px`;
+    contextMenu.style.top = `${y}px`;
+
+    contextMenu.classList.add("show");
+
+    // keep menu on-screen
+    requestAnimationFrame(() => {
+        const rect = contextMenu.getBoundingClientRect();
+        if(rect.right > window.innerWidth){
+            contextMenu.style.left = `${window.innerWidth - rect.width - 10}px`;
+        }
+        if(rect.bottom > window.innerHeight){
+            contextMenu.style.top = `${window.innerHeight - rect.height - 10}px`;
+        }
+    });
+
+}
+
+function closeContextMenu(){
+
+    contextMenu.classList.remove("show");
+
+    contextTargetId = null;
+
+}
+
+document.addEventListener("click", (e) => {
+
+    if(!contextMenu.contains(e.target)){
+
+        closeContextMenu();
+
+    }
+
+});
+
+document.addEventListener("scroll", closeContextMenu, true);
+
+contextSelectBtn.addEventListener("click", () => {
+
+    if(!contextTargetId) return;
+
+    const id = contextTargetId;
+
+    closeContextMenu();
+
+    if(!selectionMode){
+
+        enterSelectionMode(id);
+
+    }else{
+
+        selectedIds.add(id);
+
+        document.getElementById(`notif-${id}`)?.classList.add("notif-selected");
+
+        updateSelectionUI();
+
+    }
+
+});
+
+contextDeleteBtn.addEventListener("click", () => {
+
+    if(!contextTargetId) return;
+
+    const id = contextTargetId;
+
+    closeContextMenu();
+
+    window.showConfirmModal(
+        "Delete this notification?",
+        async () => {
+
+            try {
+
+                await deleteDoc(doc(db, "user_notifications", id));
+
+            } catch (err) {
+
+                console.error(err);
+
+                showToast("Couldn't delete notification.");
+
+            }
+
+        }
+    );
+
+});
+
 onAuthStateChanged(auth,user=>{
 
 if(!user){
@@ -33,6 +346,8 @@ location.href="/login";
 return;
 
 }
+
+currentUid = user.uid;
 
 loadNotifications(user.uid);
 
@@ -66,6 +381,10 @@ emptyState.style.display="flex";
 
 unreadCount.innerText="0 unread";
 
+latestNotifications = [];
+
+if(selectionMode) exitSelectionMode();
+
 return;
 
 }
@@ -73,6 +392,8 @@ return;
 container.style.display="flex";
 
 emptyState.style.display="none";
+
+latestNotifications = [];
 
 snapshot.forEach(docSnap=>{
 
@@ -83,6 +404,8 @@ id:docSnap.id,
 ...docSnap.data()
 
 };
+
+latestNotifications.push(notification);
 
 if(!notification.read){
 
@@ -97,6 +420,33 @@ createCard(notification)
 );
 
 });
+
+// drop any selected ids that no longer exist, and keep selection styling in sync
+const validIds = new Set(latestNotifications.map(n => n.id));
+
+[...selectedIds].forEach(id => {
+    if(!validIds.has(id)) selectedIds.delete(id);
+});
+
+if(selectionMode){
+
+    if(selectedIds.size === 0){
+
+        exitSelectionMode();
+
+    }else{
+
+        container.classList.add("selection-active");
+
+        selectedIds.forEach(id => {
+            document.getElementById(`notif-${id}`)?.classList.add("notif-selected");
+        });
+
+        updateSelectionUI();
+
+    }
+
+}
 
 if(openId && !autoOpened){
 
@@ -147,6 +497,10 @@ card.id=`notif-${notification.id}`;
 card.className=`notification-card ${notification.read ? "" : "unread"}`;
 
 card.innerHTML=`
+
+<div class="notif-selector">
+<i class="fa-solid fa-check"></i>
+</div>
 
 <div class="notification-top">
 
@@ -276,6 +630,10 @@ View Product
 ""
 }
 
+<button class="delete-notif-btn" data-id="${notification.id}">
+<i class="fa-solid fa-trash-can"></i> Delete
+</button>
+
 </div>
 
 `;
@@ -343,11 +701,105 @@ setTimeout(() => {
 
 }
 
-card.addEventListener("click", toggleNotification);
+/* ---------------- SELECTION: LONG PRESS (MOBILE) ---------------- */
 
-card.querySelector("button").onclick=(e)=>{
+card.addEventListener("touchstart", () => {
+
+    clearTimeout(longPressTimer);
+
+    longPressTimer = setTimeout(() => {
+
+        suppressNextClick = true;
+
+        if(!selectionMode){
+
+            enterSelectionMode(notification.id);
+
+        }else{
+
+            toggleSelected(notification.id, card);
+
+        }
+
+        if(navigator.vibrate) navigator.vibrate(15);
+
+    }, 500);
+
+}, { passive:true });
+
+["touchend","touchmove","touchcancel"].forEach(evt => {
+
+    card.addEventListener(evt, () => {
+
+        clearTimeout(longPressTimer);
+
+    }, { passive:true });
+
+});
+
+/* ---------------- SELECTION: RIGHT CLICK (DESKTOP) ---------------- */
+
+card.addEventListener("contextmenu", (e) => {
+
+    e.preventDefault();
+
+    openContextMenu(e.clientX, e.clientY, notification.id);
+
+});
+
+/* ---------------- CLICK: TOGGLE SELECTION OR DETAILS ---------------- */
+
+card.addEventListener("click", (e) => {
+
+    if(suppressNextClick){
+
+        suppressNextClick = false;
+
+        return;
+
+    }
+
+    if(selectionMode){
+
+        e.stopPropagation();
+
+        toggleSelected(notification.id, card);
+
+        return;
+
+    }
+
+    toggleNotification();
+
+});
+
+card.querySelector(".notif-selector").addEventListener("click", (e) => {
 
     e.stopPropagation();
+
+    if(!selectionMode){
+
+        enterSelectionMode(notification.id);
+
+    }else{
+
+        toggleSelected(notification.id, card);
+
+    }
+
+});
+
+card.querySelector(".notification-action button").onclick=(e)=>{
+
+    e.stopPropagation();
+
+    if(selectionMode){
+
+        toggleSelected(notification.id, card);
+
+        return;
+
+    }
 
     toggleNotification();
 
@@ -356,7 +808,8 @@ card.querySelector("button").onclick=(e)=>{
 const openOrderBtn = details.querySelector(".open-order-btn");
 
 if (openOrderBtn) {
-    openOrderBtn.onclick=()=>{
+    openOrderBtn.onclick=(e)=>{
+        e.stopPropagation();
         location.href=`/orders?open=${notification.orderId}`;
     };
 }
@@ -364,10 +817,38 @@ if (openOrderBtn) {
 const openProductBtn = details.querySelector(".open-product-btn");
 
 if (openProductBtn) {
-    openProductBtn.onclick=()=>{
+    openProductBtn.onclick=(e)=>{
+        e.stopPropagation();
         location.href=`/decision-page.html?id=${notification.productId}`;
     };
 }
+
+const deleteBtn = details.querySelector(".delete-notif-btn");
+
+deleteBtn.onclick = (e) => {
+
+    e.stopPropagation();
+
+    window.showConfirmModal(
+        "Delete this notification?",
+        async () => {
+
+            try {
+
+                await deleteDoc(doc(db, "user_notifications", notification.id));
+
+            } catch (err) {
+
+                console.error(err);
+
+                showToast("Couldn't delete notification.");
+
+            }
+
+        }
+    );
+
+};
 
 return card;
 

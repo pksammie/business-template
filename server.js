@@ -58,6 +58,12 @@ app.get("/orders", (req, res) =>
 app.get("/orders.html", (req, res) =>
   res.sendFile(path.join(__dirname, "public", "orders.html")),
 );
+app.get("/complaint", (req, res) =>
+  res.sendFile(path.join(__dirname, "public", "complaint.html")),
+);
+app.get("/complaint.html", (req, res) =>
+  res.sendFile(path.join(__dirname, "public", "complaint.html")),
+);
 app.get("/forgot-password", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "forgot-password.html"));
 });

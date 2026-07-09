@@ -4,12 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Notifications</title>
+<link rel="stylesheet" href="/css/index.css" />
 <link rel="stylesheet" href="/css/notifications.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 <body>
+<script src="/js/theme-init.js"></script>
 <header class="notifications-header">
-<a href="/" class="back-btn">
+<a href="/" class="back-btn" id="notif-back-btn">
 <i class="fa fa-arrow-left"></i>
 </a>
 <div>
@@ -20,7 +22,32 @@ Notifications
 0 unread
 </p>
 </div>
+<button id="delete-all-btn" class="delete-all-btn" title="Delete all notifications">
+<i class="fa-solid fa-trash-can"></i>
+</button>
 </header>
+
+<a href="/complaint.html" class="report-issue-link">
+<i class="fa-solid fa-triangle-exclamation"></i> Report an Issue
+</a>
+
+<!-- Selection mode toolbar: shown when the user long-presses / right-clicks a notification -->
+<div id="selection-toolbar" class="selection-toolbar">
+<button id="selection-cancel-btn" class="selection-icon-btn" title="Cancel selection">
+<i class="fa-solid fa-xmark"></i>
+</button>
+<span id="selection-count">0 selected</span>
+<button id="selection-select-all-btn" class="selection-text-btn">Select All</button>
+<button id="selection-delete-btn" class="selection-icon-btn selection-delete-btn" title="Delete selected">
+<i class="fa-solid fa-trash-can"></i>
+</button>
+</div>
+
+<!-- Custom right-click menu for desktop -->
+<div id="notif-context-menu" class="notif-context-menu">
+<button id="context-select-btn"><i class="fa-solid fa-square-check"></i> Select</button>
+<button id="context-delete-btn"><i class="fa-solid fa-trash-can"></i> Delete</button>
+</div>
 
 <div>
 <div id="notifications-container">
@@ -42,10 +69,10 @@ We'll notify you whenever your order status changes.
 </div>
 </div>
 
-<script type="module" src="/js/notifications.js">
-</script>
+<script type="module" src="/js/notifications.js"></script>
 
 <script src="/js/toast.js"></script>
+<script src="/js/modal.js"></script>
 
 </body>
 </html>

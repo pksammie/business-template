@@ -44,7 +44,13 @@ let currentReviewPage=1;
 const REVIEWS_PER_PAGE=8;
 
 const ORDERS_PER_PAGE = 10;
-const notificationSound = new Audio("/sounds/notification.wav");
+
+function playNotification() {
+  if (!window.__timelessAudioUnlocked) return;
+  const sound = new Audio("/sounds/notification.wav");
+  sound.volume = 1;
+  sound.play().catch(() => {});
+}
 
 async function createUserNotification(order, status, message) {
 
@@ -91,26 +97,6 @@ popup.classList.remove("show");
 },5000);
 
 }
-
-let audioUnlocked = false;
-
-document.addEventListener("click", () => {
-
-    if(audioUnlocked) return;
-
-    notificationSound.play()
-        .then(() => {
-
-            notificationSound.pause();
-
-            notificationSound.currentTime = 0;
-
-            audioUnlocked = true;
-
-        })
-        .catch(()=>{});
-
-}, { once:true });
 
 function celebrateDelivery(){
 
@@ -1199,6 +1185,19 @@ increment(-reservation.quantity)
 
 await deleteDoc(reservationRef);
 
+await createUserNotification(
+
+    {
+        ...reservation,
+        id
+    },
+
+    "Order Removed",
+
+    "Your order was removed by our team. Contact support if you believe this was a mistake."
+
+);
+
 showToast("Order deleted.");
 
 }
@@ -1670,6 +1669,26 @@ adminReplyDate:Date.now()
 
 );
 
+const review = allReviews.find(r => r.id === id);
+
+if (review && review.userId) {
+    try {
+        await addDoc(collection(db, "user_notifications"), {
+            userId: review.userId,
+            type: "review_reply",
+            productId: review.productId || null,
+            productTitle: review.productTitle || "your product",
+            productImage: review.productImage || "",
+            status: "We Replied To Your Review",
+            message: `We replied to your review on "${review.productTitle || "your product"}": "${reply}"`,
+            read: false,
+            createdAt: serverTimestamp(),
+        });
+    } catch (err) {
+        console.error(err);
+    }
+}
+
 showToast("Reply posted.");
 
 }
@@ -1702,6 +1721,28 @@ featured:state
 
 );
 
+const review = allReviews.find(r => r.id === id);
+
+if (review && review.userId) {
+    try {
+        await addDoc(collection(db, "user_notifications"), {
+            userId: review.userId,
+            type: "review_featured",
+            productId: review.productId || null,
+            productTitle: review.productTitle || "your product",
+            productImage: review.productImage || "",
+            status: state ? "Your Review Was Featured" : "Review Unfeatured",
+            message: state
+                ? `Your review on "${review.productTitle || "your product"}" is now featured for other shoppers to see. Thank you!`
+                : `Your review on "${review.productTitle || "your product"}" is no longer featured.`,
+            read: false,
+            createdAt: serverTimestamp(),
+        });
+    } catch (err) {
+        console.error(err);
+    }
+}
+
 showToast(
 
 state
@@ -1722,10 +1763,227 @@ state
 
 }
 
+/* ---------------- COMPLAINTS ---------------- */
+
+let allComplaints = [];
+
+function loadComplaints(){
+
+const grid = document.getElementById("admin-complaints-grid");
+
+if(!grid) return;
+
+const q = query(
+
+collection(db,"complaints"),
+
+orderBy("createdAt","desc")
+
+);
+
+onSnapshot(q,(snapshot)=>{
+
+allComplaints = [];
+
+snapshot.forEach(docSnap=>{
+
+allComplaints.push({
+id: docSnap.id,
+...docSnap.data()
+});
+
+});
+
+renderComplaintsGrid();
+
+});
+
+}
+
+function renderComplaintsGrid(){
+
+const grid = document.getElementById("admin-complaints-grid");
+
+if(!grid) return;
+
+grid.innerHTML="";
+
+// open complaints first, then resolved
+const sorted = [...allComplaints].sort((a,b)=>{
+
+    if(a.status === b.status) return 0;
+
+    return a.status === "Resolved" ? 1 : -1;
+
+});
+
+sorted.forEach(complaint=>{
+
+grid.innerHTML += renderComplaintCard(complaint);
+
+});
+
+const badge = document.getElementById("complaints-open-badge");
+
+const openCount = allComplaints.filter(c => c.status !== "Resolved").length;
+
+if(badge){
+
+    if(openCount > 0){
+
+        badge.style.display="inline-block";
+
+        badge.innerText = `${openCount} open`;
+
+    }else{
+
+        badge.style.display="none";
+
+    }
+
+}
+
+if(allComplaints.length === 0){
+
+    grid.innerHTML = `<p style="opacity:.6;">No complaints filed yet.</p>`;
+
+}
+
+}
+
+function renderComplaintCard(complaint){
+
+const isResolved = complaint.status === "Resolved";
+
+return `
+
+<div class="order-admin-card review-admin-card-item">
+
+<div class="review-card-header">
+
+<h3>${complaint.subject || "Complaint"}</h3>
+
+<div class="review-badges-row">
+
+<span class="review-status-badge ${isResolved ? "featured-badge" : "pending-badge"}">
+
+${isResolved ? `<i class="fa-solid fa-check"></i> Resolved` : `<i class="fa-solid fa-hourglass-half"></i> Open`}
+
+</span>
+
+</div>
+
+</div>
+
+${complaint.orderId ? `<p><strong>Order ID:</strong> ${complaint.orderId}</p>` : ""}
+
+${complaint.productTitle ? `<p><strong>Product:</strong> ${complaint.productTitle}</p>` : ""}
+
+<p class="review-card-text">${complaint.message || ""}</p>
+
+${
+complaint.adminReply
+?
+`
+<div class="admin-review-reply-box">
+
+<strong><i class="fa-solid fa-reply"></i> Your Reply</strong>
+
+<p>${complaint.adminReply}</p>
+
+</div>
+`
+:
+`
+<textarea
+
+id="complaint-reply-${complaint.id}"
+
+class="admin-reply-textarea"
+
+placeholder="Write a reply and resolve..."></textarea>
+
+<button
+
+class="post-reply-btn"
+
+onclick="resolveComplaint('${complaint.id}')">
+
+Send Reply &amp; Resolve
+
+</button>
+`
+}
+
+</div>
+
+`;
+
+}
+
+window.resolveComplaint = async function(id){
+
+const textarea = document.getElementById(`complaint-reply-${id}`);
+
+const reply = textarea?.value.trim();
+
+if(!reply){
+
+showToast("Write a reply first.");
+
+return;
+
+}
+
+const complaint = allComplaints.find(c => c.id === id);
+
+await updateDoc(
+
+doc(db,"complaints",id),
+
+{
+
+adminReply: reply,
+
+adminReplyDate: Date.now(),
+
+status: "Resolved"
+
+}
+
+);
+
+if(complaint && complaint.userId){
+
+    try {
+        await addDoc(collection(db, "user_notifications"), {
+            userId: complaint.userId,
+            type: "complaint_resolved",
+            orderId: complaint.orderId || null,
+            productId: complaint.productId || null,
+            productTitle: complaint.productTitle || "your complaint",
+            productImage: complaint.productImage || "",
+            status: "Your Complaint Was Answered",
+            message: `Regarding "${complaint.subject || "your complaint"}": ${reply}`,
+            read: false,
+            createdAt: serverTimestamp(),
+        });
+    } catch (err) {
+        console.error(err);
+    }
+
+}
+
+showToast("Reply sent and complaint resolved.");
+
+}
+
 loadInventory();
 
 loadOrders();
 
 loadReviews();
+
+loadComplaints();
 
 loadDashboardStats();

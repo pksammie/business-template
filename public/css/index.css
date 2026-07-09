@@ -126,37 +126,36 @@ body {
   overflow-x: hidden;
 }
 
-:root {
-  --bg: #0b0c10;
-  --text: #ffffff;
-  --card: #111;
-}
+/* THEMES
+   All themes override the SAME variables the whole site already reads
+   (--bg-color, --card-bg, --primary-color, --text-main, --text-muted),
+   so switching themes actually reskins the whole page, not just <body>. */
 
-/* DEFAULT */
-body {
-  background: var(--bg);
-  color: var(--text);
-}
-
-/* DARK THEME */
+/* MAIN THEME (default look, also selectable as "dark") */
 body[data-theme="dark"] {
-  --bg: #0b0c10;
-  --text: #ffffff;
-  --card: #111;
+  --bg-color: #0b0c10;
+  --card-bg: #1f2833;
+  --primary-color: #c5a880;
+  --text-main: #ffffff;
+  --text-muted: #c5a88099;
 }
 
-/* LIGHT THEME */
-body[data-theme="light"] {
-  --bg: #ffffff;
-  --text: #ffffff;
-  --card: #000000;
+/* EMERALD THEME */
+body[data-theme="emerald"] {
+  --bg-color: #0c1512;
+  --card-bg: #16241f;
+  --primary-color: #8fbfa0;
+  --text-main: #f5f5f0;
+  --text-muted: #8fbfa099;
 }
 
-/* LUXURY THEME */
-body[data-theme="luxury"] {
-  --bg: #0a0a0a;
-  --text: #c5a88099;
-  --card: #1a1a1a;
+/* ROSEWOOD THEME */
+body[data-theme="rosewood"] {
+  --bg-color: #150c10;
+  --card-bg: #2a1620;
+  --primary-color: #cf9a9a;
+  --text-main: #f5efe9;
+  --text-muted: #cf9a9a99;
 }
 
 /* Minimal Top Utility Server Strip */
@@ -409,39 +408,21 @@ table td {
   transition: color 0.3s ease;
 }
 
-/* default */
+/* default / main theme */
 body[data-theme="dark"] .main-signature-logo span {
   color: #ffffff;
 }
 
-/* LIGHT */
-body[data-theme="light"] .main-signature-logo span {
-  --bg: #f6f6f6;
-  --text: #1a1a1a;
-  --card: #ffffff;
-  --primary-color: #a88962;
-}
-
-body[data-theme="light"] .main-signature-logo {
-  font-size: 24px;
-  font-weight: 800;
-  letter-spacing: 4px;
-  text-align: center;
+/* EMERALD */
+body[data-theme="emerald"] .main-signature-logo span {
   color: #ffffff;
+  text-shadow: 0 0 10px rgba(143, 191, 160, 0.4);
 }
 
-body[data-theme="light"] .collection-intro-title h2 {
-  font-size: 24px;
-  letter-spacing: 3px;
-  font-weight: 400;
-  text-transform: uppercase;
-  color: #000000;
-}
-
-/* LUXURY / BLACK THEME (your special one) */
-body[data-theme="luxury"] .main-signature-logo span {
+/* ROSEWOOD */
+body[data-theme="rosewood"] .main-signature-logo span {
   color: #ffffff;
-  text-shadow: 0 0 10px rgba(197, 168, 128, 0.4);
+  text-shadow: 0 0 10px rgba(207, 154, 154, 0.4);
 }
 
 /* Right Cart Anchor Alignment */
@@ -1588,15 +1569,18 @@ a:active {
 }
 
 .theme-box[data-theme="dark"] {
-  background: black;
+  background: #0b0c10;
+  border: 1px solid #c5a880;
 }
 
-.theme-box[data-theme="light"] {
-  background: white;
+.theme-box[data-theme="emerald"] {
+  background: #0c1512;
+  border: 1px solid #8fbfa0;
 }
 
-.theme-box[data-theme="luxury"] {
-  background: gold;
+.theme-box[data-theme="rosewood"] {
+  background: #150c10;
+  border: 1px solid #cf9a9a;
 }
 
 .product-title {

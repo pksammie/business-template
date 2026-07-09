@@ -8,7 +8,7 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/f
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 const savedTheme = localStorage.getItem("theme");
-if (savedTheme) document.body.dataset.theme = savedTheme;
+document.body.dataset.theme = savedTheme || "dark";
 
 const adminLinkContainer = document.getElementById("adminLinkContainer");
 const authLinks          = document.querySelector(".account-auth-links");
@@ -38,9 +38,9 @@ function showUserDropdown(user, isAdmin) {
         </div>
 
         <div class="theme-submenu" id="themeMenu">
-          <div class="theme-box" data-theme="dark"   title="Dark"></div>
-          <div class="theme-box" data-theme="light"  title="Light"></div>
-          <div class="theme-box" data-theme="luxury" title="Luxury"></div>
+          <div class="theme-box" data-theme="dark"     title="Dark"></div>
+          <div class="theme-box" data-theme="emerald"  title="Emerald"></div>
+          <div class="theme-box" data-theme="rosewood" title="Rosewood"></div>
         </div>
 
         <div class="dropdown-item" id="ordersBtn">
