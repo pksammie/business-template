@@ -20,6 +20,8 @@ const container = document.getElementById("notifications-container");
 
 const emptyState = document.getElementById("empty-notifications");
 
+const loadingState = document.getElementById("notifications-loading");
+
 const unreadCount = document.getElementById("unread-count");
 
 onAuthStateChanged(auth,user=>{
@@ -54,13 +56,9 @@ container.innerHTML="";
 
 let unread=0;
 
-document.getElementById("loading-text").style.display="none";
+loadingState.style.display="none";
 
 if(snapshot.empty){
-
-document.getElementById("empty-text").style.display="block";
-
-document.getElementById("empty-text").style.display="none";
 
 container.style.display="none";
 
@@ -222,6 +220,10 @@ ${notification.message}
 
 </p>
 
+${
+notification.orderId
+?
+`
 <p>
 
 <strong>Order ID:</strong>
@@ -229,6 +231,10 @@ ${notification.message}
 ${notification.orderId}
 
 </p>
+`
+:
+""
+}
 
 <p>
 
@@ -238,6 +244,10 @@ ${formatFullDate(notification.createdAt)}
 
 </p>
 
+${
+notification.orderId
+?
+`
 <button
 
 class="open-order-btn"
@@ -247,6 +257,24 @@ data-order="${notification.orderId}">
 View Order
 
 </button>
+`
+:
+notification.productId
+?
+`
+<button
+
+class="open-product-btn"
+
+data-product="${notification.productId}">
+
+View Product
+
+</button>
+`
+:
+""
+}
 
 </div>
 
@@ -325,15 +353,21 @@ card.querySelector("button").onclick=(e)=>{
 
 };
 
-details
+const openOrderBtn = details.querySelector(".open-order-btn");
 
-.querySelector(".open-order-btn")
+if (openOrderBtn) {
+    openOrderBtn.onclick=()=>{
+        location.href=`/orders?open=${notification.orderId}`;
+    };
+}
 
-.onclick=()=>{
+const openProductBtn = details.querySelector(".open-product-btn");
 
-location.href=`/orders?open=${notification.orderId}`;
-
-};
+if (openProductBtn) {
+    openProductBtn.onclick=()=>{
+        location.href=`/decision-page.html?id=${notification.productId}`;
+    };
+}
 
 return card;
 

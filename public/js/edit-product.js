@@ -60,9 +60,67 @@ document.querySelectorAll('input[name="prod_sizes"]').forEach(box => {
   document.querySelectorAll('input[name="prod_colors"]').forEach(box => {
     box.checked = (product.colors || []).includes(box.value);
   });
+
+  syncSizeStockVisibility();
 }
 
 loadProduct();
+
+/* ---------------- NONE LOGIC CONTROL ---------------- */
+
+const sizeBoxes = document.querySelectorAll('input[name="prod_sizes"]');
+
+function syncSizeStockVisibility(){
+
+  sizeBoxes.forEach((cb) => {
+
+    const row = cb.closest(".size-stock-row");
+
+    if (row) row.classList.toggle("size-active", cb.checked);
+
+  });
+
+}
+
+sizeBoxes.forEach((box) => {
+  box.addEventListener("change", () => {
+    const noneBox = document.querySelector(
+      'input[name="prod_sizes"][value="None"]',
+    );
+
+    if (box.value === "None" && box.checked) {
+      sizeBoxes.forEach((cb) => {
+        if (cb !== noneBox) {
+          cb.checked = false;
+        }
+      });
+    } else if (noneBox) {
+      noneBox.checked = false;
+    }
+
+    syncSizeStockVisibility();
+  });
+});
+
+const colorBoxes = document.querySelectorAll('input[name="prod_colors"]');
+
+colorBoxes.forEach((box) => {
+  box.addEventListener("change", () => {
+    const noneBox = document.querySelector(
+      'input[name="prod_colors"][value="None"]',
+    );
+
+    if (box.value === "None" && box.checked) {
+      colorBoxes.forEach((cb) => {
+        if (cb !== noneBox) {
+          cb.checked = false;
+        }
+      });
+    } else if (noneBox) {
+      noneBox.checked = false;
+    }
+  });
+});
 
 function renderImageGallery(){
 
@@ -262,39 +320,6 @@ document.querySelectorAll(".size-stock-input").forEach(input => {
 
     stock[input.dataset.size] =
         Number(input.value) || 0;
-
-});
-
-const sizeBoxes =
-document.querySelectorAll('input[name="prod_sizes"]');
-
-sizeBoxes.forEach(box=>{
-
-box.addEventListener("change",()=>{
-
-const noneBox=document.querySelector(
-'input[name="prod_sizes"][value="None"]'
-);
-
-if(box.value==="None" && box.checked){
-
-sizeBoxes.forEach(cb=>{
-
-if(cb!==noneBox){
-
-cb.checked=false;
-
-}
-
-});
-
-}else{
-
-noneBox.checked=false;
-
-}
-
-});
 
 });
 

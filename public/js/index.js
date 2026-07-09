@@ -536,7 +536,7 @@ review.adminReply
 
     });
 
-    const cardWidth =
+    let cardWidth =
 track.querySelector(".homepage-review-card").offsetWidth + 25;
 
     track.style.transition = "none";
@@ -612,6 +612,24 @@ track.querySelector(".homepage-review-card").offsetWidth + 25;
         }
 
     });
+
+    window.onresize = () => {
+
+        const liveCard =
+            track.querySelector(".homepage-review-card");
+
+        if (!liveCard) return;
+
+        cardWidth = liveCard.offsetWidth + 25;
+
+        track.style.transition = "none";
+
+        currentTranslate = -(cardWidth * reviewIndex);
+        prevTranslate = currentTranslate;
+
+        track.style.transform =
+            `translateX(${currentTranslate}px)`;
+    };
 
     function moveCarousel(){
 

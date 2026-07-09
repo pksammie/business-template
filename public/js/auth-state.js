@@ -144,6 +144,12 @@ onAuthStateChanged(auth, async user => {
 
     hideAdminUI();
 
+    const skeleton = document.getElementById("authLinksSkeleton");
+    const realLinks = document.getElementById("authLinksReal");
+
+    if (skeleton) skeleton.style.display = "none";
+    if (realLinks) realLinks.style.display = "";
+
     return;
 
 }

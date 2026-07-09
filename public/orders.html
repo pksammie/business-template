@@ -27,13 +27,17 @@
         <h2>Your Orders</h2>
 
         <div id="orders-container">
-          <p>Loading orders...</p>
+          <div class="orders-loading-state">
+            <div class="orders-loading-spinner"></div>
+            <p>Loading your orders...</p>
+          </div>
         </div>
       </section>
     </main>
 
     <script src="/js/toast.js"></script>
     <script type="module" src="/js/admin-notification.js"></script>
+    <script type="module" src="/js/user-notifications.js"></script>
 
     <script type="module" src="/js/orders.js"></script>
   </body>

@@ -1,125 +1,51 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
-
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Notifications</title>
-
-<link
-rel="stylesheet"
-href="/css/notifications.css">
-
-<link
-rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
+<link rel="stylesheet" href="/css/notifications.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
-
 <body>
-
 <header class="notifications-header">
-
 <a href="/" class="back-btn">
-
 <i class="fa fa-arrow-left"></i>
-
 </a>
-
 <div>
-
 <h1>
-
 Notifications
-
 </h1>
-
 <p id="unread-count">
-
 0 unread
-
 </p>
-
 </div>
-
 </header>
 
 <div>
-
-<div
-id="notifications-container">
-
+<div id="notifications-container">
 </div>
 
-<div
-id="empty-notifications"
-class="empty-state">
-
-<div id="loading-text" class="notif-loader">
-
+<div id="notifications-loading" class="notif-loader">
 <div class="notif-spinner"></div>
-
 <p>Loading notifications...</p>
-
 </div>
 
-<div id="empty-texts">
-<div
-id="empty-text"
-
-style="display:none;">
-
+<div id="empty-notifications" class="empty-state" style="display:none;">
 <i class="fa-regular fa-bell-slash"></i>
-
 <h2>
-
 No notifications yet
-
 </h2>
-
 <p>
-
 We'll notify you whenever your order status changes.
-
 </p>
-
-</div>
-
-</div>
-
-<i class="fa-regular fa-bell-slash"></i>
-
-<h2>
-
-No notifications yet
-
-</h2>
-
-<p>
-
-We'll notify you whenever your order status changes.
-
-</p>
-
 </div>
 </div>
 
-</main>
-
-<script
-type="module"
-src="/js/notifications.js">
-
+<script type="module" src="/js/notifications.js">
 </script>
 
 <script src="/js/toast.js"></script>
 
 </body>
-
 </html>

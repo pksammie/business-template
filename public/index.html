@@ -87,10 +87,16 @@
         >
       </div>
       <div class="nav-right-actions">
-        <div class="account-auth-links">
-          <a href="/login" class="auth-btn">Log In</a>
-          <span class="auth-divider">/</span>
-          <a href="/register" class="auth-btn highlight">Sign Up</a>
+        <div class="account-auth-links" id="accountAuthLinks">
+          <div class="auth-links-skeleton" id="authLinksSkeleton">
+            <span class="auth-skeleton-pill"></span>
+            <span class="auth-skeleton-pill"></span>
+          </div>
+          <div class="auth-links-real" id="authLinksReal" style="display:none;">
+            <a href="/login" class="auth-btn">Log In</a>
+            <span class="auth-divider">/</span>
+            <a href="/register" class="auth-btn highlight">Sign Up</a>
+          </div>
         </div>
         <div class="nav-user-icons">
 

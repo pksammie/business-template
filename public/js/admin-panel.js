@@ -43,12 +43,6 @@ let currentReviewPage=1;
 
 const REVIEWS_PER_PAGE=8;
 
-const stockValues = {
-    S:0,
-    M:0,
-    L:0,
-    XL:0
-};
 const ORDERS_PER_PAGE = 10;
 const notificationSound = new Audio("/sounds/notification.wav");
 
@@ -367,6 +361,18 @@ window.removeUploadedImage = function(index,event){
 // sizes
 const sizeBoxes = document.querySelectorAll('input[name="prod_sizes"]');
 
+function syncSizeStockVisibility(){
+
+  sizeBoxes.forEach((cb) => {
+
+    const row = cb.closest(".size-stock-row");
+
+    if (row) row.classList.toggle("size-active", cb.checked);
+
+  });
+
+}
+
 sizeBoxes.forEach((box) => {
   box.addEventListener("change", () => {
     const noneBox = document.querySelector(
@@ -382,10 +388,12 @@ sizeBoxes.forEach((box) => {
     } else {
       noneBox.checked = false;
     }
+
+    syncSizeStockVisibility();
   });
 });
 
-const sizeCheckboxes = document.querySelectorAll('input[name="prod_sizes"]');
+syncSizeStockVisibility();
 
 // colors
 const colorBoxes = document.querySelectorAll('input[name="prod_colors"]');
@@ -1207,11 +1215,11 @@ adminForm.addEventListener("submit", async (e) => {
   const title = document.getElementById("prod-title").value;
   const price = Number(document.getElementById("prod-price").value);
   const description = document.getElementById("prod-desc").value;
-  const stock = {
+  const stock = {};
 
-    ...stockValues
-
-};
+  document.querySelectorAll(".size-stock-input").forEach((input) => {
+    stock[input.dataset.size] = Number(input.value) || 0;
+  });
 
   const colors = [
     ...document.querySelectorAll("input[name='prod_colors']:checked"),
@@ -1564,14 +1572,6 @@ ${review.featured ? "Remove Featured" : "Feature Review"}
 
 </button>
 
-<button
-class="reply-review-btn"
-onclick="replyToReview('${review.id}')">
-
-Reply
-
-</button>
-
 </div>
 
 </div>
@@ -1599,6 +1599,38 @@ approved:true
 }
 
 );
+
+const review = allReviews.find(r => r.id === id);
+
+if (review && review.userId) {
+
+    try {
+        await addDoc(collection(db, "user_notifications"), {
+
+            userId: review.userId,
+
+            type: "review_approved",
+
+            productId: review.productId || null,
+
+            productTitle: review.productTitle || "your product",
+
+            productImage: review.productImage || "",
+
+            status: "Your Review Has Been Approved",
+
+            message: `Thank you for sharing your feedback on "${review.productTitle || "your product"}". We've reviewed your submission and it's now live. We take every piece of feedback seriously and appreciate you helping us improve.`,
+
+            read: false,
+
+            createdAt: serverTimestamp(),
+
+        });
+    } catch (err) {
+        console.error(err);
+    }
+
+}
 
 showToast("Review approved.");
 

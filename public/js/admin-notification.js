@@ -149,7 +149,9 @@ function unlockAudio() {
 
     const tempAudio = new Audio("/sounds/notification.wav");
 
-    tempAudio.volume = 1;
+    tempAudio.muted = true;
+
+    tempAudio.volume = 0;
 
     tempAudio.play()
         .then(() => {

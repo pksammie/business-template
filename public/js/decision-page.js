@@ -14,6 +14,7 @@ import {
   arrayUnion,
   arrayRemove,
   onSnapshot,
+  serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 const params = new URLSearchParams(location.search);
@@ -338,6 +339,36 @@ window.toggleLike = async function (reviewId, btn) {
     likedBy: alreadyLiked ? arrayRemove(user.uid) : arrayUnion(user.uid),
     likes: newLikes,
   });
+
+  if (!alreadyLiked && review.userId && review.userId !== user.uid) {
+
+    try {
+      await addDoc(collection(db, "user_notifications"), {
+
+        userId: review.userId,
+
+        type: "review_liked",
+
+        productId: review.productId || null,
+
+        productTitle: review.productTitle || "your product",
+
+        productImage: review.productImage || "",
+
+        status: "Your Review Was Liked",
+
+        message: `Someone found your review of "${review.productTitle || "a product"}" helpful.`,
+
+        read: false,
+
+        createdAt: serverTimestamp(),
+
+      });
+    } catch (err) {
+      console.error(err);
+    }
+
+  }
 };
 
 /* ── TOGGLE REVIEW MENU ───────────────────────────────────── */

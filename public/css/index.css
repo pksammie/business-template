@@ -252,6 +252,32 @@ body[data-theme="luxury"] {
   font-size: 12px;
 }
 
+.auth-links-skeleton{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.auth-skeleton-pill{
+  display: inline-block;
+  width: 52px;
+  height: 12px;
+  border-radius: 20px;
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.08) 25%,
+    rgba(255,255,255,0.18) 37%,
+    rgba(255,255,255,0.08) 63%
+  );
+  background-size: 400% 100%;
+  animation: authSkeletonPulse 1.4s ease infinite;
+}
+
+@keyframes authSkeletonPulse{
+  0%{ background-position: 100% 50%; }
+  100%{ background-position: 0% 50%; }
+}
+
 /* Developer Label Action Item in Utility bar */
 .dev-link-badge {
   color: rgba(255, 255, 255, 0.5);
@@ -1061,26 +1087,6 @@ font-weight:600;
 .homepage-helpful i{
 
 color:#ff5b6a;
-
-}
-
-@media(max-width:768px){
-
-.homepage-review-carousel{
-
-grid-template-columns:1fr;
-
-}
-
-}
-
-@media(max-width:900px){
-
-.homepage-review-carousel{
-
-grid-template-columns:1fr;
-
-}
 
 }
 

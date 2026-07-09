@@ -69,6 +69,10 @@ function unlockAudio(){
 
     if(window.__timelessAudioUnlocked) return;
 
+    notificationSound.muted = true;
+
+    notificationSound.volume = 0;
+
     notificationSound.play()
 
         .then(()=>{
@@ -76,6 +80,10 @@ function unlockAudio(){
             notificationSound.pause();
 
             notificationSound.currentTime = 0;
+
+            notificationSound.muted = false;
+
+            notificationSound.volume = 1;
 
             window.__timelessAudioUnlocked = true;
 
@@ -167,13 +175,7 @@ requestAnimationFrame(()=>{
 
 toast.classList.add("show");
 
-if(audioUnlocked){
-
-    notificationSound.currentTime = 0;
-
-    notificationSound.play().catch(()=>{});
-
-}
+playNotification();
 
 });
 
