@@ -61,6 +61,7 @@ function loadReviews() {
   const q = query(
     collection(db, "reviews"),
     where("productId", "==", id),
+    where("approved", "==", true),
     orderBy("createdAt", "desc"),
   );
 
@@ -266,19 +267,40 @@ window.submitEditReview = async function () {
     const reviewSnap = await getDoc(doc(db, "reviews", editingReviewId));
     const oldReview = reviewSnap.data();
 
+    const wasApproved = oldReview.approved === true;
+    const isApproved  = newRating > 1;
+
     await updateDoc(doc(db, "reviews", editingReviewId), {
       reviewText: newText,
       rating: newRating,
       edited: true,
+      approved: isApproved,
     });
 
-    /* recalculate product average */
+    /* recalculate product aggregate — a review only affects the
+       aggregate while it's approved, so account for reviews moving
+       into or out of the approved pool, not just rating changes. */
     const productRef = doc(db, "products", id);
     const productSnap = await getDoc(productRef);
     const pd = productSnap.data();
-    const newTotal = (pd.totalRating || 0) - oldReview.rating + newRating;
-    const newAverage = newTotal / (pd.reviewCount || 1);
+
+    let newCount = pd.reviewCount || 0;
+    let newTotal = pd.totalRating || 0;
+
+    if (wasApproved && isApproved) {
+      newTotal = newTotal - oldReview.rating + newRating;
+    } else if (wasApproved && !isApproved) {
+      newCount = Math.max(0, newCount - 1);
+      newTotal = Math.max(0, newTotal - oldReview.rating);
+    } else if (!wasApproved && isApproved) {
+      newCount = newCount + 1;
+      newTotal = newTotal + newRating;
+    }
+    /* !wasApproved && !isApproved: still pending, aggregate untouched */
+
+    const newAverage = newCount > 0 ? newTotal / newCount : 0;
     await updateDoc(productRef, {
+      reviewCount: newCount,
       totalRating: newTotal,
       averageRating: newAverage,
     });
@@ -335,10 +357,16 @@ window.toggleLike = async function (reviewId, btn) {
         : "Helpful";
   }
 
-  await updateDoc(reviewRef, {
-    likedBy: alreadyLiked ? arrayRemove(user.uid) : arrayUnion(user.uid),
-    likes: newLikes,
-  });
+  try {
+    await updateDoc(reviewRef, {
+      likedBy: alreadyLiked ? arrayRemove(user.uid) : arrayUnion(user.uid),
+      likes: newLikes,
+    });
+  } catch (err) {
+    console.error(err);
+    showToast("Couldn't update like. Please try again.");
+    return;
+  }
 
   if (!alreadyLiked && review.userId && review.userId !== user.uid) {
 
@@ -401,18 +429,20 @@ window.deleteReview = function (reviewId) {
     const review = reviewSnap.data();
     await deleteDoc(doc(db, "reviews", reviewId));
 
-    const productRef = doc(db, "products", id);
-    const productSnap = await getDoc(productRef);
-    const pd = productSnap.data();
-    const newCount = Math.max(0, (pd.reviewCount || 1) - 1);
-    const newTotal = Math.max(0, (pd.totalRating || 0) - review.rating);
-    const newAverage = newCount > 0 ? newTotal / newCount : 0;
+    if (review.approved === true) {
+      const productRef = doc(db, "products", id);
+      const productSnap = await getDoc(productRef);
+      const pd = productSnap.data();
+      const newCount = Math.max(0, (pd.reviewCount || 0) - 1);
+      const newTotal = Math.max(0, (pd.totalRating || 0) - review.rating);
+      const newAverage = newCount > 0 ? newTotal / newCount : 0;
 
-    await updateDoc(productRef, {
-      reviewCount: newCount,
-      totalRating: newTotal,
-      averageRating: newAverage,
-    });
+      await updateDoc(productRef, {
+        reviewCount: newCount,
+        totalRating: newTotal,
+        averageRating: newAverage,
+      });
+    }
     // await refreshProductRating();
     showToast("Review deleted.");
   });

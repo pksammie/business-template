@@ -135,6 +135,32 @@ opacity:.8;
 
 }
 
+@media (max-width: 768px){
+
+#global-admin-notification{
+
+top:-200px;
+
+right:16px;
+
+left:16px;
+
+width:auto;
+
+transition:top .4s ease;
+
+}
+
+#global-admin-notification.show{
+
+top:16px;
+
+right:16px;
+
+}
+
+}
+
 `;
 
     document.head.appendChild(style);

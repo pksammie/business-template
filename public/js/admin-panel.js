@@ -1601,6 +1601,31 @@ approved:true
 
 const review = allReviews.find(r => r.id === id);
 
+/* this review was never folded into the product's aggregate stats at
+   creation time (it started out pending) — add it now */
+if (review && review.productId) {
+
+    try {
+        const productRef = doc(db, "products", review.productId);
+        const productSnap = await getDoc(productRef);
+
+        if (productSnap.exists()) {
+            const pd = productSnap.data();
+            const newCount = (pd.reviewCount || 0) + 1;
+            const newTotal = (pd.totalRating || 0) + review.rating;
+
+            await updateDoc(productRef, {
+                reviewCount: newCount,
+                totalRating: newTotal,
+                averageRating: newTotal / newCount,
+            });
+        }
+    } catch (err) {
+        console.error(err);
+    }
+
+}
+
 if (review && review.userId) {
 
     try {

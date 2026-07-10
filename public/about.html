@@ -1,228 +1,325 @@
-#admin-loading-screen .spinner {
-  width: 300px;
-  height: 300px;
-  border: none;
-  border-radius: 0;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  overflow: hidden;
+this was my firestore rules before "rules_version = '2';
+
+service cloud.firestore {
+
+match /databases/{database}/documents {
+
+//
+// PRODUCTS
+//
+match /products/{productId}{
+
+allow read: if true;
+
+// Only admins can edit products
+
+allow write:
+if request.auth != null &&
+exists(
+/databases/$(database)/documents/admins/$(request.auth.uid)
+);
+
 }
 
-/* ========================================================
-   THE HIGH-VELOCITY AERODYNAMIC PIN RECONSTRUCTION
-   ======================================================== */
+//
+// USER CART
+//
+match /users/{userId}/cart/{cartId}{
 
-/* 1. THE HYPER-SHARP NEEDLE POINT & ULTRA-SLICK BODY */
-#admin-loading-screen::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: 2px; /* Razor-thin sleek needle profile */
-  height: 110px;
-  margin-left: -1px;
-  
-  /* Graduated metal reflection into an ultra-sharp, tapered point at the bottom */
-  background: linear-gradient(to bottom, 
-    rgba(255, 255, 255, 0.2) 0%, 
-    #ffffff 75%, 
-    #c5a880 94%, 
-    #c5a880 100%
-  );
-  
-  /* Clip-path cuts the bottom edge into a perfect needle tip point */
-  clip-path: polygon(50% 100%, 0% 88%, 0% 0%, 100% 0%, 100% 88%);
-  -webkit-clip-path: polygon(50% 100%, 0% 88%, 0% 0%, 100% 0%, 100% 88%);
-  
-  /* Soft atmospheric glint following the shaft line */
-  box-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
-  transform-origin: bottom center;
-  
-  /* Stage-managed tactical dive loop */
-  animation: physical-pin-drop 3.8s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
-  z-index: 5;
+allow read,write:
+
+if request.auth!=null
+
+&&
+
+request.auth.uid==userId;
+
 }
 
-/* 2. THE HAPHAZARD AIR RESISTANCE & TIP VAPOR SHEATH */
-#admin-loading-screen .spinner::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: 35px;
-  height: 140px;
-  margin-left: -17.5px;
-  
-  /* Turbulent friction air lines starting explicitly right at the needle tip */
-  border-left: 1px dashed rgba(255, 255, 255, 0.5);
-  border-right: 1px dashed rgba(197, 168, 128, 0.4);
-  border-radius: 100% 100% 0 0;
-  
-  /* Plasma friction cone wrapping around the high-speed projectile core */
-  background: linear-gradient(to bottom, 
-    rgba(255, 255, 255, 0.15) 0%, 
-    rgba(197, 168, 128, 0.05) 40%, 
-    transparent 100%
-  );
-  
-  transform-origin: top center;
-  
-  /* Haphazard violent vibration simulation tracking along the trajectory */
-  animation: haphazard-turbulence 3.8s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
-  z-index: 4;
+//
+// CART BACKUPS
+//
+match /users/{userId}/cart_backups/{backupId}{
+
+allow read,write:
+
+if request.auth!=null
+
+&&
+
+request.auth.uid==userId;
+
 }
 
-/* 3. CLOUD LAYER DISPLACEMENT (STAGE 1 BACKGROUND ENVIRONMENT) */
-#admin-loading-screen .spinner::after {
-  content: '';
-  position: absolute;
-  inset: -50px;
-  background: 
-    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.12) 0%, transparent 35%),
-    radial-gradient(circle at 80% 60%, rgba(197, 168, 128, 0.08) 0%, transparent 45%);
-  filter: blur(20px);
-  transform: translateY(-100%);
-  animation: cloud-velocity-pass 3.8s cubic-bezier(0.165, 0.84, 0.44, 1) infinite;
-  z-index: 1;
+//
+// ADMINS
+//
+match /admins/{adminId}{
+
+allow read:
+
+if request.auth!=null;
+
+allow write:
+
+if request.auth!=null
+
+&&
+
+request.auth.uid==adminId;
+
 }
 
-/* 4. STAGE 2: KINETIC EARTH IMPACT DETONATION */
-#admin-loading-screen::after {
-  content: '';
-  position: absolute;
-  bottom: 20%; /* Ground coordinate intersection target */
-  left: 50%;
-  width: 16px;
-  height: 16px;
-  margin-left: -8px;
-  border-radius: 50%;
-  background: #ffffff;
-  transform: scale(0);
-  opacity: 0;
-  animation: precision-ground-shatter 3.8s cubic-bezier(0.1, 0.9, 0.2, 1) infinite;
-  z-index: 6;
+//
+// RESERVATIONS
+//
+match /cart_reservations/{reservationId}{
+
+allow create:
+
+if request.auth!=null;
+
+allow read,update,delete:
+
+if request.auth!=null;
+
 }
 
-/* ========================================================
-   THE MASTER REALISTIC PHYSICS KEYFRAME ARRAY
-   ======================================================== */
+//
+// REVIEWS
+//
 
-@keyframes physical-pin-drop {
-  0% {
-    /* STAGE 1: Freefall tracking injection from high altitude */
-    transform: translateY(-220px) scaleY(1.3) rotate(-1deg);
-    opacity: 0;
-  }
-  4% {
-    opacity: 1;
-  }
-  26% {
-    /* Slicing downwards through high speed camera window frame */
-    transform: translateY(180px) scaleY(1.1) rotate(0.5deg);
-    opacity: 1;
-  }
-  29%, 33% {
-    /* INSTANT GROUND VIEW CAMERA CUT: Pin appears from upper screen ceiling */
-    transform: translateY(-160px) scaleY(1.4) rotate(-0.5deg);
-    opacity: 0;
-  }
-  34% {
-    /* IMPACT FLASH: Tip punches cleanly into target deck at terminal speed */
-    transform: translateY(115px) scaleY(0.2) rotate(0deg);
-    opacity: 1;
-  }
-  37%, 100% {
-    /* Vaporized instantly under extreme impact friction force */
-    transform: translateY(115px) scaleY(0);
-    opacity: 0;
-  }
+match /reviews/{reviewId} {
+
+    allow read: if true;
+
+    allow create:
+        if request.auth != null;
+
+    allow delete:
+        if request.auth != null
+        &&
+        request.auth.uid == resource.data.userId;
+
+    allow update:
+        if request.auth != null
+        &&
+        (
+
+            request.auth.uid == resource.data.userId
+
+            ||
+
+            request.resource.data
+            .diff(resource.data)
+            .changedKeys()
+            .hasOnly(
+                [
+                    "likes",
+                    "likedBy",
+                    "featured",
+                    "adminReply",
+                    "adminReplyDate"
+                ]
+            )
+
+        );
+
 }
 
-@keyframes haphazard-turbulence {
-  0% {
-    transform: translateY(-220px) scale(0.4) skewX(0deg);
-    opacity: 0;
-  }
-  4% {
-    opacity: 1;
-  }
-  /* Violent erratic side-to-side air structural vibration */
-  8%   { transform: translateY(-120px) scale(0.9) skewX(-4deg) scaleX(1.1); }
-  12%  { transform: translateY(-40px)  scale(1.0) skewX(5deg)  scaleX(0.8); }
-  16%  { transform: translateY(40px)   scale(1.1) skewX(-6deg) scaleX(1.2); }
-  20%  { transform: translateY(120px)  scale(1.0) skewX(4deg)  scaleX(0.9); }
-  26%  { transform: translateY(220px)  scale(0.8) skewX(-2deg) scaleX(1.0); opacity: 0; }
-  
-  /* Stage 2 Camera Snap reset window */
-  27%, 33% {
-    transform: translateY(-160px) scale(0.2);
-    opacity: 0;
-  }
-  34% {
-    /* Vapor envelope shreds out laterally as impact occurs */
-    transform: translateY(10px) scaleX(3) scaleY(0.1);
-    opacity: 0.7;
-  }
-  36%, 100% {
-    transform: translateY(10px) scaleX(4) scaleY(0);
-    opacity: 0;
-  }
+//
+// ADMIN NOTIFICATIONS
+//
+
+match /admin_notifications/{notificationId} {
+
+    allow create: if request.auth != null;
+
+    allow read, update, delete:
+
+        if request.auth != null
+        &&
+
+        exists(
+        /databases/$(database)/documents/admins/$(request.auth.uid)
+        );
+
 }
 
-@keyframes cloud-velocity-pass {
-  0% {
-    transform: translateY(-100%) scaleY(1.4);
-    opacity: 0;
-  }
-  3% {
-    opacity: 1;
-  }
-  26% {
-    transform: translateY(80%) scaleY(1);
-    opacity: 1;
-  }
-  27%, 100% {
-    transform: translateY(100%);
-    opacity: 0;
-  }
+//
+// USER NOTIFICATIONS
+//
+
+match /user_notifications/{notificationId}{
+
+allow create:
+
+if request.auth != null;
+
+allow read, update:
+
+if request.auth != null
+
+&&
+
+request.auth.uid == resource.data.userId;
+
+allow delete: if false;
+
 }
 
-@keyframes precision-ground-shatter {
-  0%, 33% {
-    transform: scale(0);
-    opacity: 0;
-    box-shadow: none;
-  }
-  34% {
-    /* CONTACT: Hyper-dense atomic explosion core release */
-    transform: scale(1);
-    opacity: 1;
-    background: #ffffff;
-    box-shadow: 
-      0 0 35px 15px #ffffff,
-      0 0 70px 30px #c5a880,
-      0 0 140px 60px rgba(197, 168, 128, 0.4);
-  }
-  42% {
-    /* SHOCKWAVE EXPANSION FLUIDITY */
-    background: radial-gradient(circle, #c5a880 30%, transparent 70%);
-    box-shadow: 
-      0 0 80px 40px #c5a880,
-      0 0 160px 80px rgba(255, 255, 255, 0.3);
-  }
-  68% {
-    /* TOTAL DISSIPATION */
-    transform: scale(22);
-    opacity: 0;
-    box-shadow: 0 0 100px 50px transparent;
-  }
-  100% {
-    transform: scale(22);
-    opacity: 0;
-  }
 }
 
+}"
 
+then you gave me this "rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function isAdmin() {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function onlyChangedFields(allowed) {
+      return request.resource.data.diff(resource.data).affectedKeys()
+        .hasOnly(allowed);
+    }
+
+    /* ---------------- ADMINS ----------------
+       Client only ever checks "does a doc with my own uid exist".
+       No client writes — manage this collection from the console
+       or a trusted backend/Cloud Function. */
+    match /admins/{uid} {
+      allow get: if isOwner(uid);
+      allow list: if false;
+      allow write: if false;
+    }
+
+    /* ---------------- USERS ----------------
+       No data is stored directly on users/{uid} today, only in
+       subcollections. Locking down the parent doc is still safe. */
+    match /users/{uid} {
+      allow read, write: if false;
+
+      match /cart/{cartItemId} {
+        allow read, write: if isOwner(uid);
+      }
+
+      match /cart_backups/{backupId} {
+        allow read, write: if isOwner(uid);
+      }
+    }
+
+    /* ---------------- PRODUCTS ----------------
+       Public storefront read. Admin can change anything.
+       Any signed-in user may ONLY bump the aggregate rating
+       fields (this is what happens right after they submit a
+       review) — nothing else. */
+    match /products/{productId} {
+      allow read: if true;
+
+      allow create, delete: if isAdmin();
+
+      allow update: if isAdmin()
+        || (isSignedIn() && onlyChangedFields(
+              ['reviewCount', 'totalRating', 'averageRating']
+           ));
+    }
+
+    /* ---------------- REVIEWS ----------------
+       Public read (storefront shows reviews). A signed-in user
+       may create exactly one review per order (doc id == orderId),
+       must write it as their own, unapproved, unfeatured, with no
+       admin reply attached. Only admin can approve/reply/feature/
+       delete. */
+    match /reviews/{reviewId} {
+      allow read: if true;
+
+      allow create: if isSignedIn()
+        && reviewId == request.resource.data.orderId
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.approved == false
+        && request.resource.data.featured == false
+        && !("adminReply" in request.resource.data);
+
+      allow update, delete: if isAdmin();
+    }
+
+    /* ---------------- CART_RESERVATIONS (orders) ----------------
+       Created by the customer at checkout, owned by them. Admin
+       controls status/stock/delivery lifecycle. The one thing the
+       owner is allowed to touch after creation is flipping
+       reviewSubmitted to true once they leave a review. */
+    match /cart_reservations/{orderId} {
+      allow read: if isAdmin() || isOwner(resource.data.userId);
+
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid;
+
+      allow update: if isAdmin()
+        || (isOwner(resource.data.userId)
+            && onlyChangedFields(['reviewSubmitted']));
+
+      allow delete: if isAdmin();
+    }
+
+    /* ---------------- ORDERS (legacy/unused collection) ----------------
+       Nothing in the current app reads/writes this collection —
+       cart_reservations is the real orders collection. Locked down
+       the same way in case it's used later or manually. */
+    match /orders/{orderId} {
+      allow read: if isAdmin() || isOwner(resource.data.userId);
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+
+    /* ---------------- COMPLAINTS ----------------
+       Created by the customer, always tied to themselves, always
+       opened as "Open". Only admin can reply/resolve/delete. */
+    match /complaints/{complaintId} {
+      allow read: if isAdmin() || isOwner(resource.data.userId);
+
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.status == "Open";
+
+      allow update, delete: if isAdmin();
+    }
+
+    /* ---------------- USER_NOTIFICATIONS ----------------
+       Only admin code creates these (order/review/complaint
+       events). The owner can read their own, mark them read, and
+       delete them (single or via a batch from "delete all" /
+       multi-select). */
+    match /user_notifications/{notifId} {
+      allow read: if isAdmin() || isOwner(resource.data.userId);
+
+      allow create: if isAdmin();
+
+      allow update: if isOwner(resource.data.userId)
+        && onlyChangedFields(['read']);
+
+      allow delete: if isAdmin() || isOwner(resource.data.userId);
+    }
+
+    /* ---------------- ADMIN_NOTIFICATIONS ----------------
+       Any signed-in customer triggers these (new order, new
+       review). Only admin ever reads/manages them. */
+    match /admin_notifications/{notifId} {
+      allow create: if isSignedIn();
+      allow read, update, delete: if isAdmin();
+    }
+
+  }
+}
+"

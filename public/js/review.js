@@ -146,11 +146,7 @@ async function submitReview(oneStarReason = "") {
 
     featured:false,
 
-approved: rating === 1 ? false : true,
-
-adminReply:"",
-
-adminReplyDate:null,
+approved: rating > 1,
 
 reportCount:0,
 
@@ -191,20 +187,24 @@ await addDoc(
     /* mark order reviewed */
     await updateDoc(orderRef, { reviewSubmitted: true });
 
-    /* update product rating stats */
-    const productRef  = doc(db, "products", productId);
-    const productSnap = await getDoc(productRef);
+    /* update product rating stats — only for auto-approved reviews.
+       A pending (1-star) review isn't counted yet; admin approving it
+       later is what adds it to the aggregate (see admin-panel.js). */
+    if (rating > 1) {
+      const productRef  = doc(db, "products", productId);
+      const productSnap = await getDoc(productRef);
 
-    if (productSnap.exists()) {
-      const pd             = productSnap.data();
-      const newReviewCount = (pd.reviewCount || 0) + 1;
-      const newTotalRating = (pd.totalRating  || 0) + rating;
+      if (productSnap.exists()) {
+        const pd             = productSnap.data();
+        const newReviewCount = (pd.reviewCount || 0) + 1;
+        const newTotalRating = (pd.totalRating  || 0) + rating;
 
-      await updateDoc(productRef, {
-        reviewCount:   newReviewCount,
-        totalRating:   newTotalRating,
-        averageRating: newTotalRating / newReviewCount,
-      });
+        await updateDoc(productRef, {
+          reviewCount:   newReviewCount,
+          totalRating:   newTotalRating,
+          averageRating: newTotalRating / newReviewCount,
+        });
+      }
     }
 
     /* show success overlay */

@@ -3628,6 +3628,36 @@ right:20px;
 
 }
 
+/* On phones there's no room for a 360px card sliding in from the
+   right -- it either overflows the viewport or hugs the edge awkwardly.
+   Instead, drop it down from the top as a full-width banner, which is
+   the standard mobile pattern (Gmail, iOS/Android in-app banners). */
+@media (max-width: 768px){
+
+.user-notification-toast{
+
+top:-200px;
+
+right:16px;
+
+left:16px;
+
+width:auto;
+
+transition:top .4s ease;
+
+}
+
+.user-notification-toast.show{
+
+top:16px;
+
+right:16px;
+
+}
+
+}
+
 .toast-left img{
 
 width:70px;

@@ -64,7 +64,13 @@ function enterSelectionMode(initialId){
 
     selectionMode = true;
 
-    if(initialId) selectedIds.add(initialId);
+    if(initialId){
+
+        selectedIds.add(initialId);
+
+        document.getElementById(`notif-${initialId}`)?.classList.add("notif-selected");
+
+    }
 
     container.classList.add("selection-active");
 
@@ -721,7 +727,7 @@ card.addEventListener("touchstart", () => {
 
         }
 
-        if(navigator.vibrate) navigator.vibrate(15);
+        try { navigator.vibrate?.(15); } catch (e) {}
 
     }, 500);
 

@@ -21,6 +21,8 @@ onAuthStateChanged(auth,user=>{
 
 if(!user) return;
 
+unlockAudio();
+
 const q=query(
 
 collection(db,"user_notifications"),
