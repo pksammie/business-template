@@ -29,6 +29,17 @@
       .developer-hero h1 {
         font-size: 50px;
         margin-bottom: 15px;
+        background: linear-gradient(100deg,#ffffff 30%,var(--primary-color) 50%,#ffffff 80%);
+        background-size: 250% auto;
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        animation: devShimmer 6s linear infinite;
+      }
+
+      @keyframes devShimmer {
+        0% { background-position: 0% center; }
+        100% { background-position: 250% center; }
       }
 
       .developer-hero p {
@@ -125,6 +136,118 @@
         margin-right: 10px;
       }
 
+      .reveal {
+        opacity: 0;
+        transform: translateY(28px);
+        transition: opacity .7s ease, transform .7s ease;
+      }
+
+      .reveal.active {
+        opacity: 1;
+        transform: none;
+      }
+
+      .service-card,
+      .why-item {
+        opacity: 0;
+        translate: 0 20px;
+        transition: transform .3s, border-color .3s, box-shadow .3s,
+          opacity .6s ease, translate .6s ease;
+      }
+
+      .services-grid.active .service-card,
+      .why-grid.active .why-item {
+        opacity: 1;
+        translate: 0 0;
+      }
+
+      .services-grid.active .service-card:nth-child(1),
+      .why-grid.active .why-item:nth-child(1) { transition-delay: .05s; }
+      .services-grid.active .service-card:nth-child(2),
+      .why-grid.active .why-item:nth-child(2) { transition-delay: .15s; }
+      .services-grid.active .service-card:nth-child(3),
+      .why-grid.active .why-item:nth-child(3) { transition-delay: .25s; }
+      .why-grid.active .why-item:nth-child(4) { transition-delay: .35s; }
+      .why-grid.active .why-item:nth-child(5) { transition-delay: .45s; }
+      .why-grid.active .why-item:nth-child(6) { transition-delay: .55s; }
+
+      .service-card i {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 76px;
+        height: 76px;
+        font-size: 30px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 30% 30%, rgba(197,168,128,.18), rgba(197,168,128,.04));
+        border: 1px solid rgba(197,168,128,.25);
+        transition: .35s;
+      }
+
+      .service-card:hover i {
+        transform: scale(1.06);
+        box-shadow: 0 0 25px rgba(197,168,128,.25);
+      }
+
+      .why-item {
+        border: 1px solid rgba(255,255,255,.05);
+      }
+
+      .why-item:hover {
+        transform: translateY(-4px);
+        border-color: var(--primary-color);
+      }
+
+      .featured-work {
+        margin-top: 90px;
+        text-align: center;
+      }
+
+      .featured-work-card {
+        max-width: 720px;
+        margin: 40px auto 0;
+        background: var(--card-bg);
+        border: 1px solid rgba(255,255,255,.08);
+        border-radius: 16px;
+        padding: 45px 35px;
+        transition: .35s;
+      }
+
+      .featured-work-card:hover {
+        transform: translateY(-6px);
+        border-color: var(--primary-color);
+        box-shadow: 0 20px 40px rgba(0,0,0,.35);
+      }
+
+      .featured-work-card i {
+        font-size: 34px;
+        color: var(--primary-color);
+        margin-bottom: 18px;
+      }
+
+      .featured-work-card h3 {
+        margin-bottom: 12px;
+      }
+
+      .featured-work-card p {
+        color: var(--text-muted);
+        line-height: 1.8;
+        margin-bottom: 25px;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .developer-hero h1,
+        .reveal,
+        .service-card,
+        .why-item {
+          animation: none !important;
+          transition: none !important;
+          opacity: 1 !important;
+          transform: none !important;
+          translate: 0 0 !important;
+        }
+      }
+
       .contact-section {
         margin-top: 100px;
         text-align: center;
@@ -219,7 +342,7 @@
         </a>
       </section>
 
-      <section class="about-section">
+      <section class="about-section reveal">
         <h2 class="section-title">About Me</h2>
 
         <p>
@@ -239,10 +362,10 @@
         </p>
       </section>
 
-      <section>
+      <section class="reveal">
         <h2 class="section-title">What I Do</h2>
 
-        <div class="services-grid">
+        <div class="services-grid reveal">
           <div class="service-card">
             <i class="fa-solid fa-laptop-code"></i>
 
@@ -278,10 +401,10 @@
         </div>
       </section>
 
-      <section class="why-section">
+      <section class="why-section reveal">
         <h2 class="section-title">Why Work With Me?</h2>
 
-        <div class="why-grid">
+        <div class="why-grid reveal">
           <div class="why-item">
             <i class="fa-solid fa-check"></i>
             Attention To Detail
@@ -314,7 +437,23 @@
         </div>
       </section>
 
-      <section class="contact-section">
+      <section class="featured-work reveal">
+        <h2 class="section-title">Featured Work</h2>
+
+        <div class="featured-work-card">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <h3>Timeless — Full E-Commerce Storefront</h3>
+          <p>
+            A complete store built from scratch: product catalog, cart and
+            checkout, an admin dashboard, a moderated review system, and
+            real-time order notifications. Not a template — a working
+            platform, live right now.
+          </p>
+          <a href="/" class="developer-btn">View Live Store</a>
+        </div>
+      </section>
+
+      <section class="contact-section reveal">
         <h2>Let's Build Something Exceptional</h2>
 
         <p>
@@ -348,7 +487,7 @@
         </a>
       </section>
 
-      <div class="footer-note">
+      <div class="footer-note reveal">
         <p>Designed and developed by <strong>PK_Sammie</strong>.</p>
 
         <p>
@@ -359,5 +498,20 @@
 
     <script type="module" src="/js/admin-notification.js"></script>
     <script type="module" src="/js/user-notifications.js"></script>
+
+    <script>
+      const revealTargets = document.querySelectorAll(".reveal");
+      if (revealTargets.length) {
+        const revealObserver = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("active");
+              revealObserver.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.15 });
+        revealTargets.forEach(t => revealObserver.observe(t));
+      }
+    </script>
   </body>
 </html>
