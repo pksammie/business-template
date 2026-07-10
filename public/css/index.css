@@ -1,3 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,400..600&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+:root{
+    --font-display:'Fraunces', 'Playfair Display', serif;
+    --font-body:'Manrope', "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body{
+    font-family:var(--font-body);
+}
+
+h1, h2, h3,
+.hero-content h1,
+.section-header h2,
+.collection-intro-title h2,
+.main-signature-logo,
+.footer-grid h3{
+    font-family:var(--font-display);
+    letter-spacing:0.5px;
+}
+
 #admin-loading-screen{
     position:fixed;
     inset:0;
@@ -142,20 +163,20 @@ body[data-theme="dark"] {
 
 /* EMERALD THEME */
 body[data-theme="emerald"] {
-  --bg-color: #0c1512;
-  --card-bg: #16241f;
-  --primary-color: #8fbfa0;
-  --text-main: #f5f5f0;
-  --text-muted: #8fbfa099;
+  --bg-color: #0b1512;
+  --card-bg: #132420;
+  --primary-color: #4fae82;
+  --text-main: #f5f7f5;
+  --text-muted: #4fae8299;
 }
 
 /* ROSEWOOD THEME */
 body[data-theme="rosewood"] {
-  --bg-color: #150c10;
-  --card-bg: #2a1620;
-  --primary-color: #cf9a9a;
-  --text-main: #f5efe9;
-  --text-muted: #cf9a9a99;
+  --bg-color: #170d12;
+  --card-bg: #2b141d;
+  --primary-color: #c76b7f;
+  --text-main: #f7eef1;
+  --text-muted: #c76b7f99;
 }
 
 /* Minimal Top Utility Server Strip */
@@ -416,13 +437,13 @@ body[data-theme="dark"] .main-signature-logo span {
 /* EMERALD */
 body[data-theme="emerald"] .main-signature-logo span {
   color: #ffffff;
-  text-shadow: 0 0 10px rgba(143, 191, 160, 0.4);
+  text-shadow: 0 0 10px rgba(79, 174, 130, 0.45);
 }
 
 /* ROSEWOOD */
 body[data-theme="rosewood"] .main-signature-logo span {
   color: #ffffff;
-  text-shadow: 0 0 10px rgba(207, 154, 154, 0.4);
+  text-shadow: 0 0 10px rgba(199, 107, 127, 0.45);
 }
 
 /* Right Cart Anchor Alignment */
@@ -1569,18 +1590,18 @@ a:active {
 }
 
 .theme-box[data-theme="dark"] {
-  background: #0b0c10;
-  border: 1px solid #c5a880;
+  background: #c5a880;
+  border: 1px solid rgba(255,255,255,.2);
 }
 
 .theme-box[data-theme="emerald"] {
-  background: #0c1512;
-  border: 1px solid #8fbfa0;
+  background: #4fae82;
+  border: 1px solid rgba(255,255,255,.2);
 }
 
 .theme-box[data-theme="rosewood"] {
-  background: #150c10;
-  border: 1px solid #cf9a9a;
+  background: #c76b7f;
+  border: 1px solid rgba(255,255,255,.2);
 }
 
 .product-title {
@@ -2563,6 +2584,33 @@ a:active {
     center center/cover no-repeat;
 }
 
+.hero-video{
+
+    position:absolute;
+    inset:0;
+
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+
+    z-index:0;
+
+    animation:heroVideoZoom 26s ease-in-out infinite alternate;
+}
+
+@keyframes heroVideoZoom{
+
+    0%{ transform:scale(1); }
+
+    100%{ transform:scale(1.06); }
+}
+
+@media (prefers-reduced-motion: reduce){
+
+    .hero-video{ animation:none; }
+}
+
 .hero-overlay{
 
     position:absolute;
@@ -2586,6 +2634,20 @@ a:active {
     max-width:900px;
 
     padding:0 20px;
+
+    animation:heroContentRise 1.1s cubic-bezier(.16,.9,.35,1) both;
+}
+
+@keyframes heroContentRise{
+
+    0%{ opacity:0; transform:translateY(26px); }
+
+    100%{ opacity:1; transform:translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce){
+
+    .hero-content{ animation:none; }
 }
 
 .hero-tag{
@@ -2726,14 +2788,76 @@ a:active {
 }
 
 /* ===========================
-   FEATURED BRANDS
+   BRAND MARQUEE (trust strip)
 =========================== */
 
-.featured-brands{
+.brand-marquee-section{
 
-    padding:100px 8%;
+    padding:28px 0;
 
     background:#0f1117;
+
+    border-top:1px solid rgba(197,168,128,.15);
+
+    border-bottom:1px solid rgba(197,168,128,.15);
+
+    overflow:hidden;
+}
+
+.marquee-track{
+
+    display:flex;
+
+    width:max-content;
+
+    animation:marqueeScroll 24s linear infinite;
+}
+
+.marquee-content{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:20px;
+
+    padding-right:20px;
+
+    white-space:nowrap;
+
+    font-family:var(--font-display);
+
+    font-style:italic;
+
+    font-size:20px;
+
+    letter-spacing:.5px;
+
+    color:#c5a880;
+}
+
+.marquee-content .dot{
+
+    color:rgba(197,168,128,.4);
+
+    font-size:14px;
+}
+
+@keyframes marqueeScroll{
+
+    from{ transform:translateX(0); }
+
+    to{ transform:translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce){
+
+    .marquee-track{ animation:none; }
+}
+
+@media(max-width:768px){
+
+    .marquee-content{ font-size:16px; }
 }
 
 .section-header{
@@ -2797,59 +2921,154 @@ a:active {
     line-height:1.8;
 }
 
-.brands-slider{
+/* ==========================
+   SUB-PAGE HERO (about, contact)
+========================== */
+
+.page-hero{
+
+    position:relative;
+
+    min-height:420px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    overflow:hidden;
+
+    text-align:center;
+}
+
+.page-hero-video,
+.page-hero-img{
+
+    position:absolute;
+    inset:0;
+
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+
+    z-index:0;
+}
+
+.page-hero-overlay{
+
+    position:absolute;
+    inset:0;
+
+    background:linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.72));
+
+    z-index:1;
+}
+
+.page-hero-content{
+
+    position:relative;
+    z-index:2;
+
+    max-width:720px;
+
+    padding:0 20px;
+
+    animation:heroContentRise 1.1s cubic-bezier(.16,.9,.35,1) both;
+}
+
+.page-hero-content h1{
+
+    font-size:clamp(38px,6vw,58px);
+
+    margin:15px 0;
+}
+
+.page-hero-content p{
+
+    color:rgba(255,255,255,.75);
+
+    font-size:16px;
+
+    line-height:1.8;
+}
+
+@media (prefers-reduced-motion: reduce){
+
+    .page-hero-content{ animation:none; }
+}
+
+/* ==========================
+   ABOUT — STORY SECTION
+========================== */
+
+.about-story{
+
+    padding:110px 8%;
+
+    background:#0b0c10;
 
     display:grid;
 
-    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    grid-template-columns:1fr 1fr;
 
-    gap:25px;
-}
-
-.brand-card{
-
-    background:#171a21;
-
-    border:1px solid rgba(255,255,255,.05);
-
-    border-radius:20px;
-
-    padding:30px;
-
-    display:flex;
+    gap:60px;
 
     align-items:center;
-
-    justify-content:center;
-
-    transition:.35s;
 }
 
-.brand-card:hover{
-
-    transform:translateY(-8px);
-
-    border-color:#c5a880;
-
-    box-shadow:0 20px 40px rgba(0,0,0,.35);
-}
-
-.brand-card img{
+.about-story-image img{
 
     width:100%;
 
-    max-width:120px;
+    border-radius:20px;
 
-    object-fit:contain;
-
-    filter:grayscale(100%);
-
-    transition:.35s;
+    display:block;
 }
 
-.brand-card:hover img{
+.about-story-text h2{
 
-    filter:none;
+    font-size:clamp(30px,4vw,42px);
+
+    margin-bottom:22px;
+}
+
+.about-story-text p{
+
+    color:#b7b7b7;
+
+    line-height:1.9;
+
+    margin-bottom:18px;
+
+    max-width:520px;
+}
+
+@media(max-width:900px){
+
+    .about-story{
+
+        grid-template-columns:1fr;
+    }
+}
+
+/* ==========================
+   CTA BAND (about, contact, etc.)
+========================== */
+
+.cta-band{
+
+    padding:100px 8%;
+
+    text-align:center;
+
+    background:#11151c;
+}
+
+.cta-band h2{
+
+    font-size:clamp(28px,4vw,40px);
+
+    margin-bottom:25px;
 }
 
 /* ==========================
@@ -2886,8 +3105,45 @@ a:active {
     border:1px solid
     rgba(255,255,255,.05);
 
-    transition:.35s;
+    transition:transform .35s, border-color .35s, box-shadow .35s,
+        opacity .6s ease, translate .6s ease;
+
+    opacity:0;
+
+    translate:0 24px;
 }
+
+.vanguard-benefits.active .benefit-card{
+
+    opacity:1;
+
+    translate:0 0;
+}
+
+.vanguard-benefits.active .benefit-card,
+.about-values.active .benefit-card,
+.contact-methods.active .benefit-card{
+
+    opacity:1;
+
+    translate:0 0;
+}
+
+.vanguard-benefits.active .benefit-card:nth-child(1),
+.about-values.active .benefit-card:nth-child(1),
+.contact-methods.active .benefit-card:nth-child(1){ transition-delay:.05s; }
+
+.vanguard-benefits.active .benefit-card:nth-child(2),
+.about-values.active .benefit-card:nth-child(2),
+.contact-methods.active .benefit-card:nth-child(2){ transition-delay:.15s; }
+
+.vanguard-benefits.active .benefit-card:nth-child(3),
+.about-values.active .benefit-card:nth-child(3),
+.contact-methods.active .benefit-card:nth-child(3){ transition-delay:.25s; }
+
+.vanguard-benefits.active .benefit-card:nth-child(4),
+.about-values.active .benefit-card:nth-child(4),
+.contact-methods.active .benefit-card:nth-child(4){ transition-delay:.35s; }
 
 .benefit-card:hover{
 

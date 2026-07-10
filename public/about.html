@@ -1,325 +1,180 @@
-this was my firestore rules before "rules_version = '2';
-
-service cloud.firestore {
-
-match /databases/{database}/documents {
-
-//
-// PRODUCTS
-//
-match /products/{productId}{
-
-allow read: if true;
-
-// Only admins can edit products
-
-allow write:
-if request.auth != null &&
-exists(
-/databases/$(database)/documents/admins/$(request.auth.uid)
-);
-
-}
-
-//
-// USER CART
-//
-match /users/{userId}/cart/{cartId}{
-
-allow read,write:
-
-if request.auth!=null
-
-&&
-
-request.auth.uid==userId;
-
-}
-
-//
-// CART BACKUPS
-//
-match /users/{userId}/cart_backups/{backupId}{
-
-allow read,write:
-
-if request.auth!=null
-
-&&
-
-request.auth.uid==userId;
-
-}
-
-//
-// ADMINS
-//
-match /admins/{adminId}{
-
-allow read:
-
-if request.auth!=null;
-
-allow write:
-
-if request.auth!=null
-
-&&
-
-request.auth.uid==adminId;
-
-}
-
-//
-// RESERVATIONS
-//
-match /cart_reservations/{reservationId}{
-
-allow create:
-
-if request.auth!=null;
-
-allow read,update,delete:
-
-if request.auth!=null;
-
-}
-
-//
-// REVIEWS
-//
-
-match /reviews/{reviewId} {
-
-    allow read: if true;
-
-    allow create:
-        if request.auth != null;
-
-    allow delete:
-        if request.auth != null
-        &&
-        request.auth.uid == resource.data.userId;
-
-    allow update:
-        if request.auth != null
-        &&
-        (
-
-            request.auth.uid == resource.data.userId
-
-            ||
-
-            request.resource.data
-            .diff(resource.data)
-            .changedKeys()
-            .hasOnly(
-                [
-                    "likes",
-                    "likedBy",
-                    "featured",
-                    "adminReply",
-                    "adminReplyDate"
-                ]
-            )
-
-        );
-
-}
-
-//
-// ADMIN NOTIFICATIONS
-//
-
-match /admin_notifications/{notificationId} {
-
-    allow create: if request.auth != null;
-
-    allow read, update, delete:
-
-        if request.auth != null
-        &&
-
-        exists(
-        /databases/$(database)/documents/admins/$(request.auth.uid)
-        );
-
-}
-
-//
-// USER NOTIFICATIONS
-//
-
-match /user_notifications/{notificationId}{
-
-allow create:
-
-if request.auth != null;
-
-allow read, update:
-
-if request.auth != null
-
-&&
-
-request.auth.uid == resource.data.userId;
-
-allow delete: if false;
-
-}
-
-}
-
-}"
-
-then you gave me this "rules_version = '2';
-
-service cloud.firestore {
-  match /databases/{database}/documents {
-
-    function isSignedIn() {
-      return request.auth != null;
-    }
-
-    function isOwner(uid) {
-      return isSignedIn() && request.auth.uid == uid;
-    }
-
-    function isAdmin() {
-      return isSignedIn() &&
-        exists(/databases/$(database)/documents/admins/$(request.auth.uid));
-    }
-
-    function onlyChangedFields(allowed) {
-      return request.resource.data.diff(resource.data).affectedKeys()
-        .hasOnly(allowed);
-    }
-
-    /* ---------------- ADMINS ----------------
-       Client only ever checks "does a doc with my own uid exist".
-       No client writes — manage this collection from the console
-       or a trusted backend/Cloud Function. */
-    match /admins/{uid} {
-      allow get: if isOwner(uid);
-      allow list: if false;
-      allow write: if false;
-    }
-
-    /* ---------------- USERS ----------------
-       No data is stored directly on users/{uid} today, only in
-       subcollections. Locking down the parent doc is still safe. */
-    match /users/{uid} {
-      allow read, write: if false;
-
-      match /cart/{cartItemId} {
-        allow read, write: if isOwner(uid);
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About Us - Timeless</title>
+    <link rel="stylesheet" href="/css/index.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+  </head>
+  <body>
+  <script src="/js/theme-init.js"></script>
+
+    <div class="top-bar">
+      <span>Call/WhatsApp: +2348109007611</span>
+      <div>
+        <a href="/developer" class="dev-link-badge"
+          ><i class="fa-solid fa-code"></i> About Developer</a
+        >
+      </div>
+    </div>
+
+    <header class="luxury-nav">
+      <div class="menu-toggle">
+        <i class="fa fa-bars"></i>
+      </div>
+      <ul class="nav-left-menu">
+        <li><a href="/">Catalog</a></li>
+        <li><a href="/about">About Us</a></li>
+        <li><a href="/contact-us">Contact</a></li>
+      </ul>
+      <div class="main-signature-logo">
+        <a href="/" style="text-decoration: none; color: inherit"
+          >TIME<span>LESS</span></a
+        >
+      </div>
+      <div class="nav-right-actions">
+        <div class="nav-user-icons">
+          <a href="/notifications.html" class="notification-anchor">
+            <div class="notification-icon-wrapper">
+              <i class="fa-regular fa-bell"></i>
+              <span id="notification-badge">0</span>
+            </div>
+          </a>
+          <a href="/cart" class="custom-cart-anchor">
+            <span class="cart-label-word">Cart</span>
+            <div class="cart-icon-wrapper">
+              <i class="fa-solid fa-bag-shopping"></i>
+              <span id="cart-count">0</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <section class="page-hero">
+      <img
+        class="page-hero-img"
+        src="https://images.unsplash.com/photo-1445205170230-053b83016050?q=80&w=2000"
+        alt="Fabric detail" />
+      <div class="page-hero-overlay"></div>
+      <div class="page-hero-content">
+        <span class="hero-tag">OUR STORY</span>
+        <h1>Style That Lasts</h1>
+        <p>
+          Timeless makes considered clothing for people who'd rather buy
+          once than buy often.
+        </p>
+      </div>
+    </section>
+
+    <section class="about-story reveal">
+      <div class="about-story-image">
+        <img
+          src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?q=80&w=1400"
+          alt="Fabric and tailoring detail" />
+      </div>
+      <div class="about-story-text">
+        <h2>Built On Fewer, Better Pieces</h2>
+        <p>
+          Timeless started with a simple frustration: most fashion is
+          designed to be forgotten. We wanted to build the opposite —
+          pieces cut from better fabric, finished properly, and made to
+          outlast a season.
+        </p>
+        <p>
+          Every item in our collection is chosen for how it wears, not
+          just how it photographs. We'd rather sell you one jacket you
+          keep for five years than five you replace in one.
+        </p>
+      </div>
+    </section>
+
+    <section class="vanguard-benefits about-values reveal">
+      <div class="section-header">
+        <span class="section-tag">What We Stand For</span>
+        <h2>The Timeless Standard</h2>
+      </div>
+
+      <div class="benefits-grid">
+        <div class="benefit-card">
+          <i class="fa-solid fa-scissors"></i>
+          <h3>Considered Design</h3>
+          <p>Every piece starts with a shape and fabric that earns its place in your wardrobe.</p>
+        </div>
+
+        <div class="benefit-card">
+          <i class="fa-solid fa-leaf"></i>
+          <h3>Responsible Sourcing</h3>
+          <p>We work with mills and makers who treat materials — and people — with care.</p>
+        </div>
+
+        <div class="benefit-card">
+          <i class="fa-solid fa-heart"></i>
+          <h3>Made To Last</h3>
+          <p>Cut, stitched, and finished to survive more washes and more seasons than fast fashion ever will.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-band reveal">
+      <h2>Ready To Build Your Wardrobe?</h2>
+      <a href="/" class="hero-btn">SHOP THE COLLECTION</a>
+    </section>
+
+    <script type="module" src="/js/route-guard.js"></script>
+    <script type="module" src="/js/guard.js"></script>
+    <script type="module" src="/js/cart-count.js"></script>
+    <script type="module" src="/js/user-notifications.js"></script>
+    <script type="module" src="/js/admin-notification.js"></script>
+    <script src="/js/toast.js"></script>
+
+    <script>
+      const revealTargets = document.querySelectorAll(".reveal");
+      if (revealTargets.length) {
+        const revealObserver = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("active");
+              revealObserver.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.15 });
+        revealTargets.forEach(t => revealObserver.observe(t));
       }
+    </script>
+  </body>
 
-      match /cart_backups/{backupId} {
-        allow read, write: if isOwner(uid);
-      }
-    }
-
-    /* ---------------- PRODUCTS ----------------
-       Public storefront read. Admin can change anything.
-       Any signed-in user may ONLY bump the aggregate rating
-       fields (this is what happens right after they submit a
-       review) — nothing else. */
-    match /products/{productId} {
-      allow read: if true;
-
-      allow create, delete: if isAdmin();
-
-      allow update: if isAdmin()
-        || (isSignedIn() && onlyChangedFields(
-              ['reviewCount', 'totalRating', 'averageRating']
-           ));
-    }
-
-    /* ---------------- REVIEWS ----------------
-       Public read (storefront shows reviews). A signed-in user
-       may create exactly one review per order (doc id == orderId),
-       must write it as their own, unapproved, unfeatured, with no
-       admin reply attached. Only admin can approve/reply/feature/
-       delete. */
-    match /reviews/{reviewId} {
-      allow read: if true;
-
-      allow create: if isSignedIn()
-        && reviewId == request.resource.data.orderId
-        && request.resource.data.userId == request.auth.uid
-        && request.resource.data.approved == false
-        && request.resource.data.featured == false
-        && !("adminReply" in request.resource.data);
-
-      allow update, delete: if isAdmin();
-    }
-
-    /* ---------------- CART_RESERVATIONS (orders) ----------------
-       Created by the customer at checkout, owned by them. Admin
-       controls status/stock/delivery lifecycle. The one thing the
-       owner is allowed to touch after creation is flipping
-       reviewSubmitted to true once they leave a review. */
-    match /cart_reservations/{orderId} {
-      allow read: if isAdmin() || isOwner(resource.data.userId);
-
-      allow create: if isSignedIn()
-        && request.resource.data.userId == request.auth.uid;
-
-      allow update: if isAdmin()
-        || (isOwner(resource.data.userId)
-            && onlyChangedFields(['reviewSubmitted']));
-
-      allow delete: if isAdmin();
-    }
-
-    /* ---------------- ORDERS (legacy/unused collection) ----------------
-       Nothing in the current app reads/writes this collection —
-       cart_reservations is the real orders collection. Locked down
-       the same way in case it's used later or manually. */
-    match /orders/{orderId} {
-      allow read: if isAdmin() || isOwner(resource.data.userId);
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update, delete: if isAdmin();
-    }
-
-    /* ---------------- COMPLAINTS ----------------
-       Created by the customer, always tied to themselves, always
-       opened as "Open". Only admin can reply/resolve/delete. */
-    match /complaints/{complaintId} {
-      allow read: if isAdmin() || isOwner(resource.data.userId);
-
-      allow create: if isSignedIn()
-        && request.resource.data.userId == request.auth.uid
-        && request.resource.data.status == "Open";
-
-      allow update, delete: if isAdmin();
-    }
-
-    /* ---------------- USER_NOTIFICATIONS ----------------
-       Only admin code creates these (order/review/complaint
-       events). The owner can read their own, mark them read, and
-       delete them (single or via a batch from "delete all" /
-       multi-select). */
-    match /user_notifications/{notifId} {
-      allow read: if isAdmin() || isOwner(resource.data.userId);
-
-      allow create: if isAdmin();
-
-      allow update: if isOwner(resource.data.userId)
-        && onlyChangedFields(['read']);
-
-      allow delete: if isAdmin() || isOwner(resource.data.userId);
-    }
-
-    /* ---------------- ADMIN_NOTIFICATIONS ----------------
-       Any signed-in customer triggers these (new order, new
-       review). Only admin ever reads/manages them. */
-    match /admin_notifications/{notifId} {
-      allow create: if isSignedIn();
-      allow read, update, delete: if isAdmin();
-    }
-
-  }
-}
-"
+  <footer class="vanguard-footer">
+    <div class="footer-grid">
+      <div>
+        <h3>TIMELESS</h3>
+        <p>Discover premium fashion brands worldwide.</p>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+        <a href="/contact-us">Contact</a>
+      </div>
+      <div>
+        <h4>Support</h4>
+        <a href="#">Shipping</a>
+        <a href="#">Returns</a>
+        <a href="#">Privacy Policy</a>
+      </div>
+      <div>
+        <h4>Follow Us</h4>
+        <div class="socials">
+          <i class="fab fa-instagram"></i>
+          <i class="fab fa-facebook"></i>
+          <i class="fab fa-tiktok"></i>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">© 2026 TIMELESS Marketplace</div>
+  </footer>
+</html>
