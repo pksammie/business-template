@@ -1007,30 +1007,43 @@ window.approveOrder = async function (id) {
         const product = productSnap.data();
 
         const size = reservation.productSize;
+        const isSizeless = size === "None";
 
-        const currentStock = product.stock?.[size] || 0;
+        if (!isSizeless) {
 
-        if(currentStock < reservation.quantity){
+            const currentStock = product.stock?.[size] || 0;
 
-            showToast("Not enough stock remaining.");
+            if(currentStock < reservation.quantity){
 
-            return;
+                showToast("Not enough stock remaining.");
+
+                return;
+
+            }
+
+            await updateDoc(productRef,{
+
+                [`stock.${size}`]: increment(-reservation.quantity),
+
+                sold: increment(reservation.quantity)
+
+            });
+
+        } else {
+
+            await updateDoc(productRef,{
+
+                sold: increment(reservation.quantity)
+
+            });
 
         }
-
-        await updateDoc(productRef,{
-
-            [`stock.${size}`]: increment(-reservation.quantity),
-
-            sold: increment(reservation.quantity)
-
-        });
 
         await updateDoc(reservationRef,{
 
             status:"Approved",
 
-            stockDeducted:true
+            stockDeducted: !isSizeless
 
         });
 
@@ -1216,7 +1229,7 @@ adminForm.addEventListener("submit", async (e) => {
   const description = document.getElementById("prod-desc").value;
   const stock = {};
 
-  document.querySelectorAll(".size-stock-input").forEach((input) => {
+  document.querySelectorAll(".size-stock-row.size-active .size-stock-input").forEach((input) => {
     stock[input.dataset.size] = Number(input.value) || 0;
   });
 

@@ -743,22 +743,29 @@ async function load() {
   const hasSizes =
     Array.isArray(product.sizes) && !product.sizes.includes("None");
 
-  /* total remaining across all sizes */
-  const totalRemaining = Object.values(product.stock || {}).reduce(
-    (sum, qty) => sum + qty,
-    0,
-  );
+  /* total remaining across all sizes -- sizeless products aren't stock-tracked */
+  const totalRemaining = hasSizes
+    ? Object.values(product.stock || {}).reduce(
+        (sum, qty) => sum + qty,
+        0,
+      )
+    : null;
 
   const stockTextEl = document.getElementById("stock-left");
-  stockTextEl.textContent =
-    totalRemaining > 0 ? `${totalRemaining} available` : "Out of stock";
-  stockTextEl.style.color =
-    totalRemaining <= 0 ? "#ff4d4d" : totalRemaining < 4 ? "orange" : "lime";
+  if (totalRemaining === null) {
+    stockTextEl.textContent = "In stock";
+    stockTextEl.style.color = "lime";
+  } else {
+    stockTextEl.textContent =
+      totalRemaining > 0 ? `${totalRemaining} available` : "Out of stock";
+    stockTextEl.style.color =
+      totalRemaining <= 0 ? "#ff4d4d" : totalRemaining < 4 ? "orange" : "lime";
+  }
 
   const soldBadge = document.getElementById("sold-out-badge");
   const addBtn = document.querySelector(".add-to-cart-btn");
 
-  if (totalRemaining <= 0) {
+  if (totalRemaining !== null && totalRemaining <= 0) {
     if (soldBadge) soldBadge.style.display = "inline-block";
     if (addBtn) {
       addBtn.disabled = true;

@@ -546,19 +546,21 @@ if(selectedIds.length){
         return;
       }
 
-      const sizeStock =
-Number(productData.stock?.[item.size] ?? 0);
+      if (item.size !== "None") {
+        const sizeStock =
+          Number(productData.stock?.[item.size] ?? 0);
 
-if (item.quantity > sizeStock) {
+        if (item.quantity > sizeStock) {
 
-  showToast(
-    `Only ${sizeStock} ${item.size} size(s) of ${item.title} remain in stock.`
-  );
+          showToast(
+            `Only ${sizeStock} ${item.size} size(s) of ${item.title} remain in stock.`
+          );
 
-  resetCheckoutState();
+          resetCheckoutState();
 
-  return;
-}
+          return;
+        }
+      }
 
     }
 

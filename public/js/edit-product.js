@@ -14,54 +14,63 @@ const uploadBox = document.getElementById("upload-image-box");
 let uploadedImages = [];
 
 async function loadProduct() {
-  const snap = await getDoc(doc(db, "products", productId));
+  try {
+    const snap = await getDoc(doc(db, "products", productId));
 
-  if (!snap.exists()) {
-    showToast("Product not found.");
-    location.href = "/admin";
-    return;
-  }
+    if (!snap.exists()) {
+      showToast("Product not found.");
+      location.href = "/admin";
+      return;
+    }
 
-  const product = snap.data();
+    const product = snap.data();
 
-  document.getElementById("prod-title").value = product.title;
-  document.getElementById("prod-price").value = product.price;
-  document.querySelectorAll(".size-stock-input").forEach(input => {
+    document.getElementById("prod-title").value = product.title;
+    document.getElementById("prod-price").value = product.price;
+    document.querySelectorAll(".size-stock-input").forEach(input => {
 
-    const size = input.dataset.size;
+      const size = input.dataset.size;
 
-    input.value = product.stock?.[size] || 0;
+      input.value = product.stock?.[size] || 0;
 
-});
-
-  // ─────────────────────────────────────────────────────────────
-
-  document.getElementById("prod-desc").value = product.description;
-
-  uploadedImages = [...(product.images || [])];
-
-// Backward compatibility
-if (
-uploadedImages.length === 0 &&
-product.image
-){
-    uploadedImages.push(product.image);
-}
-
-renderImageGallery();
-
-document.querySelectorAll('input[name="prod_sizes"]').forEach(box => {
-
-    box.checked =
-        (product.sizes || []).includes(box.value);
-
-});
-
-  document.querySelectorAll('input[name="prod_colors"]').forEach(box => {
-    box.checked = (product.colors || []).includes(box.value);
   });
 
-  syncSizeStockVisibility();
+    // ─────────────────────────────────────────────────────────────
+
+    document.getElementById("prod-desc").value = product.description;
+
+    uploadedImages = [...(product.images || [])];
+
+  // Backward compatibility
+  if (
+  uploadedImages.length === 0 &&
+  product.image
+  ){
+      uploadedImages.push(product.image);
+  }
+
+  renderImageGallery();
+
+  document.querySelectorAll('input[name="prod_sizes"]').forEach(box => {
+
+      box.checked =
+          (product.sizes || []).includes(box.value);
+
+  });
+
+    document.querySelectorAll('input[name="prod_colors"]').forEach(box => {
+      box.checked = (product.colors || []).includes(box.value);
+    });
+
+    syncSizeStockVisibility();
+
+  } catch (err) {
+    console.error(err);
+    showToast("Couldn't load this product. Please try again.");
+  } finally {
+    const loadingScreen = document.getElementById("admin-loading-screen");
+    if (loadingScreen) loadingScreen.style.display = "none";
+  }
 }
 
 loadProduct();
@@ -316,7 +325,7 @@ form.addEventListener("submit", async e => {
   const sizes  = [...document.querySelectorAll("input[name='prod_sizes']:checked")].map(el => el.value);
   const stock = {};
 
-document.querySelectorAll(".size-stock-input").forEach(input => {
+document.querySelectorAll(".size-stock-row.size-active .size-stock-input").forEach(input => {
 
     stock[input.dataset.size] =
         Number(input.value) || 0;

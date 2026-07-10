@@ -115,14 +115,19 @@ const image =
 
         const stock = product.stock || {};
 
-const remainingStock =
-Object.values(stock).reduce(
+const hasSizes =
+Array.isArray(product.sizes) &&
+!product.sizes.includes("None");
+
+const remainingStock = hasSizes
+? Object.values(stock).reduce(
 (total, qty) => total + (qty || 0),
 0
-);
+)
+: null;
 
 const isOutOfStock =
-remainingStock <= 0;
+remainingStock !== null && remainingStock <= 0;
 
 const isSuspended =
     product.isSuspended;
@@ -218,15 +223,17 @@ if (!isSuspended) {
 }
 
         let stockColor = "lime";
-let stockText = `${remainingStock} left in stock`;
+let stockText = remainingStock === null
+    ? "In stock"
+    : `${remainingStock} left in stock`;
 
-if(remainingStock <= 0){
+if(remainingStock !== null && remainingStock <= 0){
 
     stockColor = "#ff4d4d";
     stockText = "Out of stock";
 
 }
-else if(remainingStock <= 3){
+else if(remainingStock !== null && remainingStock <= 3){
 
     stockColor = "#ffae00";
     stockText = `Only ${remainingStock} left`;
