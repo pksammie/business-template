@@ -306,6 +306,13 @@ transition:.3s;
 
 }
 
+.auth-form button {
+  background: gold;
+  border-radius: 10px;
+  height: 45px;
+  transition:.5s;
+}
+
 .auth-form input:focus{
 
 outline:none;
