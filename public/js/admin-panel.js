@@ -241,7 +241,11 @@ if (uploadBox) {
     cloudName: "dzkyhxdy9",
     uploadPreset: "products",
     multiple: true,
-    maxFiles: 8
+    maxFiles: 8,
+    resourceType: "image",
+    clientAllowedFormats: ["jpg", "jpeg", "png", "webp", "gif"],
+    sources: ["local", "camera", "url"],
+    theme: "minimal"
 },
 (error, result) => {
 
@@ -1226,7 +1230,9 @@ adminForm.addEventListener("submit", async (e) => {
 
   const title = document.getElementById("prod-title").value;
   const price = Number(document.getElementById("prod-price").value);
+  const category = document.getElementById("prod-category").value;
   const description = document.getElementById("prod-desc").value;
+  const careInfo = document.getElementById("prod-care-info").value;
   const stock = {};
 
   document.querySelectorAll(".size-stock-row.size-active .size-stock-input").forEach((input) => {
@@ -1255,10 +1261,12 @@ adminForm.addEventListener("submit", async (e) => {
   await addDoc(collection(db, "products"), {
     title,
     price,
+    category,
     image: uploadedImageUrls[0],
 
 images: uploadedImageUrls,
     description,
+    careInfo,
     sizes: finalSizes,
     colors: finalColors,
     stock,

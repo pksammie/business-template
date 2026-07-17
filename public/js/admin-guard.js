@@ -17,18 +17,21 @@ document.getElementById("admin-loader");
 const denied =
 document.getElementById("admin-denied");
 
+const deniedTitle =
+document.getElementById("denied-title");
+
+const deniedMessage =
+document.getElementById("denied-message");
+
 onAuthStateChanged(auth, async(user)=>{
 
     if(!user){
 
-        denied.style.display="flex";
+        deniedTitle.textContent = "Restricted Area";
 
-        denied.innerHTML=`
-            <h2>Restricted Area</h2>
-            <p>
-                Please login first.
-            </p>
-        `;
+        deniedMessage.textContent = "Please login first.";
+
+        denied.style.display="flex";
 
         loader.style.display="none";
 

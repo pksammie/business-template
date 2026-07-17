@@ -4,6 +4,8 @@ import { createSearchSelect } from "./search-select.js";
 
 import { getCountries, getStates, getCities } from "./location-service.js";
 
+import { getShippingFeeLabel } from "./shipping.js";
+
 import {
   collection,
   addDoc,
@@ -21,6 +23,7 @@ const checkoutFormInstance = document.getElementById(
   "shipping-address-capture-form",
 );
 let isProcessingCheckout = false;
+let cachedSubtotal = 0;
 
 function resetCheckoutState() {
   isProcessingCheckout = false;
@@ -129,18 +132,49 @@ if(selectedIds.length){
   });
 
   // Subtotal output layer creation block
+  cachedSubtotal = overallCostSum;
+
   const summaryTotalFooterBlock = document.createElement("div");
-  summaryTotalFooterBlock.className = "summary-total-footer";
+  summaryTotalFooterBlock.id = "checkout-totals-footer";
   summaryTotalFooterBlock.style =
-    "border-top:1px solid #1f2833; padding-top:20px; margin-top:20px; display:flex; justify-content:space-between; align-items:center;";
-  summaryTotalFooterBlock.innerHTML = `
-        <span style="font-size:18px;">Subtotal Amount Due</span>
-        <span style="font-size:22px; font-weight:700; color:#c5a880;">₦${overallCostSum.toLocaleString()}</span>
-    `;
+    "border-top:1px solid #1f2833; padding-top:20px; margin-top:20px;";
   orderSummaryWrapper.appendChild(summaryTotalFooterBlock);
+
+  renderOrderTotals();
 }
 
-function initializeLocationSelectors() {
+function renderOrderTotals() {
+  const footer = document.getElementById("checkout-totals-footer");
+
+  if (!footer) return;
+
+  const countryInput = document.getElementById("country");
+  const stateInput = document.getElementById("state");
+
+  const { fee: shippingFee, text: shippingText } = getShippingFeeLabel(
+    countryInput?.value,
+    stateInput?.value,
+  );
+
+  const grandTotal = cachedSubtotal + shippingFee;
+
+  footer.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; color:#c9c9c9; font-size:15px;">
+            <span>Subtotal</span>
+            <span>₦${cachedSubtotal.toLocaleString()}</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; color:#c9c9c9; font-size:15px;">
+            <span>Shipping Fee${stateInput?.value ? ` (${stateInput.value})` : ""}</span>
+            <span>${shippingText}</span>
+        </div>
+        <div style="border-top:1px solid #1f2833; padding-top:15px; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:18px;">Total Amount Due</span>
+            <span style="font-size:22px; font-weight:700; color:#c5a880;">₦${grandTotal.toLocaleString()}</span>
+        </div>
+    `;
+}
+
+function initializeLocationSelectors(onAddressChange) {
   const countryInput = document.getElementById("country");
 
   const stateInput = document.getElementById("state");
@@ -200,6 +234,8 @@ function initializeLocationSelectors() {
 
         cityDropdown.setPlaceholder("Select City");
       }
+
+      onAddressChange?.();
     },
   });
 
@@ -235,6 +271,8 @@ function initializeLocationSelectors() {
       cityDropdown.setItems(cities);
 
       cityDropdown.setPlaceholder("Select City");
+
+      onAddressChange?.();
     },
   });
 
@@ -404,8 +442,6 @@ window.executeOrderCompilationPipeline = async function (event) {
     }
 
     const user = auth.currentUser;
-
-    console.log(user);
 
     if (!user) {
       showToast("Please login.");
@@ -653,7 +689,12 @@ for (let i = 0; i < cart.length; i++) {
 
     messageText += `───────────────────\n`;
     messageText += `*ORDER ITEM TOTAL:* ₦${subtotalValueAmount.toLocaleString()}\n`;
-    messageText += `_Shipping fee will be calculated based on the address above._\n\n`;
+
+    const { fee: whatsappShippingFee, text: whatsappShippingText } =
+      getShippingFeeLabel(addressProfile.country, addressProfile.state);
+
+    messageText += `*SHIPPING FEE:* ${whatsappShippingText}\n`;
+    messageText += `*ORDER GRAND TOTAL:* ₦${(subtotalValueAmount + whatsappShippingFee).toLocaleString()}\n\n`;
 
     messageText += `⚠️ Please do not edit or cancel this message so your order can be processed faster.`;
 
@@ -711,7 +752,7 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/f
 
 document.addEventListener("DOMContentLoaded", () => {
   const selectors =
-    initializeLocationSelectors();
+    initializeLocationSelectors(renderOrderTotals);
 
   if (typeof loadProductPreview === "function") {
     loadProductPreview();

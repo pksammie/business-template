@@ -20,12 +20,13 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 </head>
 
 <body>
+<script src="/js/theme-init.js"></script>
 
 <div class="top-bar">
 
 <span>Review Management</span>
 
-<a href="/admin.html"
+<a href="/admin-panel"
 class="view-store-btn">
 
 ← Admin Panel
@@ -157,6 +158,26 @@ class="admin-reviews-grid">
 
 <script type="module"
 src="/js/admin-reviews.js"></script>
+
+<div id="vanguard-confirm-modal" class="vanguard-modal">
+    <div class="vanguard-modal-box">
+        <h3 id="vanguard-modal-title">Confirm Action</h3>
+
+        <p id="vanguard-modal-message">
+            Are you sure?
+        </p>
+
+        <div class="vanguard-modal-actions">
+            <button id="vanguard-modal-cancel">
+                Cancel
+            </button>
+
+            <button id="vanguard-modal-confirm">
+                Confirm
+            </button>
+        </div>
+    </div>
+</div>
 
 <script src="/js/toast.js"></script>
 

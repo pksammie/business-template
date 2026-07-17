@@ -25,133 +25,111 @@
 
 <div class="background-glow"></div>
 
-<div class="auth-container">
+<div class="auth-shell">
+    <aside class="auth-hero">
+        <div class="hero-badge">Secure access</div>
+        <h1>Welcome back to <span>TIMELESS</span></h1>
+        <p>Sign in to view your saved carts, track orders, and pick up right where you left off.</p>
 
-    <div class="auth-logo">
+        <ul class="hero-benefits">
+            <li><i class="fa-solid fa-shield-halved"></i> Protected account access</li>
+            <li><i class="fa-solid fa-bolt"></i> Fast checkout for returning customers</li>
+            <li><i class="fa-solid fa-gift"></i> Exclusive offers and order updates</li>
+        </ul>
+    </aside>
 
-        TIME<span>LESS</span>
-
-    </div>
-
-    <p class="auth-subtitle">
-
-        Welcome back.<br>
-
-        Sign in to continue shopping.
-
-    </p>
-
-    <form
-        id="loginForm"
-        class="auth-form">
-
-        <div class="input-group">
-
-            <i class="fa-solid fa-envelope"></i>
-
-            <input
-                id="email"
-                type="email"
-                placeholder="Email Address"
-                required>
-
+    <section class="auth-card">
+        <div class="auth-logo">
+            TIME<span>LESS</span>
         </div>
 
-        <div class="input-group">
+        <p class="auth-subtitle">
+            Sign in to continue shopping.
+        </p>
 
-            <i class="fa-solid fa-lock"></i>
+        <form
+            id="loginForm"
+            class="auth-form">
 
-            <input
-                id="password"
-                type="password"
-                placeholder="Password"
-                required>
+            <div class="input-group">
+                <i class="fa-solid fa-envelope"></i>
+                <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="Email Address"
+                    autocomplete="email"
+                    required>
+            </div>
+
+            <div class="input-group">
+                <i class="fa-solid fa-lock"></i>
+                <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    placeholder="Password"
+                    autocomplete="current-password"
+                    required>
+
+                <button
+                    type="button"
+                    id="togglePassword"
+                    aria-label="Toggle password visibility">
+                    <i class="fa-solid fa-eye"></i>
+                </button>
+            </div>
+
+            <div class="login-options">
+                <label class="remember">
+                    <input type="checkbox">
+                    Remember me
+                </label>
+            </div>
+
+            <div id="forgotContainer" class="auth-links"></div>
 
             <button
-                type="button"
-                id="togglePassword">
-
-                <i class="fa-solid fa-eye"></i>
-
+                type="submit"
+                class="login-btn">
+                Login
             </button>
+        </form>
 
-        </div>
-
-        <div class="login-options">
-
-            <label class="remember">
-
-                <input type="checkbox">
-
-                Remember me
-
-            </label>
-
+        <div class="divider">
+            <span>OR</span>
         </div>
 
         <button
-            type="submit"
-            class="login-btn">
-
-            Login
-
+            id="googleLogin"
+            class="google-btn">
+            <img
+                src="https://www.svgrepo.com/show/475656/google-color.svg"
+                alt="Google">
+            Continue with Google
         </button>
 
-    </form>
-
-    <div class="divider">
-
-        <span>OR</span>
-
-    </div>
-
-    <button
-        id="googleLogin"
-        class="google-btn">
-
-        <img
-            src="https://www.svgrepo.com/show/475656/google-color.svg"
-            alt="Google">
-
-        Continue with Google
-
-    </button>
-
-    <div
-        id="forgotContainer"
-        class="auth-links">
-
-    </div>
-
-    <div class="auth-links">
-
-        Don't have an account?
-
-        <a href="/register">
-
-            Create One
-
-        </a>
-
-    </div>
-
+        <div class="auth-links">
+            Don't have an account?
+            <a href="/register">
+                Create One
+            </a>
+        </div>
+    </section>
 </div>
 
 <script
     type="module"
     src="/js/login.js">
-
 </script>
 
 <script
     type="module"
     src="/js/guard.js">
-
 </script>
 
 <script
     src="/js/toast.js">
-
 </script>
 
 </body>

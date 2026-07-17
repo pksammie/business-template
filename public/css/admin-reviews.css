@@ -183,3 +183,131 @@ font-size:12px;
 font-weight:bold;
 
 }
+
+/* ── Reply modal ──
+   This page never linked review.css (where .review-reason-overlay /
+   .review-reason-modal actually live), so the reply modal had no
+   display:none, no overlay, no centering -- it just sat inertly in the
+   page. This gives it its own real styling. */
+
+.review-reason-overlay{
+
+    position:fixed;
+    inset:0;
+
+    background:rgba(0,0,0,.65);
+    backdrop-filter:blur(8px);
+
+    display:none;
+    align-items:center;
+    justify-content:center;
+
+    z-index:5000;
+
+}
+
+.review-reason-overlay.show{
+
+    display:flex;
+
+}
+
+.review-reason-modal{
+
+    position:relative;
+
+    width:min(480px,92%);
+
+    background:#141821;
+
+    border:1px solid rgba(197,168,128,0.2);
+    border-radius:18px;
+
+    padding:30px;
+
+}
+
+.review-reason-modal h3{
+
+    color:#c5a880;
+    margin-bottom:16px;
+
+}
+
+.close-review-modal{
+
+    position:absolute;
+    top:14px;
+    right:18px;
+
+    background:none;
+    border:none;
+
+    color:#888;
+    font-size:22px;
+    line-height:1;
+
+    cursor:pointer;
+
+}
+
+.close-review-modal:hover{
+
+    color:#fff;
+
+}
+
+#admin-reply-text{
+
+    width:100%;
+    min-height:110px;
+
+    background:#0b0c10;
+    color:#fff;
+
+    border:1px solid rgba(255,255,255,0.15);
+    border-radius:10px;
+
+    padding:14px;
+
+    font-size:14px;
+    font-family:inherit;
+    line-height:1.6;
+
+    resize:vertical;
+
+    margin-bottom:16px;
+
+}
+
+#admin-reply-text:focus{
+
+    outline:none;
+    border-color:#c5a880;
+
+}
+
+#send-admin-reply{
+
+    width:100%;
+
+    background:#c5a880;
+    color:#000;
+
+    border:none;
+    border-radius:10px;
+
+    padding:13px;
+
+    font-weight:600;
+    font-size:14px;
+
+    cursor:pointer;
+
+}
+
+#send-admin-reply:hover{
+
+    filter:brightness(1.05);
+
+}

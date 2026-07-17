@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Complaint Center</title>
+  <link rel="stylesheet" href="/css/index.css" />
+  <link rel="stylesheet" href="/css/admin.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+</head>
+<body>
+<script src="/js/theme-init.js"></script>
+  <div class="top-bar">
+    <span>Complaint Center</span>
+    <a href="/admin-panel" class="view-store-btn">← Admin Panel</a>
+  </div>
+
+  <header class="luxury-nav">
+    <div class="main-signature-logo">TIMELESS<span>COMPLAINTS</span></div>
+  </header>
+
+  <main class="store-mainframe">
+    <section class="admin-section">
+      <div class="admin-page-header">
+        <div>
+          <h2>Customer Complaints</h2>
+          <p class="admin-page-subtitle">Review unresolved issues, respond to customers, and resolve cases quickly.</p>
+        </div>
+      </div>
+
+      <div class="page-toolbar">
+        <div class="orders-search-wrapper">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input id="complaints-search" placeholder="Search subject, order, or customer..." />
+        </div>
+
+        <select id="complaints-status-filter" class="admin-select">
+          <option value="all">All statuses</option>
+          <option value="Open">Open</option>
+          <option value="Resolved">Resolved</option>
+        </select>
+      </div>
+
+      <div id="complaints-list" class="orders-cards-grid"></div>
+    </section>
+  </main>
+
+  <script src="/js/toast.js"></script>
+  <script type="module" src="/js/admin-complaints.js"></script>
+</body>
+</html>

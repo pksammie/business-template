@@ -27,6 +27,7 @@ async function loadProduct() {
 
     document.getElementById("prod-title").value = product.title;
     document.getElementById("prod-price").value = product.price;
+    document.getElementById("prod-category").value = product.category || "";
     document.querySelectorAll(".size-stock-input").forEach(input => {
 
       const size = input.dataset.size;
@@ -38,6 +39,7 @@ async function loadProduct() {
     // ─────────────────────────────────────────────────────────────
 
     document.getElementById("prod-desc").value = product.description;
+    document.getElementById("prod-care-info").value = product.careInfo || "";
 
     uploadedImages = [...(product.images || [])];
 
@@ -338,9 +340,13 @@ document.querySelectorAll(".size-stock-row.size-active .size-stock-input").forEa
 
     price: Number(document.getElementById("prod-price").value),
 
+    category: document.getElementById("prod-category").value,
+
     stock,
 
     description: document.getElementById("prod-desc").value,
+
+    careInfo: document.getElementById("prod-care-info").value,
 
     images: uploadedImages,
 

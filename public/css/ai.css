@@ -1,0 +1,425 @@
+:root {
+  --bg-color: #0b0c10;
+  --card-bg: #1f2833;
+  --primary-color: #c5a880;
+  --font-display: "Playfair Display", Georgia, serif;
+  --font-body: "Jost", "Segoe UI", sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: var(--font-body);
+}
+
+body {
+  background: var(--bg-color);
+  color: #fff;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ── LOADER ── */
+
+#samai-loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 50% 40%, rgba(197, 168, 128, 0.08), transparent 60%), var(--bg-color);
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+#samai-loading-screen.hide {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.samai-loader {
+  text-align: center;
+}
+
+.samai-orb {
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 26px;
+  position: relative;
+}
+
+.samai-orb span {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: var(--primary-color);
+  animation: samai-spin 1.4s linear infinite;
+}
+
+.samai-orb span:nth-child(2) {
+  inset: 10px;
+  border-top-color: rgba(197, 168, 128, 0.6);
+  animation-duration: 2s;
+  animation-direction: reverse;
+}
+
+.samai-orb span:nth-child(3) {
+  inset: 20px;
+  border-top-color: rgba(197, 168, 128, 0.35);
+  animation-duration: 2.6s;
+}
+
+@keyframes samai-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.samai-loader-title {
+  font-family: var(--font-display);
+  font-size: 26px;
+  letter-spacing: 2px;
+  color: var(--primary-color);
+  margin-bottom: 6px;
+}
+
+.samai-loader-subtitle {
+  font-size: 13px;
+  color: #8a8a8a;
+  letter-spacing: 0.5px;
+}
+
+/* ── PAGE LAYOUT ── */
+
+.samai-page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.samai-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.samai-back {
+  color: #c9c9c9;
+  font-size: 16px;
+  text-decoration: none;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: 0.2s;
+}
+
+.samai-back:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--primary-color);
+}
+
+.samai-header-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.samai-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-color), #8a7048);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000;
+  font-size: 15px;
+  flex-shrink: 0;
+  animation: samai-glow 2.6s ease-in-out infinite;
+}
+
+.samai-header-title h1 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  color: #fff;
+  font-weight: 600;
+}
+
+.samai-header-title p {
+  font-size: 12px;
+  color: var(--primary-color);
+  letter-spacing: 0.5px;
+}
+
+/* ── CHAT AREA ── */
+
+.samai-chat {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  scroll-behavior: smooth;
+}
+
+.samai-chat::-webkit-scrollbar {
+  width: 6px;
+}
+
+.samai-chat::-webkit-scrollbar-thumb {
+  background: rgba(197, 168, 128, 0.3);
+  border-radius: 10px;
+}
+
+.samai-msg-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  animation: samai-msg-in 0.35s ease both;
+}
+
+@keyframes samai-msg-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.samai-msg-row.user {
+  flex-direction: row-reverse;
+}
+
+.samai-msg-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  background: var(--card-bg);
+  color: var(--primary-color);
+}
+
+.samai-msg-row.user .samai-msg-avatar {
+  background: var(--primary-color);
+  color: #000;
+}
+
+.samai-bubble {
+  max-width: 78%;
+  padding: 12px 16px;
+  border-radius: 16px;
+  font-size: 14.5px;
+  line-height: 1.55;
+  background: var(--card-bg);
+  color: #eaeaea;
+  border-bottom-left-radius: 4px;
+}
+
+.samai-msg-row.user .samai-bubble {
+  background: var(--primary-color);
+  color: #000;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 4px;
+}
+
+/* ── Result card (sentiment output) ── */
+
+.samai-result-card {
+  max-width: 82%;
+  background: linear-gradient(160deg, #1f2833, #171d26);
+  border: 1px solid rgba(197, 168, 128, 0.25);
+  border-radius: 16px;
+  border-bottom-left-radius: 4px;
+  padding: 18px 18px 16px;
+}
+
+.samai-result-score {
+  font-size: 12px;
+  color: #8a8a8a;
+  margin-bottom: 8px;
+  letter-spacing: 0.3px;
+}
+
+.samai-result-score span {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.samai-result-verdict {
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.samai-result-bar {
+  margin-top: 12px;
+  height: 6px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  position: relative;
+}
+
+.samai-result-bar-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 6px;
+  transition: width 0.6s ease;
+}
+
+/* ── Quick reply buttons ── */
+
+.samai-quick-replies {
+  display: flex;
+  gap: 10px;
+  margin-left: 38px;
+  animation: samai-msg-in 0.35s ease both;
+}
+
+.samai-quick-btn {
+  background: transparent;
+  border: 1px solid rgba(197, 168, 128, 0.4);
+  color: var(--primary-color);
+  padding: 9px 20px;
+  border-radius: 999px;
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.samai-quick-btn:hover {
+  background: var(--primary-color);
+  color: #000;
+}
+
+/* ── Typing indicator ── */
+
+.samai-typing .samai-bubble {
+  display: flex;
+  gap: 4px;
+  padding: 14px 18px;
+}
+
+.samai-typing span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  opacity: 0.5;
+  animation: samai-bounce 1.2s infinite ease-in-out;
+}
+
+.samai-typing span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.samai-typing span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes samai-bounce {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+  30% {
+    transform: translateY(-5px);
+    opacity: 1;
+  }
+}
+
+@keyframes samai-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(197, 168, 128, 0.25);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(197, 168, 128, 0.08);
+    transform: scale(1.03);
+  }
+}
+
+/* ── INPUT BAR ── */
+
+.samai-input-bar {
+  display: flex;
+  gap: 10px;
+  padding: 16px 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+#samai-input {
+  flex: 1;
+  background: var(--card-bg);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #fff;
+  padding: 13px 16px;
+  border-radius: 999px;
+  font-size: 14.5px;
+}
+
+#samai-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+#samai-input:disabled {
+  opacity: 0.5;
+}
+
+#samai-send-btn {
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: none;
+  background: var(--primary-color);
+  color: #000;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease;
+}
+
+#samai-send-btn:hover {
+  transform: scale(1.06);
+  box-shadow: 0 8px 18px rgba(197, 168, 128, 0.22);
+}
+
+#samai-send-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (max-width: 480px) {
+  .samai-bubble,
+  .samai-result-card {
+    max-width: 88%;
+  }
+}

@@ -24,6 +24,15 @@ document.getElementById("cart-count");
 const searchInput =
 document.getElementById("search-input");
 
+const categoryFilterBar =
+document.getElementById("category-filter-bar");
+
+const sortSelect =
+document.getElementById("sort-select");
+
+let activeCategory = "All";
+let activeSort = "newest";
+
 /* ---------------- HOMEPAGE FEATURED REVIEW CAROUSEL ---------------- */
 /* Single source of truth: shows the latest FEATURED reviews only.
    (See loadHomepageReviews() / renderHomepageReviews() further below,
@@ -345,7 +354,7 @@ async function loadStorefrontGrid() {
 
         });
 
-        renderProducts(allProducts);
+        applyFiltersAndRender();
 
     });
 
@@ -368,27 +377,84 @@ async function loadStorefrontGrid() {
 
 }
 
-/* ---------------- SEARCH ---------------- */
+/* ---------------- SEARCH + CATEGORY + SORT ---------------- */
+
+function applyFiltersAndRender() {
+
+    const term =
+        (searchInput?.value || "").toLowerCase();
+
+    let filtered =
+        allProducts.filter(product => {
+
+            const matchesSearch =
+                (product.title || "")
+                    .toLowerCase()
+                    .includes(term);
+
+            const matchesCategory =
+                activeCategory === "All" ||
+                product.category === activeCategory;
+
+            return matchesSearch && matchesCategory;
+
+        });
+
+    if (activeSort === "price-asc") {
+
+        filtered = [...filtered].sort(
+            (a, b) => (Number(a.price) || 0) - (Number(b.price) || 0)
+        );
+
+    } else if (activeSort === "price-desc") {
+
+        filtered = [...filtered].sort(
+            (a, b) => (Number(b.price) || 0) - (Number(a.price) || 0)
+        );
+
+    }
+    // "newest" needs no re-sort -- allProducts already comes back
+    // ordered by createdAt desc straight from the Firestore query.
+
+    renderProducts(filtered);
+
+}
 
 if (searchInput) {
 
-    searchInput.addEventListener("input", (e) => {
+    searchInput.addEventListener("input", applyFiltersAndRender);
 
-        const term =
-            e.target.value.toLowerCase();
+}
 
-        const filteredProducts =
-            allProducts.filter(product => {
+if (categoryFilterBar) {
 
-                return (
-                    product.title || ""
-                )
-                .toLowerCase()
-                .includes(term);
+    categoryFilterBar.addEventListener("click", (e) => {
 
-            });
+        const pill = e.target.closest(".category-pill");
 
-        renderProducts(filteredProducts);
+        if (!pill) return;
+
+        categoryFilterBar
+            .querySelectorAll(".category-pill")
+            .forEach(p => p.classList.remove("active"));
+
+        pill.classList.add("active");
+
+        activeCategory = pill.dataset.category;
+
+        applyFiltersAndRender();
+
+    });
+
+}
+
+if (sortSelect) {
+
+    sortSelect.addEventListener("change", () => {
+
+        activeSort = sortSelect.value;
+
+        applyFiltersAndRender();
 
     });
 

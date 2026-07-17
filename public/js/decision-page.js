@@ -19,6 +19,10 @@ import {
 
 const params = new URLSearchParams(location.search);
 const id = params.get("id");
+if (!id) {
+    window.location.href = "index.html";
+    throw new Error("Missing product id");
+}
 const cartDocId = params.get("cartDocId");
 
 let product = null;
@@ -783,6 +787,33 @@ async function load() {
   document.getElementById("decision-price").textContent =
     "₦" + Number(product.price).toLocaleString();
   descriptionBox.textContent = product.description;
+
+  /* ── SEO: reflect the actual product in the page's meta tags ── */
+  const pageTitle = `${product.title} | Timeless`;
+  const shortDescription =
+    (product.description || "").slice(0, 160) ||
+    "Shop curated luxury fashion at Timeless.";
+  const heroImage = product.images?.[0] || product.image || "";
+
+  document.title = pageTitle;
+
+  const setMeta = (id, value) => {
+    const el = document.getElementById(id);
+    if (el) el.setAttribute("content", value);
+  };
+
+  setMeta("meta-description", shortDescription);
+  setMeta("og-title", pageTitle);
+  setMeta("og-description", shortDescription);
+  setMeta("twitter-title", pageTitle);
+  setMeta("twitter-description", shortDescription);
+
+  if (heroImage) {
+    setMeta("og-image", heroImage);
+    setMeta("twitter-image", heroImage);
+  }
+
+  setMeta("og-url", location.href);
 
   galleryImages = product.images?.length ? product.images : [product.image];
 

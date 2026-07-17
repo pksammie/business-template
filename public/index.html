@@ -3,13 +3,42 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Timeless Storefront</title>
+    <title>Timeless | Curated Luxury Fashion, Delivered Across Nigeria</title>
+
+    <meta
+      name="description"
+      content="Shop curated tops, dresses, shoes, bags and accessories at Timeless. Verified sellers, secure checkout, and nationwide delivery across Nigeria."
+    />
+
+    <link rel="canonical" href="https://your-domain.com/" />
+
+    <!-- Open Graph / Facebook, Instagram, WhatsApp link previews -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Timeless" />
+    <meta property="og:title" content="Timeless | Curated Luxury Fashion, Delivered Across Nigeria" />
+    <meta
+      property="og:description"
+      content="Shop curated tops, dresses, shoes, bags and accessories at Timeless. Verified sellers, secure checkout, and nationwide delivery across Nigeria."
+    />
+    <meta property="og:url" content="https://your-domain.com/" />
+    <meta property="og:image" content="https://your-domain.com/images/og-cover.jpg" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Timeless | Curated Luxury Fashion, Delivered Across Nigeria" />
+    <meta
+      name="twitter:description"
+      content="Shop curated tops, dresses, shoes, bags and accessories at Timeless. Verified sellers, secure checkout, and nationwide delivery across Nigeria."
+    />
+    <meta name="twitter:image" content="https://your-domain.com/images/og-cover.jpg" />
+
     <link rel="stylesheet" href="/css/index.css" />
 
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     />
+    <script src="/js/analytics.js" defer></script>
   </head>
   <body>
   <script src="/js/theme-init.js"></script>
@@ -306,6 +335,29 @@
 
     </div>
 
+    <div class="filter-sort-row">
+
+        <div class="category-filter-bar" id="category-filter-bar">
+
+            <button class="category-pill active" data-category="All">All</button>
+            <button class="category-pill" data-category="Tops">Tops</button>
+            <button class="category-pill" data-category="Bottoms">Bottoms</button>
+            <button class="category-pill" data-category="Dresses">Dresses</button>
+            <button class="category-pill" data-category="Outerwear">Outerwear</button>
+            <button class="category-pill" data-category="Shoes">Shoes</button>
+            <button class="category-pill" data-category="Bags">Bags</button>
+            <button class="category-pill" data-category="Accessories">Accessories</button>
+
+        </div>
+
+        <select id="sort-select" class="sort-select">
+            <option value="newest">Newest First</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+        </select>
+
+    </div>
+
 </div>
 
 <div
@@ -355,6 +407,7 @@
     <script type="module" src="/js/guard.js"></script>
     <script type="module" src="/js/cart-count.js"></script>
     <script src="/js/toast.js"></script>
+
   </body>
 
   <footer class="vanguard-footer">

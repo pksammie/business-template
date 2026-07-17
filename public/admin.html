@@ -101,6 +101,17 @@ View Store
 
     <input type="number" id="prod-price" placeholder="Price" required>
 
+    <select id="prod-category" required>
+        <option value="" disabled selected>Select Category</option>
+        <option value="Tops">Tops</option>
+        <option value="Bottoms">Bottoms</option>
+        <option value="Dresses">Dresses</option>
+        <option value="Outerwear">Outerwear</option>
+        <option value="Shoes">Shoes</option>
+        <option value="Bags">Bags</option>
+        <option value="Accessories">Accessories</option>
+    </select>
+
     <div class="admin-option-box">
 
 <h4>Available Sizes & Stock</h4>
@@ -241,6 +252,11 @@ id="uploaded-image-url">
 
     <textarea id="prod-desc" placeholder="Description" required></textarea>
 
+    <textarea
+        id="prod-care-info"
+        placeholder="Material, fit & care notes (used by the support chat bot to answer quality/fabric/sizing questions -- optional)"
+    ></textarea>
+
     <button type="submit">Publish Product</button>
 
 </form>
@@ -296,34 +312,17 @@ placeholder="Search products...">
 
 <section style="margin-top:60px;">
 
-<h2>Customer Reviews</h2>
+<h2>Support Workspace</h2>
 
-<br>
-<div class="orders-search-wrapper">
-
-<i class="fa-solid fa-magnifying-glass"></i>
-
-<input
-    id="reviews-search"
-    placeholder="Search reviews...">
-
-</div>
-
-
-<div id="admin-reviews-grid" class="orders-cards-grid">
-</div>
-
-<div id="reviews-pagination" class="admin-pagination"></div>
-
-</section>
-
-<section style="margin-top:60px;">
-
-<h2>Complaints <span id="complaints-open-badge" class="complaints-badge" style="display:none;"></span></h2>
-
-<br>
-
-<div id="admin-complaints-grid" class="orders-cards-grid">
+<div class="admin-page-links">
+    <a href="/admin-reviews" class="admin-page-link">
+        <i class="fa-solid fa-star"></i>
+        <span>Customer Reviews</span>
+    </a>
+    <a href="/admin-complaints" class="admin-page-link">
+        <i class="fa-solid fa-file-circle-exclamation"></i>
+        <span>Complaints</span>
+    </a>
 </div>
 
 </section>

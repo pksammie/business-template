@@ -14,7 +14,63 @@ body{
 
     color:white;
 
-    font-family:sans-serif;
+    font-family:"Jost","Segoe UI",sans-serif;
+
+    position:relative;
+
+    overflow:hidden;
+}
+
+/* -- Ambient boutique-at-night backdrop -- */
+
+.scene-backdrop{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    background:
+        radial-gradient(circle at 50% 30%, rgba(197,168,128,0.08), transparent 60%),
+        linear-gradient(180deg, #0b0c10 0%, #14161c 60%, #0b0c10 100%);
+}
+
+.spotlight{
+    position:absolute;
+    top:-20%;
+    left:50%;
+    width:900px;
+    height:900px;
+    transform:translateX(-50%);
+    background:radial-gradient(circle, rgba(197,168,128,0.14) 0%, transparent 65%);
+    animation:sweep 9s ease-in-out infinite;
+}
+
+@keyframes sweep{
+    0%, 100%{
+        transform:translateX(-65%) translateY(0);
+        opacity:0.7;
+    }
+    50%{
+        transform:translateX(-35%) translateY(40px);
+        opacity:1;
+    }
+}
+
+.dust{
+    position:absolute;
+    inset:0;
+    background-image:
+        radial-gradient(2px 2px at 20% 30%, rgba(197,168,128,0.5), transparent),
+        radial-gradient(2px 2px at 65% 70%, rgba(197,168,128,0.35), transparent),
+        radial-gradient(1.5px 1.5px at 80% 20%, rgba(197,168,128,0.4), transparent),
+        radial-gradient(1.5px 1.5px at 35% 80%, rgba(197,168,128,0.3), transparent),
+        radial-gradient(2px 2px at 50% 50%, rgba(197,168,128,0.25), transparent);
+    background-size:100% 100%;
+    animation:drift 14s linear infinite;
+    opacity:0.8;
+}
+
+@keyframes drift{
+    0%{ background-position:0 0; }
+    100%{ background-position:0 -200px; }
 }
 
 .vanguard-ring{
@@ -59,11 +115,118 @@ body{
 #admin-loader,
 #admin-denied{
 
+    position:relative;
+    z-index:1;
     text-align:center;
+    padding:0 24px;
 }
 
 #admin-denied{
     display:none;
+    flex-direction:column;
+    align-items:center;
+    animation:rise 0.7s ease both;
+}
+
+@keyframes rise{
+    from{
+        opacity:0;
+        transform:translateY(18px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+/* -- Animated padlock -- */
+
+.guard-lock{
+    width:88px;
+    height:auto;
+    margin-bottom:22px;
+    filter:drop-shadow(0 0 18px rgba(197,168,128,0.35));
+    animation:lock-settle 0.8s cubic-bezier(.34,1.56,.64,1) both;
+}
+
+@keyframes lock-settle{
+    0%{
+        transform:rotate(-8deg) scale(0.85);
+        opacity:0;
+    }
+    60%{
+        transform:rotate(4deg) scale(1.05);
+        opacity:1;
+    }
+    100%{
+        transform:rotate(0) scale(1);
+    }
+}
+
+.lock-body{
+    fill:#1f2833;
+    stroke:#c5a880;
+    stroke-width:2.5;
+}
+
+.lock-shackle{
+    fill:none;
+    stroke:#c5a880;
+    stroke-width:6;
+    stroke-linecap:round;
+    animation:shackle-rattle 3.5s ease-in-out infinite;
+    transform-origin:32px 55px;
+}
+
+@keyframes shackle-rattle{
+    0%, 85%, 100%{ transform:rotate(0deg); }
+    88%{ transform:rotate(-4deg); }
+    91%{ transform:rotate(3deg); }
+    94%{ transform:rotate(-2deg); }
+    97%{ transform:rotate(0deg); }
+}
+
+.lock-keyhole,
+.lock-keyhole-stem{
+    fill:#c5a880;
+    animation:keyhole-glow 2.4s ease-in-out infinite;
+}
+
+@keyframes keyhole-glow{
+    0%, 100%{ opacity:0.85; }
+    50%{ opacity:0.4; }
+}
+
+h2{
+    font-family:"Playfair Display",Georgia,serif;
+    color:#c5a880;
+    letter-spacing:1px;
+    margin-bottom:10px;
+    font-size:26px;
+}
+
+#admin-denied p{
+    color:#b8b8b8;
+    max-width:360px;
+    line-height:1.6;
+    margin-bottom:28px;
+}
+
+.guard-return-btn{
+    display:inline-block;
+    background:#c5a880;
+    color:#000;
+    text-decoration:none;
+    font-weight:600;
+    letter-spacing:0.5px;
+    padding:13px 32px;
+    border-radius:8px;
+    transition:transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.guard-return-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 24px rgba(197,168,128,0.25);
 }
 
 .spinner{
@@ -80,16 +243,4 @@ body{
     animation:spin 1s linear infinite;
 
     margin:auto;
-}
-
-@keyframes spin{
-
-    to{
-        transform:rotate(360deg);
-    }
-
-}
-
-h2{
-    color:#c5a880;
 }

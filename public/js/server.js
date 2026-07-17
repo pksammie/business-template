@@ -28,12 +28,6 @@ app.get("/admin-panel", (req, res) =>
 app.get("/admin-complaints", (req, res) =>
   res.sendFile(path.join(__dirname, "public", "admin-complaints.html")),
 );
-app.get("/admin-support", (req, res) =>
-  res.sendFile(path.join(__dirname, "public", "admin-support.html")),
-);
-app.get("/admin-unanswered", (req, res) =>
-  res.sendFile(path.join(__dirname, "public", "admin-unanswered.html")),
-);
 app.get("/admin-reviews", (req, res) =>
   res.sendFile(path.join(__dirname, "public", "admin-reviews.html")),
 );

@@ -1,3 +1,35 @@
 node_modules
 .env
 .DS_Store
+
+# Phase 1
+
+# Install Python
+# Install Ollama
+# Run your first local AI
+
+# Phase 2
+
+# Build a FastAPI backend
+
+# Phase 3
+
+# Connect your website to Python
+
+# Phase 4
+
+# Connect the AI to your product database
+
+# Phase 5
+
+# Add memory
+
+# Phase 6
+
+# Add recommendations
+
+# Phase 7
+
+# Add shopping reasoning
+
+# At the end, you'll have an AI shopping assistant that runs entirely on your own machine with no API costs.

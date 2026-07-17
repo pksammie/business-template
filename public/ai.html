@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SamAi | Review Assistant</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,600&display=swap"
+  rel="stylesheet"
+/>
+
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+/>
+
+<link rel="stylesheet" href="/css/ai.css">
+
+</head>
+<body>
+<script src="/js/theme-init.js"></script>
+
+<div id="samai-loading-screen">
+
+    <div class="samai-loader">
+
+        <div class="samai-orb">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <div class="samai-loader-title">SamAi</div>
+        <div class="samai-loader-subtitle">Waking up the review assistant</div>
+
+    </div>
+
+</div>
+
+<div class="samai-page">
+
+    <header class="samai-header">
+
+        <a href="/" class="samai-back">
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
+
+        <div class="samai-header-title">
+
+            <div class="samai-avatar"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+
+            <div>
+                <h1>SamAi</h1>
+                <p>Review Assistant</p>
+            </div>
+
+        </div>
+
+    </header>
+
+    <main class="samai-chat" id="samai-chat">
+        <!-- messages injected here -->
+    </main>
+
+    <form id="samai-input-form" class="samai-input-bar">
+
+        <input
+            type="text"
+            id="samai-input"
+            placeholder="Type your answer..."
+            autocomplete="off"
+        />
+
+        <button type="submit" id="samai-send-btn" aria-label="Send">
+            <i class="fa-solid fa-paper-plane"></i>
+        </button>
+
+    </form>
+
+</div>
+
+<script src="/js/ai.js"></script>
+
+</body>
+</html>
