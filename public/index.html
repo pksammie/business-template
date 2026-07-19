@@ -42,6 +42,7 @@
   </head>
   <body>
   <script src="/js/theme-init.js"></script>
+<script>document.body.classList.add("scroll-locked");</script>
 
     <div id="admin-loading-screen">
 
@@ -350,11 +351,7 @@
 
         </div>
 
-        <select id="sort-select" class="sort-select">
-            <option value="newest">Newest First</option>
-            <option value="price-asc">Price: Low to High</option>
-            <option value="price-desc">Price: High to Low</option>
-        </select>
+        <div id="sort-select-mount" class="sort-select-mount"></div>
 
     </div>
 

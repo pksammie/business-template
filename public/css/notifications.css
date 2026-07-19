@@ -208,6 +208,22 @@ flex-shrink:0;
 
 }
 
+.notification-image-placeholder{
+
+background:#1f2833;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+color:#c5a880;
+
+font-size:26px;
+
+}
+
 .notification-info{
 
 flex:1;

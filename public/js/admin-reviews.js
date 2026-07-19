@@ -8,56 +8,107 @@ import {
   updateDoc,
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
+import { createDropdown } from "./timeless-dropdown.js";
+
 const container = document.getElementById("reviews-container");
 const searchInput = document.getElementById("orders-search");
-const ratingFilter = document.getElementById("rating-filter");
 const paginationEl = document.getElementById("reviews-pagination");
 
 const replyModal = document.getElementById("reply-modal");
 const replyText = document.getElementById("admin-reply-text");
 
+const viewModal = document.getElementById("view-review-modal");
+const viewText = document.getElementById("view-review-text");
+
 const REVIEWS_PER_PAGE = 8;
+const CLAMP_THRESHOLD = 160; // characters -- past this, show "View Review"
 
 let reviews = [];
 let selectedReview = null;
 let currentPage = 1;
+let selectedRatingFilter = "all";
+
+createDropdown({
+  container: document.getElementById("rating-filter-mount"),
+  placeholder: "All Ratings",
+  options: [
+    { value: "all", label: "All Ratings" },
+    { value: "5", label: "★★★★★" },
+    { value: "4", label: "★★★★☆" },
+    { value: "3", label: "★★★☆☆" },
+    { value: "2", label: "★★☆☆☆" },
+    { value: "1", label: "★☆☆☆☆" },
+  ],
+  value: "all",
+  onChange: (value) => {
+    selectedRatingFilter = value;
+    currentPage = 1;
+    render();
+  },
+});
 
 function stars(r) {
   const n = Number(r) || 0;
   return "★".repeat(n) + "☆".repeat(5 - n);
 }
 
+function initials(name) {
+  const clean = (name || "Anonymous").trim();
+  const parts = clean.split(/\s+/);
+  return ((parts[0]?.[0] || "A") + (parts[1]?.[0] || "")).toUpperCase();
+}
+
 function formatDate(value) {
   if (!value) return "";
   const d = typeof value === "number" ? new Date(value) : new Date(value);
-  return isNaN(d) ? "" : d.toLocaleDateString();
+  return isNaN(d) ? "" : d.toLocaleDateString(undefined, { dateStyle: "medium" });
+}
+
+function escapeHtml(text) {
+  return (text || "").replace(/</g, "&lt;");
 }
 
 function reviewCardHtml(r) {
+  const fullText = escapeHtml(r.reviewText);
+  const isLong = fullText.length > CLAMP_THRESHOLD;
+
   return `
     <div class="review-admin-card">
 
-      <div class="review-admin-product">
-        <img src="${r.productImage || "/images/placeholder.png"}" alt="${r.productTitle || "Product"}">
-        <div>
+      <div class="review-admin-top">
+
+        <div class="review-admin-avatar">${initials(r.customerName)}</div>
+
+        <div class="review-admin-identity">
           <div class="review-admin-user">${r.customerName || "Anonymous"}</div>
           <div class="review-admin-stars">${stars(r.rating)}</div>
         </div>
+
+        ${r.featured ? '<span class="verified-badge">Featured</span>' : ""}
+
       </div>
 
-      <p class="review-admin-text">${(r.reviewText || "").replace(/</g, "&lt;")}</p>
-
-      ${r.oneStarReason ? `<p class="review-admin-text" style="color:#ff8a8a;">Reason: ${r.oneStarReason}</p>` : ""}
-
-      ${r.adminReply ? `
-        <div class="review-admin-text" style="border-left:2px solid #c5a880; padding-left:12px;">
-          <strong style="color:#c5a880;">Your reply:</strong> ${r.adminReply}
+      ${r.productTitle ? `
+        <div class="review-admin-product">
+          <img src="${r.productImage || "/images/placeholder.png"}" alt="${r.productTitle}">
+          <span class="review-admin-product-title">${escapeHtml(r.productTitle)}</span>
         </div>
       ` : ""}
 
-      <div style="display:flex; justify-content:space-between; align-items:center; color:#888; font-size:12px;">
+      <p class="review-admin-text ${isLong ? "clamped" : ""}">${fullText}</p>
+
+      ${isLong ? `<button class="view-review-btn" data-review-id="${r.id}">View Review</button>` : ""}
+
+      ${r.oneStarReason ? `<p class="review-admin-reason">Reason: ${escapeHtml(r.oneStarReason)}</p>` : ""}
+
+      ${r.adminReply ? `
+        <div class="review-admin-reply">
+          <strong>Your reply:</strong> ${escapeHtml(r.adminReply)}
+        </div>
+      ` : ""}
+
+      <div class="review-admin-meta">
         <span>${formatDate(r.createdAt)}</span>
-        ${r.featured ? '<span class="verified-badge">Featured</span>' : ""}
       </div>
 
       <div class="review-admin-actions">
@@ -78,7 +129,7 @@ function reviewCardHtml(r) {
 
 function getFiltered() {
   const term = (searchInput.value || "").toLowerCase();
-  const rating = ratingFilter.value;
+  const rating = selectedRatingFilter;
 
   return reviews.filter(r => {
     const matchSearch =
@@ -103,10 +154,19 @@ function render() {
   const pageItems = filtered.slice(start, start + REVIEWS_PER_PAGE);
 
   if (!filtered.length) {
-    container.innerHTML = `<p style="color:#8a8a8a; grid-column:1/-1;">No reviews match that search yet.</p>`;
+    container.innerHTML = `<p class="reviews-empty-state">No reviews match that search yet.</p>`;
   } else {
     container.innerHTML = pageItems.map(reviewCardHtml).join("");
   }
+
+  container.querySelectorAll(".view-review-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const review = reviews.find(r => r.id === btn.dataset.reviewId);
+      if (!review) return;
+      viewText.textContent = review.reviewText || "";
+      viewModal.classList.add("show");
+    });
+  });
 
   renderPagination(filtered.length, totalPages);
 }
@@ -142,11 +202,6 @@ window.changeReviewPage = function (page) {
 };
 
 searchInput.addEventListener("input", () => {
-  currentPage = 1;
-  render();
-});
-
-ratingFilter.addEventListener("change", () => {
   currentPage = 1;
   render();
 });
@@ -194,6 +249,16 @@ document.getElementById("close-reply-modal").onclick = () => {
 replyModal.onclick = (e) => {
   if (e.target === replyModal) {
     replyModal.classList.remove("show");
+  }
+};
+
+document.getElementById("close-view-modal").onclick = () => {
+  viewModal.classList.remove("show");
+};
+
+viewModal.onclick = (e) => {
+  if (e.target === viewModal) {
+    viewModal.classList.remove("show");
   }
 };
 

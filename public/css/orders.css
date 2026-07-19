@@ -42,46 +42,90 @@ animation:flashOrder 2s ease;
 }
 
 .order-card {
-  background: #111;
-  border: 1px solid #2a2a2a;
+  background: var(--card-bg, #1f2833);
+  border: 1px solid rgba(197, 168, 128, 0.15);
 
-  border-radius: 12px;
+  border-radius: 16px;
 
-  padding: 20px;
+  padding: 22px;
 
   margin-bottom: 20px;
+
+  transition: border-color 0.2s ease;
+}
+
+.order-card:hover {
+  border-color: rgba(197, 168, 128, 0.35);
 }
 
 .order-card-product {
   display: flex;
-  gap: 15px;
+  gap: 16px;
   align-items: center;
+  margin-bottom: 18px;
 }
 
 .order-card-image {
-  width: 80px;
-  height: 80px;
+  width: 76px;
+  height: 76px;
   object-fit: cover;
-  border-radius: 10px;
+  border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+.order-card-info h4 {
+  font-size: 16px;
+  color: #fff;
+  margin-bottom: 6px;
+  font-family: var(--font-display, Georgia, serif);
+}
+
+.order-card-variant {
+  font-size: 13px;
+  color: #999;
 }
 
 .order-header {
   display: flex;
 
   justify-content: space-between;
+  align-items: center;
 
-  margin-bottom: 15px;
+  margin-bottom: 16px;
 
   flex-wrap: wrap;
 
   gap: 10px;
 }
 
-.order-title {
-  font-size: 18px;
+.order-date {
+  color: #888;
+  font-size: 12.5px;
+}
 
+.order-price-breakdown {
+  background: rgba(0, 0, 0, 0.18);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 4px;
+}
+
+.order-price-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13.5px;
+  color: #b5b5b5;
+  padding: 4px 0;
+}
+
+.order-price-total {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 6px;
+  padding-top: 10px;
   font-weight: 700;
+  font-size: 15px;
+  color: var(--primary-color, #c5a880);
 }
 
 .order-details {
@@ -264,4 +308,37 @@ margin-top:4px;
 
 @keyframes ordersSpin{
   to{ transform:rotate(360deg); }
+}
+
+@media (max-width: 640px) {
+
+  .orders-section {
+    padding: 0 4px;
+  }
+
+  .order-card {
+    padding: 16px;
+  }
+
+  .order-card-product {
+    gap: 12px;
+  }
+
+  .order-card-image {
+    width: 60px;
+    height: 60px;
+  }
+
+  .order-card-info h4 {
+    font-size: 14px;
+  }
+
+  .order-card-variant {
+    font-size: 12px;
+  }
+
+  .order-price-breakdown {
+    padding: 12px;
+  }
+
 }

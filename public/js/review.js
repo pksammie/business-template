@@ -15,6 +15,8 @@ import {
 import { onAuthStateChanged } from
   "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
 
+import { createDropdown } from "./timeless-dropdown.js";
+
 /* ── URL PARAMS ───────────────────────────────────────────── */
 const params    = new URLSearchParams(location.search);
 const orderId   = params.get("orderId");
@@ -23,11 +25,27 @@ const productId = params.get("productId");
 /* ── ELEMENTS ─────────────────────────────────────────────── */
 const reviewForm        = document.getElementById("review-form");
 const reviewBox         = document.getElementById("review-text");
-const ratingSelect      = document.getElementById("review-rating");
 const counter           = document.getElementById("review-count");
 const oneStarModal      = document.getElementById("one-star-modal");
 const submitOneStarBtn  = document.getElementById("submit-one-star");
 const closeOneStarModal = document.getElementById("close-one-star-modal");
+
+let selectedRating = 5;
+
+createDropdown({
+  container: document.getElementById("review-rating-mount"),
+  options: [
+    { value: "5", label: "★★★★★ — Excellent" },
+    { value: "4", label: "★★★★☆ — Good" },
+    { value: "3", label: "★★★☆☆ — Average" },
+    { value: "2", label: "★★☆☆☆ — Poor" },
+    { value: "1", label: "★☆☆☆☆ — Terrible" },
+  ],
+  value: "5",
+  onChange: (value) => {
+    selectedRating = Number(value);
+  },
+});
 const submitBtn         = reviewForm.querySelector('button[type="submit"]');
 const successOverlay    = document.getElementById("review-success-overlay");
 
@@ -83,7 +101,7 @@ async function submitReview(oneStarReason = "") {
 
   if (!currentUser) { showToast("Please login first."); return false; }
 
-  const rating     = Number(ratingSelect.value);
+  const rating     = selectedRating;
   const reviewText = reviewBox.value.trim();
 
   if (reviewText.length < 20) {
@@ -232,7 +250,7 @@ reviewForm.addEventListener("submit", async e => {
   e.preventDefault();
 
   const reviewText = reviewBox.value.trim();
-  const rating     = Number(ratingSelect.value);
+  const rating     = selectedRating;
 
   if (reviewText.length < 20) { showToast("Please write at least 20 characters."); return; }
 

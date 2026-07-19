@@ -1,5 +1,7 @@
 import { db } from "./firebase.js";
 
+import { createDropdown } from "./timeless-dropdown.js";
+
 import {
   collection,
   onSnapshot,
@@ -13,13 +15,31 @@ import {
 
 const listEl = document.getElementById("complaints-list");
 const searchInput = document.getElementById("complaints-search");
-const statusFilter = document.getElementById("complaints-status-filter");
+
+let selectedStatusFilter = "all";
+
+const statusFilterMount = document.getElementById("complaints-status-filter-mount");
+if (statusFilterMount) {
+  createDropdown({
+    container: statusFilterMount,
+    options: [
+      { value: "all", label: "All Statuses" },
+      { value: "Open", label: "Open" },
+      { value: "Resolved", label: "Resolved" },
+    ],
+    value: "all",
+    onChange: (value) => {
+      selectedStatusFilter = value;
+      renderComplaints();
+    },
+  });
+}
 
 let allComplaints = [];
 
 function getFilteredComplaints() {
   const term = (searchInput?.value || "").toLowerCase().trim();
-  const status = statusFilter?.value || "all";
+  const status = selectedStatusFilter;
 
   return allComplaints.filter((complaint) => {
     const matchesTerm =
@@ -113,7 +133,6 @@ window.resolveComplaint = async function (id) {
 };
 
 searchInput?.addEventListener("input", renderComplaints);
-statusFilter?.addEventListener("change", renderComplaints);
 
 onSnapshot(
   query(collection(db, "complaints"), orderBy("createdAt", "desc")),

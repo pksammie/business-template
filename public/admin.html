@@ -12,6 +12,7 @@
 
 <body id="admin-body">
 <script src="/js/theme-init.js"></script>
+<script>document.body.classList.add("scroll-locked");</script>
 
 <div id="admin-loading-screen">
 
@@ -101,16 +102,7 @@ View Store
 
     <input type="number" id="prod-price" placeholder="Price" required>
 
-    <select id="prod-category" required>
-        <option value="" disabled selected>Select Category</option>
-        <option value="Tops">Tops</option>
-        <option value="Bottoms">Bottoms</option>
-        <option value="Dresses">Dresses</option>
-        <option value="Outerwear">Outerwear</option>
-        <option value="Shoes">Shoes</option>
-        <option value="Bags">Bags</option>
-        <option value="Accessories">Accessories</option>
-    </select>
+    <div id="prod-category-mount"></div>
 
     <div class="admin-option-box">
 
@@ -251,11 +243,6 @@ id="uploaded-image-url">
 </div>
 
     <textarea id="prod-desc" placeholder="Description" required></textarea>
-
-    <textarea
-        id="prod-care-info"
-        placeholder="Material, fit & care notes (used by the support chat bot to answer quality/fabric/sizing questions -- optional)"
-    ></textarea>
 
     <button type="submit">Publish Product</button>
 

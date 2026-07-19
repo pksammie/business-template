@@ -1,5 +1,7 @@
 import { db, auth } from "./firebase.js";
 
+import { createDropdown } from "./timeless-dropdown.js";
+
 import {
   collection,
   getDocs,
@@ -392,6 +394,11 @@ window.removeLineItem = function (index) {
 ───────────────────────────────────────────────────────── */
 window.toggleSelectAll = function () {
 
+  if (firestoreCart.length === 0) {
+    showToast("There's nothing in your cart to select.");
+    return;
+  }
+
   const available =
     firestoreCart.filter(i => !i.isUnavailable);
 
@@ -446,7 +453,10 @@ window.toggleSelectAll = function () {
 window.actionContinueShopping = function () { window.location.href = "/"; };
 
 window.actionUpdateCartRedirect = async function () {
-  if (firestoreCart.length === 0) return;
+  if (firestoreCart.length === 0) {
+    showToast("There's nothing in your cart to update.");
+    return;
+  }
 
   if (!editMode) {
     editMode = true;
@@ -546,6 +556,10 @@ showToast(
 };
 
 window.clearCart = function () {
+  if (firestoreCart.length === 0) {
+    showToast("There's nothing in your cart to clear.");
+    return;
+  }
   showConfirmModal("Clear your entire shopping bag?", async () => {
     await backupCurrentCart();
     for (const item of firestoreCart) {
@@ -641,6 +655,24 @@ onAuthStateChanged(auth, user => {
    RESTORE CART
 ───────────────────────────────────────────────────────── */
 const restoreBtn = document.getElementById("restore-cart-btn");
+
+let selectedRestoreRange = "1";
+
+const restoreRangeMount = document.getElementById("restore-range-mount");
+if (restoreRangeMount) {
+  createDropdown({
+    container: restoreRangeMount,
+    options: [
+      { value: "1", label: "Last Hour" },
+      { value: "24", label: "Last 24 Hours" },
+    ],
+    value: "1",
+    onChange: (value) => {
+      selectedRestoreRange = value;
+    },
+  });
+}
+
 if (restoreBtn) {
   const restoreBtnOriginalHTML = restoreBtn.innerHTML;
 
@@ -649,7 +681,7 @@ if (restoreBtn) {
     const user = auth.currentUser;
     if (!user) { showToast("Please log in first."); return; }
 
-    const range = document.getElementById("restore-range").value;
+    const range = selectedRestoreRange;
 
     restoreBtn.disabled = true;
     restoreBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Restoring...`;

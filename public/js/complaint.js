@@ -17,9 +17,25 @@ onAuthStateChanged
 }
 from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
 
+import { createDropdown } from "./timeless-dropdown.js";
+
 const form = document.getElementById("complaint-form");
 
-const orderSelect = document.getElementById("complaint-order");
+const orderDropdownMount = document.getElementById("complaint-order-mount");
+
+let selectedOrderId = "";
+
+const orderDropdown = createDropdown({
+  container: orderDropdownMount,
+  options: [
+    { value: "", label: "General complaint (not about a specific order)" },
+  ],
+  value: "",
+  placeholder: "General complaint (not about a specific order)",
+  onChange: (value) => {
+    selectedOrderId = value;
+  },
+});
 
 const subjectInput = document.getElementById("complaint-subject");
 
@@ -75,17 +91,27 @@ userOrders.push({ id: docSnap.id, ...docSnap.data() });
 
 });
 
-userOrders.forEach(order => {
+orderDropdown.setOptions([
+  { value: "", label: "General complaint (not about a specific order)" },
+  ...userOrders.map(order => {
 
-const opt = document.createElement("option");
+    const dateText = order.createdAt
+      ? new Date(order.createdAt).toLocaleString(undefined, {
+          dateStyle: "medium",
+          timeStyle: "short",
+        })
+      : "";
 
-opt.value = order.id;
-
-opt.innerText = `${order.productTitle || "Order"} — ${order.status || ""}`;
-
-orderSelect.appendChild(opt);
-
-});
+    return {
+      value: order.id,
+      label: `${order.productTitle || "Order"} — ${order.status || ""}`,
+      html: `
+        <span class="dropdown-option-title">${order.productTitle || "Order"} — ${order.status || ""}</span>
+        ${dateText ? `<span class="dropdown-option-date">${dateText}</span>` : ""}
+      `,
+    };
+  }),
+]);
 
 }
 
@@ -95,7 +121,7 @@ e.preventDefault();
 
 if(!currentUser) return;
 
-const orderId = orderSelect.value || null;
+const orderId = selectedOrderId || null;
 
 const order = orderId ? userOrders.find(o => o.id === orderId) : null;
 
@@ -113,7 +139,7 @@ return;
 
 try {
 
-await addDoc(collection(db, "complaints"), {
+const complaintRef = await addDoc(collection(db, "complaints"), {
 
 userId: currentUser.uid,
 
@@ -132,6 +158,22 @@ message,
 status: "Open",
 
 createdAt: serverTimestamp()
+
+});
+
+await addDoc(collection(db, "admin_notifications"), {
+
+  type: "complaint",
+
+  complaintId: complaintRef.id,
+
+  customerName: currentUser.displayName || currentUser.email || "A customer",
+
+  subject,
+
+  createdAt: Date.now(),
+
+  read: false,
 
 });
 
@@ -164,6 +206,7 @@ orderBy("createdAt", "desc")
 onSnapshot(q, (snapshot) => {
 
 loadingState.style.display = "none";
+document.body.classList.remove("scroll-locked");
 
 listEl.innerHTML = "";
 

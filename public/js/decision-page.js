@@ -58,6 +58,8 @@ function generateStars(rating) {
 }
 
 /* ── REVIEWS — LOAD ─────────────────────────────────────────── */
+let suppressReviewsRerenderUntil = 0;
+
 function loadReviews() {
   const container = document.getElementById("reviews-container");
   if (!container) return;
@@ -79,6 +81,16 @@ function loadReviews() {
 
       return scoreB - scoreA;
     });
+
+    // A like/unlike we just did locally already updated the UI
+    // optimistically (heart-pop + burst). Firestore echoes that same
+    // write back almost instantly, and re-rendering right then would
+    // wipe out the animation mid-flight by nuking and rebuilding every
+    // card. Skip the rebuild for a short window so it can finish --
+    // the data itself is already correct on screen either way.
+    if (Date.now() < suppressReviewsRerenderUntil) {
+      return;
+    }
 
     renderReviews();
   });
@@ -319,12 +331,56 @@ window.submitEditReview = async function () {
 };
 
 /* ── LIKE ─────────────────────────────────────────────────── */
+function spawnLikeBurst(btn) {
+
+  const container = document.createElement("div");
+  container.className = "like-burst-container";
+
+  const heartSymbols = ["❤", "❤", "💕", "❤"];
+  const particleCount = 6;
+
+  for (let i = 0; i < particleCount; i++) {
+
+    const particle = document.createElement("span");
+    particle.className = "like-burst-particle";
+    particle.textContent = heartSymbols[i % heartSymbols.length];
+
+    // spread the hearts out horizontally with a bit of randomness,
+    // so they don't all fly straight up in a single line
+    const spread = (i - (particleCount - 1) / 2) * 12;
+    const startX = spread + (Math.random() * 8 - 4);
+    const endX = startX + (Math.random() * 16 - 8);
+    const rotation = Math.random() * 40 - 20;
+    const delay = i * 35;
+    const size = 12 + Math.random() * 6;
+
+    particle.style.setProperty("--burst-x-start", `${startX}px`);
+    particle.style.setProperty("--burst-x-end", `${endX}px`);
+    particle.style.setProperty("--burst-rot", `${rotation}deg`);
+    particle.style.left = `${18 + spread}px`;
+    particle.style.fontSize = `${size}px`;
+    particle.style.animationDelay = `${delay}ms`;
+
+    container.appendChild(particle);
+
+  }
+
+  btn.appendChild(container);
+
+  setTimeout(() => container.remove(), 1000);
+
+}
+
 window.toggleLike = async function (reviewId, btn) {
   const user = auth.currentUser;
   if (!user) {
     showToast("Please login to like reviews.");
     return;
   }
+
+  // Give the heart-pop + burst animation (and the unlike toggle) a clear
+  // 1.2s window before the live listener is allowed to rebuild the list.
+  suppressReviewsRerenderUntil = Date.now() + 1200;
 
   const reviewRef = doc(db, "reviews", reviewId);
   const review = reviews.find((r) => r.id === reviewId);
@@ -341,6 +397,8 @@ window.toggleLike = async function (reviewId, btn) {
       () => heart.classList.remove("heart-pop"),
       { once: true },
     );
+
+    spawnLikeBurst(btn);
   } else {
     btn.classList.remove("liked");
   }

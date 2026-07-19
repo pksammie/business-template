@@ -378,6 +378,7 @@ container.innerHTML="";
 let unread=0;
 
 loadingState.style.display="none";
+document.body.classList.remove("scroll-locked");
 
 if(snapshot.empty){
 
@@ -512,11 +513,10 @@ card.innerHTML=`
 
 <div class="notification-image-wrapper">
 
-<img
-
-src="${notification.productImage}"
-
-class="notification-image">
+${notification.productImage
+  ? `<img src="${notification.productImage}" class="notification-image">`
+  : `<div class="notification-image notification-image-placeholder"><i class="fa-solid fa-bell"></i></div>`
+}
 
 ${notification.read ? "" : `<span class="unread-dot"></span>`}
 
@@ -558,7 +558,7 @@ View Details
 
 <div class="notification-details">
 
-<img src="${notification.productImage}">
+${notification.productImage ? `<img src="${notification.productImage}">` : ""}
 
 <h3>
 

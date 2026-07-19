@@ -151,7 +151,10 @@ toast.innerHTML=`
 
 <div class="toast-left">
 
-<img src="${notification.productImage}">
+${notification.productImage
+  ? `<img src="${notification.productImage}">`
+  : `<div class="toast-icon-fallback"><i class="fa-solid fa-bell"></i></div>`
+}
 
 </div>
 

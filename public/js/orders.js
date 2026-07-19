@@ -169,78 +169,68 @@ card.id = `order-${order.id}`;
 
       const date = new Date(order.createdAt);
 
+      const hasShipping = typeof order.shippingFee === "number" && order.shippingFee > 0;
+      const grandTotal = order.total + (hasShipping ? order.shippingFee : 0);
+
       card.innerHTML = `
 
             <div class="order-header">
 
-                <div>
+                <span class="order-status ${statusClass}">
+                    ${statusText}
+                </span>
 
-                    <div class="order-title">
+                <small class="order-date">
+                    ${date.toLocaleDateString("en-NG", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                </small>
 
-                        <div class="order-card-product">
+            </div>
 
-    <img
-    src="${order.productImage || "/images/placeholder.jpg"}"
-    class="order-card-image">
+            <div class="order-card-product">
 
-    <div>
+                <img
+                    src="${order.productImage || "/images/placeholder.jpg"}"
+                    class="order-card-image"
+                    alt="${order.productTitle || "Product"}">
 
-        <h4>${order.productTitle}</h4>
+                <div class="order-card-info">
 
-        <p>
-            ${order.productColor || "N/A"}
-            •
-            ${order.productSize || "N/A"}
-        </p>
+                    <h4>${order.productTitle}</h4>
 
-        <p>
-            Qty: ${order.quantity}
-        </p>
-
-        <p>
-            ₦${order.total.toLocaleString()}
-        </p>
-
-    </div>
-
-</div>
-
-                    </div>
-
-                    <small>
-
-                        ${date.toLocaleDateString("en-NG", {
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                        })}
-
-                    </small>
+                    <p class="order-card-variant">
+                        ${order.productColor || "N/A"} • ${order.productSize || "N/A"} • Qty ${order.quantity}
+                    </p>
 
                 </div>
 
-                <span class="
-                order-status
-                ${statusClass}
-                ">
+            </div>
 
-                    ${statusText}
+            <div class="order-price-breakdown">
 
-                </span>
+                <div class="order-price-row">
+                    <span>Item Total</span>
+                    <span>₦${order.total.toLocaleString()}</span>
+                </div>
+
+                ${hasShipping ? `
+                <div class="order-price-row">
+                    <span>Shipping Fee</span>
+                    <span>₦${order.shippingFee.toLocaleString()}</span>
+                </div>
+                ` : ""}
+
+                <div class="order-price-row order-price-total">
+                    <span>Total Paid</span>
+                    <span>₦${grandTotal.toLocaleString()}</span>
+                </div>
 
             </div>
 
             <div class="order-details">
-                Quantity:
-                ${order.quantity}
-
-                <br>
-
-                Total:
-                ₦${order.total.toLocaleString()}
-
-                <br>
-
                 ${
 
 order.status==="Delivered"

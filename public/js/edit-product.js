@@ -6,12 +6,32 @@ import {
   updateDoc,
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
+import { createDropdown } from "./timeless-dropdown.js";
+
 const params    = new URLSearchParams(location.search);
 const productId = params.get("id");
 const form      = document.getElementById("edit-product-form");
 const uploadBox = document.getElementById("upload-image-box");
 
 let uploadedImages = [];
+let selectedCategory = "";
+
+const categoryDropdown = createDropdown({
+  container: document.getElementById("prod-category-mount"),
+  placeholder: "Select Category",
+  options: [
+    { value: "Tops", label: "Tops" },
+    { value: "Bottoms", label: "Bottoms" },
+    { value: "Dresses", label: "Dresses" },
+    { value: "Outerwear", label: "Outerwear" },
+    { value: "Shoes", label: "Shoes" },
+    { value: "Bags", label: "Bags" },
+    { value: "Accessories", label: "Accessories" },
+  ],
+  onChange: (value) => {
+    selectedCategory = value;
+  },
+});
 
 async function loadProduct() {
   try {
@@ -27,7 +47,8 @@ async function loadProduct() {
 
     document.getElementById("prod-title").value = product.title;
     document.getElementById("prod-price").value = product.price;
-    document.getElementById("prod-category").value = product.category || "";
+    selectedCategory = product.category || "";
+    categoryDropdown.setValue(product.category || null);
     document.querySelectorAll(".size-stock-input").forEach(input => {
 
       const size = input.dataset.size;
@@ -39,7 +60,6 @@ async function loadProduct() {
     // ─────────────────────────────────────────────────────────────
 
     document.getElementById("prod-desc").value = product.description;
-    document.getElementById("prod-care-info").value = product.careInfo || "";
 
     uploadedImages = [...(product.images || [])];
 
@@ -72,6 +92,7 @@ async function loadProduct() {
   } finally {
     const loadingScreen = document.getElementById("admin-loading-screen");
     if (loadingScreen) loadingScreen.style.display = "none";
+    document.body.classList.remove("scroll-locked");
   }
 }
 
@@ -323,6 +344,11 @@ document.getElementById("back-admin-btn").addEventListener("click", async e => {
 form.addEventListener("submit", async e => {
   e.preventDefault();
 
+  if (!selectedCategory) {
+    showToast("Please select a category.");
+    return;
+  }
+
   const colors = [...document.querySelectorAll("input[name='prod_colors']:checked")].map(el => el.value);
   const sizes  = [...document.querySelectorAll("input[name='prod_sizes']:checked")].map(el => el.value);
   const stock = {};
@@ -340,13 +366,11 @@ document.querySelectorAll(".size-stock-row.size-active .size-stock-input").forEa
 
     price: Number(document.getElementById("prod-price").value),
 
-    category: document.getElementById("prod-category").value,
+    category: selectedCategory,
 
     stock,
 
     description: document.getElementById("prod-desc").value,
-
-    careInfo: document.getElementById("prod-care-info").value,
 
     images: uploadedImages,
 

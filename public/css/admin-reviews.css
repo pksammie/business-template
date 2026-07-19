@@ -1,172 +1,128 @@
-.review-toolbar{
-
-display:flex;
-
-gap:15px;
-
-margin-bottom:20px;
-
-flex-wrap:wrap;
-
-}
-
-.review-toolbar input{
-
-flex:1;
-
-padding:14px;
-
-border:none;
-
-background:#1a1a1a;
-
-color:white;
-
-border-radius:10px;
-
-}
-
-.review-toolbar select{
-
-padding:14px;
-
-background:#1a1a1a;
-
-border:none;
-
-color:white;
-
-border-radius:10px;
-
-}
-
 .admin-reviews-grid{
 
 display:grid;
 
-grid-template-columns:
+grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
 
-repeat(auto-fill,minmax(360px,1fr));
+gap:22px;
 
-gap:25px;
+}
+
+.reviews-empty-state{
+
+grid-column:1/-1;
+
+color:#8a8a8a;
+
+text-align:center;
+
+padding:60px 20px;
+
+font-size:15px;
 
 }
 
 .review-admin-card{
 
-background:#121212;
+background:var(--card-bg,#1f2833);
 
-border-radius:18px;
+border-radius:16px;
 
-padding:25px;
+padding:22px;
 
-border:1px solid rgba(255,255,255,.08);
+border:1px solid rgba(197,168,128,0.15);
 
 display:flex;
 
 flex-direction:column;
 
-gap:18px;
+gap:14px;
+
+transition:border-color .2s ease, transform .2s ease;
 
 }
 
-.review-admin-stars{
+.review-admin-card:hover{
 
-font-size:22px;
+border-color:rgba(197,168,128,0.35);
 
-color:#c5a880;
+}
+
+.review-admin-top{
+
+display:flex;
+
+align-items:center;
+
+gap:12px;
+
+}
+
+.review-admin-avatar{
+
+width:42px;
+
+height:42px;
+
+flex-shrink:0;
+
+border-radius:50%;
+
+background:linear-gradient(135deg, var(--primary-color,#c5a880), #8a7048);
+
+color:#000;
+
+font-weight:700;
+
+font-size:14px;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+}
+
+.review-admin-identity{
+
+flex:1;
+
+min-width:0;
 
 }
 
 .review-admin-user{
 
-font-weight:bold;
-
-font-size:16px;
-
-}
-
-.review-admin-product{
-
-display:flex;
-
-gap:15px;
-
-align-items:center;
-
-}
-
-.review-admin-product img{
-
-width:70px;
-
-height:70px;
-
-object-fit:cover;
-
-border-radius:10px;
-
-}
-
-.review-admin-text{
-
-line-height:1.7;
-
-color:#ddd;
-
-}
-
-.review-admin-actions{
-
-display:flex;
-
-flex-wrap:wrap;
-
-gap:10px;
-
-}
-
-.review-admin-actions button{
-
-flex:1;
-
-padding:12px;
-
-border:none;
-
-cursor:pointer;
-
-border-radius:10px;
+font-family:var(--font-display, Georgia, serif);
 
 font-weight:600;
 
-}
+font-size:16px;
 
-.reply-btn{
+color:#fff;
 
-background:#c5a880;
+white-space:nowrap;
 
-color:black;
+overflow:hidden;
 
-}
-
-.feature-btn{
-
-background:#222;
-
-color:white;
+text-overflow:ellipsis;
 
 }
 
-.delete-review-btn{
+.review-admin-stars{
 
-background:#b30000;
+font-size:15px;
 
-color:white;
+color:var(--primary-color,#c5a880);
+
+letter-spacing:2px;
 
 }
 
 .verified-badge{
+
+flex-shrink:0;
 
 display:inline-block;
 
@@ -178,17 +134,269 @@ color:#8cff8c;
 
 border-radius:20px;
 
-font-size:12px;
+font-size:11px;
 
 font-weight:bold;
 
+white-space:nowrap;
+
 }
 
-/* ── Reply modal ──
+.review-admin-product{
+
+display:flex;
+
+align-items:center;
+
+gap:12px;
+
+background:rgba(0,0,0,0.2);
+
+border-radius:10px;
+
+padding:8px 10px;
+
+}
+
+.review-admin-product img{
+
+width:44px;
+
+height:44px;
+
+object-fit:cover;
+
+border-radius:8px;
+
+flex-shrink:0;
+
+}
+
+.review-admin-product-title{
+
+font-size:13px;
+
+color:#c9c9c9;
+
+white-space:nowrap;
+
+overflow:hidden;
+
+text-overflow:ellipsis;
+
+}
+
+.review-admin-text{
+
+line-height:1.7;
+
+color:#ddd;
+
+font-size:14px;
+
+margin:0;
+
+}
+
+.review-admin-text.clamped{
+
+display:-webkit-box;
+
+-webkit-line-clamp:3;
+
+-webkit-box-orient:vertical;
+
+overflow:hidden;
+
+}
+
+.view-review-btn{
+
+align-self:flex-start;
+
+background:none;
+
+border:none;
+
+color:var(--primary-color,#c5a880);
+
+font-size:13px;
+
+font-weight:600;
+
+cursor:pointer;
+
+padding:0;
+
+text-decoration:underline;
+
+}
+
+.view-review-btn:hover{
+
+color:#fff;
+
+}
+
+.view-review-full-text{
+
+color:#ddd;
+
+line-height:1.8;
+
+font-size:15px;
+
+white-space:pre-wrap;
+
+max-height:60vh;
+
+overflow-y:auto;
+
+}
+
+.review-admin-reason{
+
+color:#ff8a8a;
+
+font-size:13px;
+
+margin:0;
+
+}
+
+.review-admin-reply{
+
+border-left:2px solid var(--primary-color,#c5a880);
+
+padding-left:12px;
+
+color:#ddd;
+
+font-size:13px;
+
+line-height:1.6;
+
+}
+
+.review-admin-reply strong{
+
+color:var(--primary-color,#c5a880);
+
+}
+
+.review-admin-meta{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+color:#777;
+
+font-size:12px;
+
+}
+
+.review-admin-actions{
+
+display:flex;
+
+flex-wrap:wrap;
+
+gap:8px;
+
+}
+
+.review-admin-actions button{
+
+flex:1;
+
+min-width:90px;
+
+padding:10px;
+
+border:none;
+
+cursor:pointer;
+
+border-radius:8px;
+
+font-weight:600;
+
+font-size:12.5px;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+gap:6px;
+
+transition:filter .2s ease, transform .15s ease;
+
+}
+
+.review-admin-actions button:hover{
+
+filter:brightness(1.1);
+
+transform:translateY(-1px);
+
+}
+
+.reply-btn{
+
+background:var(--primary-color,#c5a880);
+
+color:#000;
+
+}
+
+.feature-btn{
+
+background:#2a3140;
+
+color:#fff;
+
+}
+
+.delete-review-btn{
+
+background:#7a1f1f;
+
+color:#fff;
+
+}
+
+.rating-filter-mount{
+
+min-width:170px;
+
+}
+
+@media (max-width:640px){
+
+  .admin-reviews-grid{
+    grid-template-columns:1fr;
+  }
+
+  .review-admin-actions button{
+    min-width:80px;
+    font-size:11.5px;
+  }
+
+  .rating-filter-mount{
+    width:100%;
+  }
+}
+
+/* ── Reply / View modals ──
    This page never linked review.css (where .review-reason-overlay /
-   .review-reason-modal actually live), so the reply modal had no
-   display:none, no overlay, no centering -- it just sat inertly in the
-   page. This gives it its own real styling. */
+   .review-reason-modal actually live), so modals here had no
+   display:none, no overlay, no centering -- they just sat inertly in
+   the page. This gives them their own real styling. */
 
 .review-reason-overlay{
 
@@ -203,6 +411,8 @@ font-weight:bold;
     justify-content:center;
 
     z-index:5000;
+
+    padding:20px;
 
 }
 
@@ -231,6 +441,8 @@ font-weight:bold;
 
     color:#c5a880;
     margin-bottom:16px;
+
+    font-family:var(--font-display, Georgia, serif);
 
 }
 

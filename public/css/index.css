@@ -141,6 +141,14 @@ h1, h2, h3,
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/* Applied to <body> for as long as a page's opening/loading animation
+   is visible, so people can't scroll behind it. Removed by the same JS
+   that hides the loader. */
+body.scroll-locked {
+  overflow: hidden;
+  height: 100vh;
+}
+
 body {
   background-color: var(--bg-color);
   color: var(--text-main);
@@ -759,34 +767,6 @@ body[data-theme="rosewood"] .main-signature-logo span {
 LIVE REVIEW CARD
 ========================== */
 
-.review-card{
-
-background:#111;
-
-border:1px solid rgba(255,255,255,.08);
-
-border-radius:18px;
-
-padding:28px;
-
-transition:.5s;
-
-opacity:0;
-
-transform:translateY(30px);
-
-animation:reviewFade .6s forwards;
-
-}
-
-.review-card:hover{
-
-transform:translateY(-8px);
-
-border-color:var(--primary-color);
-
-}
-
 .review-stars{
 
 font-size:20px;
@@ -1356,6 +1336,28 @@ color:#ff5b6a;
   pointer-events: none;
 }
 
+.search-select-option-active {
+  color: #c5a880;
+}
+
+/* Rich option content, e.g. complaint page's related-order picker */
+.dropdown-option-title {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  color: #fff;
+  font-size: 14px;
+}
+
+.dropdown-option-date {
+  display: block;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 12px;
+  margin-top: 2px;
+}
+
 .admin-form {
   display: flex;
   flex-direction: column;
@@ -1403,36 +1405,6 @@ nav,
 .nav-links,
 .nav-left-menu {
   transition: all 0.3s ease;
-}
-
-.upload-box {
-  border: 2px dashed rgba(197, 168, 128, 0.5);
-  padding: 40px;
-  text-align: center;
-  cursor: pointer;
-  border-radius: 10px;
-  background: #0b0c10;
-  transition: 0.3s;
-}
-
-.upload-box:hover {
-  border-color: #c5a880;
-  background: #12141a;
-}
-
-.upload-box i {
-  display: block;
-  font-size: 40px;
-  color: #c5a880;
-  margin-bottom: 10px;
-  text-align: center;
-  justify-content: center;
-  align-items: center;
-}
-
-.upload-box p {
-  color: #fff;
-  margin: 0;
 }
 
 .uploaded-image-preview{
@@ -1784,21 +1756,15 @@ a:active {
   font-weight: 600;
 }
 
-.sort-select {
+.sort-select-mount {
   flex-shrink: 0;
-  background: #1f2833;
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 10px;
-  padding: 10px 14px;
-  font-size: 14px;
-  font-family: var(--font-body);
-  cursor: pointer;
+  width: 220px;
 }
 
-.sort-select:focus {
-  outline: none;
-  border-color: var(--primary-color);
+@media (max-width: 640px) {
+  .sort-select-mount {
+    width: 100%;
+  }
 }
 
 @media (max-width: 640px) {
@@ -1819,10 +1785,6 @@ a:active {
     text-align: center;
     padding: 8px 10px;
     font-size: 12px;
-  }
-
-  .sort-select {
-    width: 100%;
   }
 }
 
@@ -2075,25 +2037,6 @@ a:active {
   .vanguard-modal-actions {
     flex-direction: column;
   }
-}
-
-.toast {
-  position: fixed;
-  top: 30px;
-  right: 30px;
-
-  background: #1f2833;
-  color: white;
-
-  padding: 14px 22px;
-
-  border-radius: 12px;
-
-  border-left: 4px solid var(--primary-color);
-
-  z-index: 9999;
-
-  animation: slideIn 0.3s ease;
 }
 
 .sold-out-badge {
@@ -3574,7 +3517,11 @@ opacity:.9;
 
     position:relative;
 
-    overflow:hidden;
+    opacity:0;
+
+    transform:translateY(30px);
+
+    animation:reviewFade .6s forwards;
 
 }
 
@@ -3626,6 +3573,52 @@ opacity:.9;
     font-size:14px;
 
     font-weight:600;
+
+}
+
+.verified-badge.fake{
+
+    color:#999;
+
+}
+
+@media (max-width:640px){
+
+    .reviews-section{
+        margin:50px auto;
+    }
+
+    .reviews-section h2{
+        font-size:24px;
+        margin-bottom:22px;
+    }
+
+    #reviews-container{
+        grid-template-columns:1fr;
+        gap:16px;
+    }
+
+    .review-card{
+        padding:20px;
+    }
+
+    .review-page-wrapper{
+        padding:24px 14px;
+    }
+
+    .review-form{
+        padding:22px;
+    }
+
+    .review-product-preview{
+        padding:14px;
+        gap:12px;
+    }
+
+    .review-product-preview img{
+        width:64px;
+        height:64px;
+    }
 
 }
 
@@ -3833,36 +3826,6 @@ margin-top:15px;
 
 }
 
-.review-like-btn{
-
-background:none;
-
-border:none;
-
-color:#999;
-
-cursor:pointer;
-
-font-size:15px;
-
-transition:.3s;
-
-}
-
-.review-like-btn:hover{
-
-color:#ff4d6d;
-
-transform:scale(1.05);
-
-}
-
-.review-like-btn:active{
-
-transform:scale(.95);
-
-}
-
 .see-more-reviews-btn{
 
 margin:30px auto 0;
@@ -4023,6 +3986,28 @@ height:70px;
 object-fit:cover;
 
 border-radius:10px;
+
+}
+
+.toast-icon-fallback{
+
+width:70px;
+
+height:70px;
+
+border-radius:10px;
+
+background:#1f2833;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+color:#c5a880;
+
+font-size:24px;
 
 }
 

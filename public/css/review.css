@@ -309,6 +309,7 @@ opacity:.7;
    LIKE BUTTON — heart pop animation
 ───────────────────────────────────────────────────────── */
 .review-like-btn {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 7px;
@@ -319,7 +320,16 @@ opacity:.7;
   color: #888;
   font-size: 13px;
   cursor: pointer;
-  transition: color 0.2s, border-color 0.2s;
+  transition: color 0.2s, border-color 0.2s, transform 0.15s;
+}
+
+.review-like-btn:hover {
+  color: #ff4d6d;
+  transform: scale(1.05);
+}
+
+.review-like-btn:active {
+  transform: scale(0.95);
 }
 
 .review-like-btn.liked {
@@ -334,14 +344,49 @@ opacity:.7;
 }
 
 .review-like-btn .heart-pop {
-  animation: heartPop 0.35s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  animation: heartPop 0.45s cubic-bezier(0.17, 0.89, 0.32, 1.49) both;
 }
 
 @keyframes heartPop {
   0%   { transform: scale(1);    }
-  40%  { transform: scale(1.55); }
-  70%  { transform: scale(0.88); }
+  35%  { transform: scale(1.7);  }
+  60%  { transform: scale(0.85); }
   100% { transform: scale(1);    }
+}
+
+/* ── Like burst -- little hearts flying up and fading, TikTok/IG style ── */
+
+.like-burst-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.like-burst-particle {
+  position: absolute;
+  left: 14px;
+  bottom: 8px;
+  font-size: 14px;
+  color: #ff4d6d;
+  opacity: 0;
+  animation: likeBurstFloat 0.9s ease-out forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes likeBurstFloat {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.4) rotate(0deg);
+  }
+  15% {
+    opacity: 1;
+    transform: translate(var(--burst-x-start, 0px), -6px) scale(1) rotate(var(--burst-rot, 0deg));
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--burst-x-end, 0px), -46px) scale(0.6) rotate(var(--burst-rot, 0deg));
+  }
 }
 
 /* ─────────────────────────────────────────────────────────

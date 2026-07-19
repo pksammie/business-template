@@ -15,6 +15,8 @@ from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 import { onAuthStateChanged }
 from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
 
+import { createDropdown } from "./timeless-dropdown.js";
+
 const productsGrid =
 document.getElementById("products-grid");
 
@@ -27,8 +29,8 @@ document.getElementById("search-input");
 const categoryFilterBar =
 document.getElementById("category-filter-bar");
 
-const sortSelect =
-document.getElementById("sort-select");
+const sortSelectMount =
+document.getElementById("sort-select-mount");
 
 let activeCategory = "All";
 let activeSort = "newest";
@@ -448,14 +450,20 @@ if (categoryFilterBar) {
 
 }
 
-if (sortSelect) {
+if (sortSelectMount) {
 
-    sortSelect.addEventListener("change", () => {
-
-        activeSort = sortSelect.value;
-
-        applyFiltersAndRender();
-
+    createDropdown({
+        container: sortSelectMount,
+        options: [
+            { value: "newest", label: "Newest First" },
+            { value: "price-asc", label: "Price: Low to High" },
+            { value: "price-desc", label: "Price: High to Low" },
+        ],
+        value: activeSort,
+        onChange: (value) => {
+            activeSort = value;
+            applyFiltersAndRender();
+        },
     });
 
 }
@@ -865,6 +873,7 @@ window.addEventListener("load", () => {
     if (alreadyShown) {
 
         loader.remove();
+        document.body.classList.remove("scroll-locked");
         return;
 
     }
@@ -880,6 +889,8 @@ window.addEventListener("load", () => {
         "opacity .8s ease";
 
         loader.style.opacity = "0";
+
+        document.body.classList.remove("scroll-locked");
 
         setTimeout(() => {
 

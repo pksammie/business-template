@@ -608,6 +608,11 @@ if(selectedIds.length){
       );
     }
 
+const { fee: reservationShippingFee } = getShippingFeeLabel(
+  addressProfile.country,
+  addressProfile.state,
+);
+
 const reservationPromises = cart.map(item => {
   return addDoc(
     collection(db, "cart_reservations"),
@@ -629,6 +634,7 @@ const reservationPromises = cart.map(item => {
       productColor: item.color,
       quantity: item.quantity,
       total: item.price * item.quantity,
+      shippingFee: reservationShippingFee,
       status: "Pending",
       stockDeducted: false,
       createdAt: Date.now(),

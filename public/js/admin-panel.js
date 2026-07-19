@@ -2,6 +2,8 @@ import { auth, db } from "./firebase.js";
 
 import { fireLuxuryConfetti } from "./confetti.js";
 
+import { createDropdown } from "./timeless-dropdown.js";
+
 import {
 collection,
 getDocs,
@@ -29,7 +31,7 @@ let allProducts = [];
 let filteredProducts = [];
 let currentProductsPage = 1;
 
-const PRODUCTS_PER_PAGE = 12;
+const PRODUCTS_PER_PAGE = 10;
 
 let productSearchTerm = "";
 
@@ -172,6 +174,8 @@ onAuthStateChanged(auth, async (user) => {
     "admin-loading-screen"
 ).style.display = "none";
 
+    document.body.classList.remove("scroll-locked");
+
   }
 
   catch(err){
@@ -189,6 +193,28 @@ const tableBody = document.getElementById("admin-inventory-table-body");
 
 let uploadedImageUrls = [];
 let ordersSearchTerm = "";
+let selectedProductCategory = "";
+
+const categoryDropdownMount = document.getElementById("prod-category-mount");
+
+const categoryDropdown = categoryDropdownMount
+  ? createDropdown({
+      container: categoryDropdownMount,
+      placeholder: "Select Category",
+      options: [
+        { value: "Tops", label: "Tops" },
+        { value: "Bottoms", label: "Bottoms" },
+        { value: "Dresses", label: "Dresses" },
+        { value: "Outerwear", label: "Outerwear" },
+        { value: "Shoes", label: "Shoes" },
+        { value: "Bags", label: "Bags" },
+        { value: "Accessories", label: "Accessories" },
+      ],
+      onChange: (value) => {
+        selectedProductCategory = value;
+      },
+    })
+  : null;
 
 const uploadBox = document.getElementById("upload-image-box");
 
@@ -1230,10 +1256,14 @@ adminForm.addEventListener("submit", async (e) => {
 
   const title = document.getElementById("prod-title").value;
   const price = Number(document.getElementById("prod-price").value);
-  const category = document.getElementById("prod-category").value;
+  const category = selectedProductCategory;
   const description = document.getElementById("prod-desc").value;
-  const careInfo = document.getElementById("prod-care-info").value;
   const stock = {};
+
+  if (!category) {
+    showToast("Please select a category.");
+    return;
+  }
 
   document.querySelectorAll(".size-stock-row.size-active .size-stock-input").forEach((input) => {
     stock[input.dataset.size] = Number(input.value) || 0;
@@ -1266,7 +1296,6 @@ adminForm.addEventListener("submit", async (e) => {
 
 images: uploadedImageUrls,
     description,
-    careInfo,
     sizes: finalSizes,
     colors: finalColors,
     stock,
@@ -1282,6 +1311,8 @@ images: uploadedImageUrls,
   showToast("Product added!");
 
   adminForm.reset();
+  selectedProductCategory = "";
+  categoryDropdown?.setValue(null);
 
   uploadedImageUrls = [];
 

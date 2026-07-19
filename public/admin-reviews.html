@@ -55,65 +55,26 @@ REVIEWS
 
 <section class="admin-section">
 
-<h2>
-
-Customer Reviews
-
-</h2>
-
-<br>
-
-<div class="review-toolbar">
-
-<input
-type="text"
-id="orders-search"
-placeholder="Search customer or review..."
->
-
-<select id="rating-filter">
-
-<option value="all">
-
-All Ratings
-
-</option>
-
-<option value="5">
-
-★★★★★
-
-</option>
-
-<option value="4">
-
-★★★★☆
-
-</option>
-
-<option value="3">
-
-★★★☆☆
-
-</option>
-
-<option value="2">
-
-★★☆☆☆
-
-</option>
-
-<option value="1">
-
-★☆☆☆☆
-
-</option>
-
-</select>
-
+<div class="admin-page-header">
+    <div>
+        <h2>Customer Reviews</h2>
+        <p class="admin-page-subtitle">See what customers are saying, reply, and choose which reviews feature on your homepage.</p>
+    </div>
 </div>
 
-<br>
+<div class="page-toolbar">
+
+<div class="orders-search-wrapper">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input
+        type="text"
+        id="orders-search"
+        placeholder="Search customer or review...">
+</div>
+
+<div id="rating-filter-mount" class="rating-filter-mount"></div>
+
+</div>
 
 <div
 id="reviews-container"
@@ -121,11 +82,31 @@ class="admin-reviews-grid">
 
 </div>
 
-<div id="reviews-pagination"></div>
+<div id="reviews-pagination" class="admin-pagination"></div>
 
 </section>
 
 </main>
+
+<div id="view-review-modal" class="review-reason-overlay">
+
+    <div class="review-reason-modal">
+
+        <button
+            class="close-review-modal"
+            id="close-view-modal">
+
+            ×
+
+        </button>
+
+        <h3>Full Review</h3>
+
+        <p id="view-review-text" class="view-review-full-text"></p>
+
+    </div>
+
+</div>
 
 <div id="reply-modal" class="review-reason-overlay">
 

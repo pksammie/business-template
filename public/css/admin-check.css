@@ -244,3 +244,7 @@ h2{
 
     margin:auto;
 }
+body.scroll-locked{
+    overflow:hidden;
+    height:100vh;
+}

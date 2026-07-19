@@ -246,7 +246,8 @@ onAuthStateChanged(auth, async user => {
 
     injectNotificationUI();
 
-    unlockAudio();
+    document.addEventListener("click", unlockAudio, { once: true });
+    document.addEventListener("touchstart", unlockAudio, { once: true });
 
     startAdminNotificationListener();
 
@@ -312,6 +313,14 @@ function startAdminNotificationListener(){
 
                 showNotification(
                     `${data.customerName} placed an order`
+                );
+
+                break;
+
+            case "complaint":
+
+                showNotification(
+                    `${data.customerName} filed a complaint: ${data.subject}`
                 );
 
                 break;

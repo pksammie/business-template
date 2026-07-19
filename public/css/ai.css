@@ -423,3 +423,7 @@ body {
     max-width: 88%;
   }
 }
+body.scroll-locked{
+    overflow:hidden;
+    height:100vh;
+}

@@ -10,6 +10,7 @@
 </head>
 <body>
 <script src="/js/theme-init.js"></script>
+<script>document.body.classList.add("scroll-locked");</script>
 
 <header class="complaint-header">
 <a href="/" class="back-btn">
@@ -26,9 +27,7 @@
 <form id="complaint-form" class="complaint-form">
 
 <label for="complaint-order">Related order (optional)</label>
-<select id="complaint-order">
-<option value="">General complaint (not about a specific order)</option>
-</select>
+<div id="complaint-order-mount"></div>
 
 <label for="complaint-subject">Subject</label>
 <input type="text" id="complaint-subject" placeholder="Briefly summarize your issue" required>

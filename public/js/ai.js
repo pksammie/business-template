@@ -364,6 +364,7 @@ form.addEventListener("submit", async (e) => {
 window.addEventListener("DOMContentLoaded", () => {
   setTimeout(() => {
     loadingScreen.classList.add("hide");
+    document.body.classList.remove("scroll-locked");
     startConversation();
   }, 1100);
 });

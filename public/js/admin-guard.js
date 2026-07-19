@@ -35,6 +35,8 @@ onAuthStateChanged(auth, async(user)=>{
 
         loader.style.display="none";
 
+        document.body.classList.remove("scroll-locked");
+
         return;
     }
 
@@ -50,6 +52,8 @@ onAuthStateChanged(auth, async(user)=>{
     }else{
 
         loader.style.display="none";
+
+        document.body.classList.remove("scroll-locked");
 
         denied.style.display="flex";
 

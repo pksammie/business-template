@@ -523,7 +523,7 @@
 }
 
 #restore-cart-btn {
-  height: 38px;
+  height: 52px;
   background: transparent;
   border: 1px solid rgba(255,255,255,0.2);
   color: #fff;
@@ -546,21 +546,9 @@
   background: rgba(197,168,128,0.07);
 }
 
-#restore-range {
+.restore-range-mount {
   flex: 1;
-  min-width: 0;
-  height: 38px;
-  background: #111;
-  color: #fff;
-  border: 1px solid rgba(255,255,255,0.15);
-  padding: 0 10px;
-  cursor: pointer;
-  border-radius: 4px;
-  font-size: 12px;
-}
-#restore-range:focus {
-  outline: none;
-  border-color: var(--primary-color);
+  min-width: 160px;
 }
 
 /* ── MOBILE ──────────────────────────────────────────────── */
@@ -601,11 +589,8 @@
 
   .restore-cart-controls  { flex-direction: column; }
 
-  #restore-range {
+  .restore-range-mount {
     width: 100%;
-    height: 60px;
-    font-size: 14px;
-    padding: 0 12px;
   }
 
   .select-all-bar { flex-wrap: wrap; }
