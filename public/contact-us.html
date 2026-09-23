@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contact Us - Timeless</title>
+    <link rel="stylesheet" href="/css/index.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+  </head>
+  <body>
+  <script src="/js/theme-init.js"></script>
+
+    <div class="top-bar">
+      <span>Call/WhatsApp: +2348109007611</span>
+      <div>
+        <a href="/developer" class="dev-link-badge"
+          ><i class="fa-solid fa-code"></i> About Developer</a
+        >
+      </div>
+    </div>
+
+    <header class="luxury-nav">
+      <div class="menu-toggle">
+        <i class="fa fa-bars"></i>
+      </div>
+      <ul class="nav-left-menu">
+        <li><a href="/">Catalog</a></li>
+        <li><a href="/about">About Us</a></li>
+        <li><a href="/contact-us">Contact</a></li>
+      </ul>
+      <div class="main-signature-logo">
+        <a href="/" style="text-decoration: none; color: inherit"
+          >TIME<span>LESS</span></a
+        >
+      </div>
+      <div class="nav-right-actions">
+        <div class="nav-user-icons">
+          <a href="/notifications.html" class="notification-anchor">
+            <div class="notification-icon-wrapper">
+              <i class="fa-regular fa-bell"></i>
+              <span id="notification-badge">0</span>
+            </div>
+          </a>
+          <a href="/cart" class="custom-cart-anchor">
+            <span class="cart-label-word">Cart</span>
+            <div class="cart-icon-wrapper">
+              <i class="fa-solid fa-bag-shopping"></i>
+              <span id="cart-count">0</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <section class="page-hero">
+      <video
+        class="page-hero-video"
+        autoplay muted loop playsinline
+        poster="https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?q=80&w=2000">
+        <source
+          src="https://videos.pexels.com/video-files/7679416/7679416-uhd_2732_1440_25fps.mp4"
+          type="video/mp4">
+      </video>
+      <div class="page-hero-overlay"></div>
+      <div class="page-hero-content">
+        <span class="hero-tag">GET IN TOUCH</span>
+        <h1>We're Here To Help</h1>
+        <p>
+          Questions about an order, sizing, or a return? Reach us
+          directly below — we usually reply within the hour.
+        </p>
+      </div>
+    </section>
+
+    <section class="vanguard-benefits contact-methods reveal">
+      <div class="section-header">
+        <span class="section-tag">Contact Methods</span>
+        <h2>Talk To Us</h2>
+      </div>
+
+      <div class="benefits-grid">
+        <div class="benefit-card">
+          <i class="fa-brands fa-whatsapp"></i>
+          <h3>WhatsApp</h3>
+          <p>The fastest way to reach us — usually within the hour.</p>
+          <a href="https://wa.me/2348109007611" target="_blank" class="hero-btn" style="margin-top:18px;font-size:13px;padding:12px 26px;">
+            CHAT ON WHATSAPP
+          </a>
+        </div>
+
+        <div class="benefit-card">
+          <i class="fa-solid fa-phone"></i>
+          <h3>Call Us</h3>
+          <p>Available 9am – 9pm daily.</p>
+          <a href="tel:+2348109007611" style="color:#c5a880;font-weight:700;letter-spacing:1px;">
+            0810 900 7611
+          </a>
+        </div>
+
+        <div class="benefit-card">
+          <i class="fa-solid fa-envelope"></i>
+          <h3>Email</h3>
+          <p>We reply within 24 hours.</p>
+          <a href="mailto:hello@timelessstore.com" style="color:#c5a880;font-weight:700;letter-spacing:.5px;">
+            hello@timelessstore.com
+          </a>
+        </div>
+
+        <div class="benefit-card">
+          <i class="fa-solid fa-share-nodes"></i>
+          <h3>Follow Us</h3>
+          <p>See new drops and restocks first.</p>
+          <div class="socials" style="justify-content:center;margin-top:10px;">
+            <i class="fab fa-instagram"></i>
+            <i class="fab fa-facebook"></i>
+            <i class="fab fa-tiktok"></i>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-band reveal">
+      <h2>Still Have A Question?</h2>
+      <a href="https://wa.me/2348109007611" target="_blank" class="hero-btn">MESSAGE US ON WHATSAPP</a>
+    </section>
+
+    <script type="module" src="/js/route-guard.js"></script>
+    <script type="module" src="/js/index.js"></script>
+    <script type="module" src="/js/guard.js"></script>
+    <script type="module" src="/js/cart-count.js"></script>
+    <script type="module" src="/js/user-notifications.js"></script>
+    <script type="module" src="/js/admin-notification.js"></script>
+    <script src="/js/toast.js"></script>
+
+    <script>
+      const revealTargets = document.querySelectorAll(".reveal");
+      if (revealTargets.length) {
+        const revealObserver = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("active");
+              revealObserver.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.15 });
+        revealTargets.forEach(t => revealObserver.observe(t));
+      }
+    </script>
+  </body>
+
+  <footer class="vanguard-footer">
+    <div class="footer-grid">
+      <div>
+        <h3>TIMELESS</h3>
+        <p>Discover premium fashion brands worldwide.</p>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+        <a href="/contact-us">Contact</a>
+      </div>
+      <div>
+        <h4>Support</h4>
+        <a href="/returns-policy">Shipping & Returns</a>
+        <a href="/terms-of-service">Terms of Service</a>
+        <a href="/privacy-policy">Privacy Policy</a>
+      </div>
+      <div>
+        <h4>Follow Us</h4>
+        <div class="socials">
+          <i class="fab fa-instagram"></i>
+          <i class="fab fa-facebook"></i>
+          <i class="fab fa-tiktok"></i>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">© 2026 TIMELESS Marketplace</div>
+  </footer>
+</html>

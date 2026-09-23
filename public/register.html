@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Create Account | TIMELESS</title>
+
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/auth.css">
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+</head>
+
+<body>
+<script src="/js/theme-init.js"></script>
+
+<div class="background-glow"></div>
+
+<div class="auth-shell">
+    <aside class="auth-hero">
+        <div class="hero-badge">Create account</div>
+        <h1>Join <span>TIMELESS</span></h1>
+        <p>Open an account to save favorites, track orders, and checkout faster on every visit.</p>
+
+        <ul class="hero-benefits">
+            <li><i class="fa-solid fa-cart-shopping"></i> Save your cart for later</li>
+            <li><i class="fa-solid fa-truck-fast"></i> Track orders with ease</li>
+            <li><i class="fa-solid fa-gift"></i> Receive exclusive offers</li>
+        </ul>
+    </aside>
+
+    <section class="auth-card">
+        <div class="auth-logo">
+            TIME<span>LESS</span>
+        </div>
+
+        <p class="auth-subtitle">
+            Create your account to start shopping.
+        </p>
+
+        <form
+            id="registerForm"
+            class="auth-form">
+
+            <div class="input-group">
+                <i class="fa-solid fa-envelope"></i>
+                <input
+                    id="email"
+                    type="email"
+                    placeholder="Email Address"
+                    autocomplete="email"
+                    required>
+            </div>
+
+            <div class="input-group">
+                <i class="fa-solid fa-lock"></i>
+                <input
+                    id="password"
+                    type="password"
+                    placeholder="Password"
+                    autocomplete="new-password"
+                    required>
+
+                <button
+                    type="button"
+                    id="togglePassword"
+                    aria-label="Toggle password visibility">
+                    <i class="fa-solid fa-eye"></i>
+                </button>
+            </div>
+
+            <div class="password-strength">
+                <div class="strength-bar">
+                    <span id="strengthFill"></span>
+                </div>
+                <small id="strengthText">Password Strength</small>
+            </div>
+
+            <div class="input-group">
+                <i class="fa-solid fa-lock"></i>
+                <input
+                    id="confirmPassword"
+                    type="password"
+                    placeholder="Confirm Password"
+                    autocomplete="new-password"
+                    required>
+
+                <button
+                    type="button"
+                    id="toggleConfirmPassword"
+                    aria-label="Toggle confirm password visibility">
+                    <i class="fa-solid fa-eye"></i>
+                </button>
+            </div>
+
+            <button
+                type="submit"
+                class="login-btn">
+                Create Account
+            </button>
+        </form>
+
+        <div class="divider">
+            <span>OR</span>
+        </div>
+
+        <button
+            id="googleSignup"
+            class="google-btn">
+            <img
+                src="https://www.svgrepo.com/show/475656/google-color.svg"
+                alt="Google">
+            Continue with Google
+        </button>
+
+        <div class="auth-links">
+            Already have an account?
+            <a href="/login">
+                Login
+            </a>
+        </div>
+    </section>
+</div>
+
+<script type="module" src="/js/register.js"></script>
+
+<script type="module" src="/js/guard.js"></script>
+
+<script src="/js/toast.js"></script>
+
+</body>
+
+</html>

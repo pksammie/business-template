@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leave a Review — Vanguard</title>
+
+  <link rel="stylesheet" href="/css/index.css">
+  <link rel="stylesheet" href="/css/review.css">
+
+  <!-- FIX: Font Awesome was missing — needed for the ✕ close icon -->
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+<script src="/js/theme-init.js"></script>
+
+  <div class="review-page-wrapper">
+
+    <form id="review-form" class="review-form">
+
+  <div id="review-product-preview" class="review-product-preview">
+
+    <img id="preview-image" src="" alt="Product">
+
+    <div class="review-product-info">
+
+      <h3 id="preview-title"></h3>
+
+      <p id="preview-variant"></p>
+
+      <p id="preview-price"></p>
+
+    </div>
+
+  </div>
+
+  <h2>Leave A Review</h2>
+
+      <select id="review-rating">
+        <option value="5">★★★★★ — Excellent</option>
+        <option value="4">★★★★☆ — Good</option>
+        <option value="3">★★★☆☆ — Average</option>
+        <option value="2">★★☆☆☆ — Poor</option>
+        <option value="1">★☆☆☆☆ — Terrible</option>
+      </select>
+
+      <textarea
+        id="review-text"
+        maxlength="500"
+        placeholder="Tell other customers about this product (min 20 characters)..."
+      ></textarea>
+
+      <div class="review-counter">
+        <span id="review-count">0</span>/500
+      </div>
+
+      <div class="review-photo-section">
+        <p class="review-photo-label">Add a photo (optional)</p>
+
+        <div id="review-photo-gallery" class="review-photo-gallery"></div>
+
+        <button type="button" id="add-review-photo-btn" class="add-review-photo-btn">
+          <i class="fa-solid fa-camera"></i> Add Photo
+        </button>
+      </div>
+
+      <button type="submit">Submit Review</button>
+
+      <button
+        type="button"
+        id="cancel-review-btn"
+        class="cancel-review-btn"
+      >
+        Exit Review
+      </button>
+
+    </form>
+
+  </div>
+
+  <!-- ONE-STAR REASON MODAL -->
+  <div id="one-star-modal" class="review-reason-overlay">
+
+    <div class="review-reason-modal">
+
+      <button id="close-one-star-modal" class="close-review-modal">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <h3>Sorry your experience wasn't great</h3>
+
+      <p>Help us improve by telling us what happened.</p>
+
+      <div class="reason-options">
+
+        <label>
+          <input type="radio" name="oneStarReason" value="Product quality was poor">
+          Product quality was poor
+        </label>
+
+        <label>
+          <input type="radio" name="oneStarReason" value="Wrong item delivered">
+          Wrong item delivered
+        </label>
+
+        <label>
+          <input type="radio" name="oneStarReason" value="Item arrived damaged">
+          Item arrived damaged
+        </label>
+
+        <label>
+          <input type="radio" name="oneStarReason" value="Delivery took too long">
+          Delivery took too long
+        </label>
+
+        <label>
+          <input type="radio" name="oneStarReason" value="Not worth the price">
+          Not worth the price
+        </label>
+
+      </div>
+
+      <textarea
+        id="custom-one-star-reason"
+        placeholder="Anything else you'd like to add?"
+      ></textarea>
+
+      <div class="review-contact-buttons">
+        <a
+          href="https://wa.me/2348109007611?text=Hello%20I%20need%20help%20with%20my%20order."
+          target="_blank"
+          class="contact-support-btn"
+        >
+          Message Support
+        </a>
+        <a href="tel:+2348109007611" class="call-support-btn">
+          Call Support
+        </a>
+      </div>
+
+      <button id="submit-one-star">Submit Review</button>
+
+    </div>
+
+  </div>
+
+  <div id="review-success-overlay" class="review-success-overlay">
+
+    <div class="review-success-box">
+
+        <div class="success-circle">
+
+            <i class="fa-solid fa-circle-check"></i>
+
+        </div>
+
+        <h2>Review Submitted</h2>
+
+        <p>
+
+            Thank you for helping other customers.
+
+        </p>
+
+        <small>
+
+            Returning to your orders...
+
+        </small>
+
+    </div>
+
+</div>
+
+  <!-- FIX: added guard.js and route-guard.js — were missing,
+       meaning logged-out users could reach this page -->
+  <script src="/js/toast.js"></script>
+  <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
+  <script type="module" src="/js/guard.js"></script>
+  <script type="module" src="/js/route-guard.js"></script>
+  <script type="module" src="/js/review.js"></script>
+  <script type="module" src="/js/user-notifications.js"></script>
+  <script type="module" src="/js/admin-notification.js"></script>
+
+</body>
+</html>

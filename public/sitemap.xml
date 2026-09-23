@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <url>
+    <loc>https://your-domain.com/</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://your-domain.com/about</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
+    <loc>https://your-domain.com/contact-us</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!--
+    Individual product pages (decision-page?id=...) aren't listed here because
+    they're created/removed dynamically in Firestore -- a static file can't
+    stay in sync with that. When you're ready, the clean way to cover them is
+    a small script (or Cloud Function on a daily schedule) that queries the
+    `products` collection and writes out a `sitemap-products.xml` the same
+    way, then references it from this file with a <sitemap> entry. Ask me
+    when you want that built.
+  -->
+
+</urlset>

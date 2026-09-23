@@ -1,0 +1,344 @@
+.orders-section {
+  max-width: 900px;
+  margin: auto;
+}
+
+.orders-section h2 {
+  margin-bottom: 30px;
+}
+
+@keyframes flashOrder{
+
+0%{
+
+box-shadow:0 0 0 rgba(197,168,128,0);
+
+}
+
+30%{
+
+box-shadow:0 0 30px rgba(197,168,128,.9);
+
+}
+
+60%{
+
+box-shadow:0 0 18px rgba(197,168,128,.7);
+
+}
+
+100%{
+
+box-shadow:none;
+
+}
+
+}
+
+.flash-order{
+
+animation:flashOrder 2s ease;
+
+}
+
+.order-card {
+  background: var(--card-bg, #1f2833);
+  border: 1px solid rgba(197, 168, 128, 0.15);
+
+  border-radius: 16px;
+
+  padding: 22px;
+
+  margin-bottom: 20px;
+
+  transition: border-color 0.2s ease;
+}
+
+.order-card:hover {
+  border-color: rgba(197, 168, 128, 0.35);
+}
+
+.order-card-product {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.order-card-image {
+  width: 76px;
+  height: 76px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+.order-card-info h4 {
+  font-size: 16px;
+  color: #fff;
+  margin-bottom: 6px;
+  font-family: var(--font-display, Georgia, serif);
+}
+
+.order-card-variant {
+  font-size: 13px;
+  color: #999;
+}
+
+.order-header {
+  display: flex;
+
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 16px;
+
+  flex-wrap: wrap;
+
+  gap: 10px;
+}
+
+.order-date {
+  color: #888;
+  font-size: 12.5px;
+}
+
+.order-price-breakdown {
+  background: rgba(0, 0, 0, 0.18);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 4px;
+}
+
+.order-price-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13.5px;
+  color: #b5b5b5;
+  padding: 4px 0;
+}
+
+.order-price-total {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 6px;
+  padding-top: 10px;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--primary-color, #c5a880);
+}
+
+.order-details {
+  color: #b5b5b5;
+
+  line-height: 1.8;
+}
+
+.order-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: fit-content;
+
+  padding: 6px 14px;
+
+  border-radius: 30px;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+.status-approved {
+  background: #28a74533;
+
+  color: #28a745;
+}
+
+.status-pending {
+  background: #3a3125;
+  color: #c5a880;
+}
+
+.status-delivered {
+  background: #17a2b833;
+  color: #17a2b8;
+}
+
+.status-cancelled {
+  background: #ff4d4d33;
+
+  color: #ff4d4d;
+}
+
+.empty-orders {
+  text-align: center;
+
+  color: #999;
+
+  margin-top: 80px;
+}
+
+.back-home-btn {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 1px;
+  transition: opacity 0.3s;
+}
+
+.back-home-btn:hover {
+  opacity: 0.8;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 8px 14px;
+
+  border-radius: 20px;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  white-space: nowrap;
+
+  width: fit-content;
+}
+
+.status-delivery{
+    background:#ff9800;
+    color:white;
+}
+
+.review-complete-card{
+
+display:flex;
+
+align-items:center;
+
+gap:12px;
+
+margin-top:15px;
+
+padding:14px;
+
+border-radius:12px;
+
+background:#171717;
+
+border:1px solid rgba(255,255,255,.08);
+
+}
+
+.review-complete-icon{
+
+width:42px;
+
+height:42px;
+
+border-radius:50%;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+background:#143d20;
+
+color:#43d36f;
+
+font-size:18px;
+
+}
+
+.review-complete-title{
+
+font-weight:700;
+
+font-size:15px;
+
+color:white;
+
+}
+
+.review-complete-sub{
+
+font-size:13px;
+
+color:#8f8f8f;
+
+margin-top:4px;
+
+}
+/* ── LOADING STATE ───────────────────────────────────────── */
+.orders-loading-state{
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:16px;
+
+  padding:80px 20px;
+
+  color:rgba(255,255,255,.55);
+
+  font-size:14px;
+}
+
+.orders-loading-spinner{
+
+  width:36px;
+  height:36px;
+
+  border:3px solid rgba(197,168,128,.2);
+  border-top-color:#c5a880;
+
+  border-radius:50%;
+
+  animation:ordersSpin .8s linear infinite;
+}
+
+@keyframes ordersSpin{
+  to{ transform:rotate(360deg); }
+}
+
+@media (max-width: 640px) {
+
+  .orders-section {
+    padding: 0 4px;
+  }
+
+  .order-card {
+    padding: 16px;
+  }
+
+  .order-card-product {
+    gap: 12px;
+  }
+
+  .order-card-image {
+    width: 60px;
+    height: 60px;
+  }
+
+  .order-card-info h4 {
+    font-size: 14px;
+  }
+
+  .order-card-variant {
+    font-size: 12px;
+  }
+
+  .order-price-breakdown {
+    padding: 12px;
+  }
+
+}

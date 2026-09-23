@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product Options - Timeless</title>
+
+    <meta
+      name="description"
+      id="meta-description"
+      content="Shop curated luxury fashion at Timeless. Verified sellers, secure checkout, and nationwide delivery across Nigeria."
+    />
+
+    <meta property="og:type" content="product" />
+    <meta property="og:site_name" content="Timeless" />
+    <meta property="og:title" id="og-title" content="Timeless" />
+    <meta property="og:description" id="og-description" content="Shop curated luxury fashion at Timeless." />
+    <meta property="og:image" id="og-image" content="https://your-domain.com/images/og-cover.jpg" />
+    <meta property="og:url" id="og-url" content="https://your-domain.com/decision-page" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" id="twitter-title" content="Timeless" />
+    <meta name="twitter:description" id="twitter-description" content="Shop curated luxury fashion at Timeless." />
+    <meta name="twitter:image" id="twitter-image" content="https://your-domain.com/images/og-cover.jpg" />
+
+    <link rel="stylesheet" href="/css/index.css" />
+    <link rel="stylesheet" href="/css/review.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+
+    <style>
+      .decision-split-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 50px;
+      }
+
+      @media (max-width: 768px) {
+        .decision-split-container {
+          grid-template-columns: 1fr;
+        }
+        .decision-media-pane img {
+          height: 300px !important;
+        }
+      }
+    </style>
+    <script src="/js/analytics.js" defer></script>
+  </head>
+  <body>
+  <script src="/js/theme-init.js"></script>
+    <header class="luxury-nav">
+      <div class="nav-left-menu"><a href="/">Catalog</a></div>
+
+      <div class="main-signature-logo">
+        <a href="/" style="text-decoration: none; color: inherit">
+          TIME<span>LESS</span>
+        </a>
+      </div>
+
+      <div class="nav-right-actions">
+        <a href="/cart" class="custom-cart-anchor">
+          <span class="cart-label-word">Cart</span>
+          <div class="cart-icon-wrapper">
+            <i class="fa-solid fa-bag-shopping"></i>
+            <span id="cart-count">0</span>
+          </div>
+        </a>
+      </div>
+    </header>
+
+    <main class="store-mainframe">
+
+      <nav class="vanguard-breadcrumb">
+
+    <a href="/">Home</a>
+
+    <span class="separator">
+        <i class="fa-solid fa-chevron-right"></i>
+    </span>
+
+    <span class="current">
+        Product Details
+    </span>
+
+</nav>
+
+<span class="sold-out-badge" id="sold-out-badge" style="display: none">
+        SOLD OUT
+      </span>
+<br>
+<br>
+      <div class="decision-split-container">
+        <!-- IMAGE -->
+        <div class="decision-media-pane">
+
+    <div class="product-gallery">
+
+        <button
+            class="gallery-arrow left"
+            id="gallery-prev"
+        >
+            <i class="fa-solid fa-chevron-left"></i>
+        </button>
+
+        <div
+            class="gallery-slider"
+            id="gallery-slider"
+        >
+
+        </div>
+
+        <button
+            class="gallery-arrow right"
+            id="gallery-next"
+        >
+            <i class="fa-solid fa-chevron-right"></i>
+        </button>
+
+        <div
+            class="gallery-dots"
+            id="gallery-dots"
+        ></div>
+
+    </div>
+
+</div>
+
+        <!-- DETAILS -->
+        <div class="decision-meta-pane">
+          <h1 id="decision-title">Loading...</h1>
+          <div id="decision-price"></div>
+
+          <div class="product-review-summary">
+
+    <span id="product-stars"></span>
+
+    <span id="product-review-count"></span>
+
+</div>  
+
+          <p id="stock-left" style="color: lime; margin-bottom: 10px"></p>
+
+          <hr />
+
+          <!-- SIZE -->
+          <div>
+            <div class="size-heading-row">
+              <h4>Size</h4>
+              <button type="button" id="size-guide-trigger" class="size-guide-link">
+                <i class="fa-solid fa-ruler"></i> Size Guide
+              </button>
+            </div>
+            <div id="size-options-wrapper"></div>
+          </div>
+
+          <!-- COLOR -->
+          <div style="margin-top: 15px">
+            <h4>Color</h4>
+            <div id="color-options-wrapper"></div>
+          </div>
+
+          <!-- QTY -->
+          <div style="margin-top: 15px">
+            <h4>Quantity</h4>
+            <div class="luxury-qty-box">
+              <button
+                type="button"
+                onclick="decreaseQty()"
+                class="luxury-qty-btn"
+              >
+                −
+              </button>
+
+              <input
+                type="number"
+                id="item-quantity"
+                value="1"
+                min="1"
+                readonly
+              />
+
+              <button
+                type="button"
+                onclick="increaseQty()"
+                class="luxury-qty-btn"
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          <p id="decision-description"></p>
+
+          <button onclick="submitToCartBag()" class="add-to-cart-btn">
+            Add To Bag
+          </button>
+
+          <div class="trust-badges">
+
+    <div class="trust-item">
+        <i class="fa-solid fa-shield-halved"></i>
+        Authentic Products
+    </div>
+
+    <div class="trust-item">
+        <i class="fa-solid fa-lock"></i>
+        Secure Checkout
+    </div>
+
+    <div class="trust-item">
+        <i class="fa-solid fa-truck"></i>
+        Fast Delivery
+    </div>
+
+    <div class="trust-item">
+        <i class="fa-solid fa-rotate-left"></i>
+        Easy Returns
+    </div>
+
+</div>
+
+        </div>
+      </div>
+    </main>
+<div style="
+width:100%;
+height:1px;
+background:rgba(255,255,255,.08);
+margin-top:80px;
+margin-bottom:80px;
+">
+</div>
+
+<section class="reviews-section">
+
+    <h2>
+
+        Customer Reviews
+
+    </h2>
+
+    <div id="reviews-container">
+
+    </div>
+
+</section>
+
+    <section class="related-products-section">
+
+    <div class="collection-intro-title">
+        <h2>You May Also Like</h2>
+        <div class="thin-accent-line"></div>
+    </div>
+
+    <div id="related-products-grid" class="products-grid">
+    </div>
+
+</section>
+
+<section class="related-products-section">
+
+    <div class="collection-intro-title">
+
+        <h2>Recently Viewed</h2>
+
+        <div class="thin-accent-line"></div>
+
+    </div>
+
+    <div
+        id="recently-viewed-grid"
+        class="products-grid"
+    ></div>
+
+</section>
+
+
+    <div id="size-guide-modal" class="size-guide-overlay">
+
+    <div class="size-guide-box">
+
+        <button type="button" id="close-size-guide" class="close-review-modal">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <h3>Size Guide</h3>
+        <p class="size-guide-note">All measurements in inches. Not sure between two sizes? Go up a size for a more relaxed fit.</p>
+
+        <div class="size-guide-table-wrap">
+            <table class="size-guide-table">
+                <thead>
+                    <tr>
+                        <th>Size</th>
+                        <th>Bust</th>
+                        <th>Waist</th>
+                        <th>Hips</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>XS</td><td>31-32</td><td>24-25</td><td>34-35</td></tr>
+                    <tr><td>S</td><td>33-34</td><td>26-27</td><td>36-37</td></tr>
+                    <tr><td>M</td><td>35-36</td><td>28-29</td><td>38-39</td></tr>
+                    <tr><td>L</td><td>37-39</td><td>30-32</td><td>40-42</td></tr>
+                    <tr><td>XL</td><td>40-42</td><td>33-35</td><td>43-45</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p class="size-guide-tip">
+            <i class="fa-solid fa-circle-info"></i>
+            Measure over your undergarments, keeping the tape snug but not tight.
+        </p>
+
+    </div>
+
+</div>
+
+<script type="module" src="/js/decision-page.js"></script>
+    <script type="module" src="/js/guard.js"></script>
+    <script type="module" src="/js/route-guard.js"></script>
+    <script type="module" src="/js/cart-count.js"></script>
+    <script src="/js/modal.js"></script>
+    <script src="/js/toast.js"></script>
+    <script type="module" src="/js/user-notifications.js"></script>
+    <script type="module" src="/js/admin-notification.js"></script>
+
+  </body>
+</html>

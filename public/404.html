@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Page Not Found | Timeless</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,600&display=swap"
+  rel="stylesheet"
+/>
+
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+/>
+
+<link rel="stylesheet" href="/css/index.css">
+
+<style>
+
+body{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:20px;
+    position:relative;
+    overflow:hidden;
+}
+
+.notfound-backdrop{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    background:
+        radial-gradient(circle at 50% 30%, rgba(197,168,128,0.08), transparent 60%),
+        var(--bg-color, #0b0c10);
+}
+
+.notfound-content{
+    position:relative;
+    z-index:1;
+    max-width:480px;
+}
+
+.notfound-number{
+    font-family:var(--font-display, Georgia, serif);
+    font-size:110px;
+    font-weight:700;
+    line-height:1;
+    color:var(--primary-color, #c5a880);
+    letter-spacing:4px;
+    opacity:0;
+    animation:notfoundRise .7s ease .1s both;
+}
+
+.notfound-thread{
+    width:70px;
+    height:2px;
+    background:var(--primary-color, #c5a880);
+    margin:22px auto 26px;
+    opacity:0;
+    animation:notfoundRise .7s ease .3s both;
+}
+
+.notfound-title{
+    font-family:var(--font-display, Georgia, serif);
+    font-size:26px;
+    color:#fff;
+    margin-bottom:14px;
+    opacity:0;
+    animation:notfoundRise .7s ease .45s both;
+}
+
+.notfound-sub{
+    color:#999;
+    font-size:15px;
+    line-height:1.7;
+    margin-bottom:34px;
+    opacity:0;
+    animation:notfoundRise .7s ease .6s both;
+}
+
+.notfound-actions{
+    display:flex;
+    gap:14px;
+    justify-content:center;
+    flex-wrap:wrap;
+    opacity:0;
+    animation:notfoundRise .7s ease .75s both;
+}
+
+.notfound-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:14px 28px;
+    border-radius:8px;
+    font-size:13px;
+    font-weight:600;
+    letter-spacing:.5px;
+    text-decoration:none;
+    transition:transform .2s ease, box-shadow .2s ease;
+}
+
+.notfound-btn.primary{
+    background:var(--primary-color, #c5a880);
+    color:#000;
+}
+
+.notfound-btn.secondary{
+    border:1px solid rgba(255,255,255,.2);
+    color:#fff;
+}
+
+.notfound-btn:hover{
+    transform:translateY(-2px);
+}
+
+.notfound-btn.primary:hover{
+    box-shadow:0 10px 24px rgba(197,168,128,.25);
+}
+
+@keyframes notfoundRise{
+    from{ opacity:0; transform:translateY(16px); }
+    to{ opacity:1; transform:translateY(0); }
+}
+
+</style>
+
+</head>
+<body>
+<script src="/js/theme-init.js"></script>
+
+<div class="notfound-backdrop"></div>
+
+<div class="notfound-content">
+
+    <div class="notfound-number">404</div>
+
+    <div class="notfound-thread"></div>
+
+    <h1 class="notfound-title">This page has left the collection</h1>
+
+    <p class="notfound-sub">
+        The page you're looking for doesn't exist, was moved, or the link
+        might be off. Let's get you back to browsing.
+    </p>
+
+    <div class="notfound-actions">
+
+        <a href="/" class="notfound-btn primary">
+            <i class="fa-solid fa-house"></i> Back To Storefront
+        </a>
+
+        <a href="/orders" class="notfound-btn secondary">
+            <i class="fa-solid fa-bag-shopping"></i> My Orders
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+</html>

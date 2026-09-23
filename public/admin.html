@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel</title>
+
+<link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="/css/admin.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body id="admin-body">
+<script src="/js/theme-init.js"></script>
+
+<div id="admin-loading-screen">
+
+    <div class="luxury-loader">
+
+        <div class="gold-line"></div>
+
+        <div class="luxury-logo">
+
+            TIMELESS
+
+        </div>
+
+        <div class="luxury-subtitle">
+
+            ADMIN PANEL
+
+        </div>
+
+    </div>
+
+</div>
+
+<div id="live-order-notification" class="live-order-notification">
+
+    <div class="live-order-icon">
+        <i class="fa-solid fa-bell"></i>
+    </div>
+
+    <div class="live-order-content">
+
+        <h4>New Order</h4>
+
+        <p id="live-order-text">
+            Someone placed an order.
+        </p>
+
+    </div>
+
+</div>
+
+<div class="top-bar">
+    <span>Terminal Console Workspace</span>
+    <a href="/" class="view-store-btn">
+View Store
+</a>
+</div>
+
+<header class="luxury-nav">
+    <div class="nav-left-menu"><a href="/">Control Hub</a></div>
+    <div class="main-signature-logo">ADMIN<span>PANEL</span></div>
+</header>
+
+<main class="store-mainframe">
+
+<section class="admin-dashboard-stats">
+
+    <div class="admin-stat-card">
+        <span class="stat-label">Products</span>
+        <h2 id="products-count">0</h2>
+    </div>
+
+    <div class="admin-stat-card">
+        <span class="stat-label">Orders</span>
+        <h2 id="orders-count">0</h2>
+    </div>
+
+    <div class="admin-stat-card">
+        <span class="stat-label">Revenue</span>
+        <h2 id="revenue-count">₦0</h2>
+    </div>
+
+    <div class="admin-stat-card">
+        <span class="stat-label">Pending</span>
+        <h2 id="pending-count">0</h2>
+    </div>
+
+</section>
+
+<section class="admin-section">
+
+<h3>Product Configurator</h3>
+<br>
+<form id="admin-product-form" class="admin-form">
+
+    <input type="text" id="prod-title" placeholder="Product Title" required>
+
+    <input type="number" id="prod-price" placeholder="Price" required>
+
+    <div id="prod-category-mount"></div>
+
+    <div class="admin-option-box">
+
+<h4>Available Sizes & Stock</h4>
+
+<div class="size-stock-row">
+
+<label>
+
+<input type="checkbox" name="prod_sizes" value="S">
+
+S
+
+</label>
+
+<input
+type="number"
+class="size-stock-input"
+data-size="S"
+placeholder="Stock"
+min="0"
+value="0">
+
+</div>
+
+<div class="size-stock-row">
+
+<label>
+
+<input type="checkbox" name="prod_sizes" value="M">
+
+M
+
+</label>
+
+<input
+type="number"
+class="size-stock-input"
+data-size="M"
+placeholder="Stock"
+min="0"
+value="0">
+
+</div>
+
+<div class="size-stock-row">
+
+<label>
+
+<input type="checkbox" name="prod_sizes" value="L">
+
+L
+
+</label>
+
+<input
+type="number"
+class="size-stock-input"
+data-size="L"
+placeholder="Stock"
+min="0"
+value="0">
+
+</div>
+
+<div class="size-stock-row">
+
+<label>
+
+<input type="checkbox" name="prod_sizes" value="XL">
+
+XL
+
+</label>
+
+<input
+type="number"
+class="size-stock-input"
+data-size="XL"
+placeholder="Stock"
+min="0"
+value="0">
+
+</div>
+
+<div class="size-stock-row">
+
+<label>
+
+<input type="checkbox" name="prod_sizes" value="None">
+
+No Sizes
+
+</label>
+
+</div>
+
+</div>
+
+    <div id="upload-image-box" class="upload-box">
+    <div class="upload-placeholder">
+        <i class="fa-solid fa-cloud-arrow-up"></i>
+        <p>Upload Product Image</p>
+    </div>
+</div>
+
+<input
+type="hidden"
+id="uploaded-image-url">
+
+    <!-- COLORS -->
+<div class="admin-option-box">
+
+<h4>Available Colors</h4>
+
+<div class="checkbox-grid" aria-required="true">
+
+<label><input type="checkbox" name="prod_colors" value="None"> None</label>
+
+<label><input type="checkbox" name="prod_colors" value="Black"> Black</label>
+
+<label><input type="checkbox" name="prod_colors" value="White"> White</label>
+
+<label><input type="checkbox" name="prod_colors" value="Red"> Red</label>
+
+<label><input type="checkbox" name="prod_colors" value="Blue"> Blue</label>
+
+<label><input type="checkbox" name="prod_colors" value="Green"> Green</label>
+
+<label><input type="checkbox" name="prod_colors" value="Orange"> Orange</label>
+
+<label><input type="checkbox" name="prod_colors" value="Yellow"> Yellow</label>
+
+<label><input type="checkbox" name="prod_colors" value="Gold"> Gold</label>
+
+</div>
+
+</div>
+
+    <textarea id="prod-desc" placeholder="Description" required></textarea>
+
+    <button type="submit">Publish Product</button>
+
+</form>
+
+</section>
+
+<section style="margin-top:50px;">
+
+<h3>Live Products</h3>
+<br>
+<div class="orders-search-wrapper">
+
+<i class="fa-solid fa-magnifying-glass"></i>
+
+<input
+id="products-search"
+placeholder="Search products...">
+
+</div>
+
+<div class="table-scroll">
+
+<div id="admin-inventory-table-body" class="products-cards-grid"></div>
+<br>
+<div id="products-pagination" class="admin-pagination"></div>
+
+</div>
+
+</section>
+
+<h2 style="margin-top:50px;">
+    Customer Orders
+</h2>
+<br>
+
+<div class="table-scroll customer-orders-scroll">
+
+    <div class="orders-search-wrapper">
+
+    <i class="fa-solid fa-magnifying-glass"></i>
+
+    <input
+        type="text"
+        id="orders-search"
+        placeholder="Search customer, phone or product..."
+    >
+
+</div>
+    
+<div id="orders-body" class="orders-cards-grid"></div>
+
+<div id="orders-pagination" class="admin-pagination"></div>
+
+<section style="margin-top:60px;">
+
+<h2>Support Workspace</h2>
+
+<div class="admin-page-links">
+    <a href="/admin-reviews" class="admin-page-link">
+        <i class="fa-solid fa-star"></i>
+        <span>Customer Reviews</span>
+        <span id="reviews-badge" class="admin-nav-badge" style="display:none;"></span>
+    </a>
+    <a href="/admin-complaints" class="admin-page-link">
+        <i class="fa-solid fa-file-circle-exclamation"></i>
+        <span>Complaints</span>
+        <span id="complaints-badge" class="admin-nav-badge" style="display:none;"></span>
+    </a>
+</div>
+
+</section>
+
+</main>
+
+<!-- Vanguard Confirm Modal -->
+<div id="vanguard-confirm-modal" class="vanguard-modal">
+    <div class="vanguard-modal-box">
+        <h3 id="vanguard-modal-title">Confirm Action</h3>
+
+        <p id="vanguard-modal-message">
+            Are you sure?
+        </p>
+
+        <div class="vanguard-modal-actions">
+            <button id="vanguard-modal-cancel">
+                Cancel
+            </button>
+
+            <button id="vanguard-modal-confirm">
+                Confirm
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="/js/toast.js"></script>
+<script src="https://upload-widget.cloudinary.com/global/all.js"></script>
+<script type="module" src="/js/admin-panel.js"></script>
+<script type="module" src="/js/admin-notification.js"></script>
+<script type="module" src="/js/user-notifications.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+</body>
+</html>

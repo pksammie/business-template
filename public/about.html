@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About Us - Timeless</title>
+    <link rel="stylesheet" href="/css/index.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+  </head>
+  <body>
+  <script src="/js/theme-init.js"></script>
+
+    <div class="top-bar">
+      <span>Call/WhatsApp: +2348109007611</span>
+      <div>
+        <a href="/developer" class="dev-link-badge"
+          ><i class="fa-solid fa-code"></i> About Developer</a
+        >
+      </div>
+    </div>
+
+    <header class="luxury-nav">
+      <div class="menu-toggle">
+        <i class="fa fa-bars"></i>
+      </div>
+      <ul class="nav-left-menu">
+        <li><a href="/">Catalog</a></li>
+        <li><a href="/about">About Us</a></li>
+        <li><a href="/contact-us">Contact</a></li>
+      </ul>
+      <div class="main-signature-logo">
+        <a href="/" style="text-decoration: none; color: inherit"
+          >TIME<span>LESS</span></a
+        >
+      </div>
+      <div class="nav-right-actions">
+        <div class="nav-user-icons">
+          <a href="/notifications.html" class="notification-anchor">
+            <div class="notification-icon-wrapper">
+              <i class="fa-regular fa-bell"></i>
+              <span id="notification-badge">0</span>
+            </div>
+          </a>
+          <a href="/cart" class="custom-cart-anchor">
+            <span class="cart-label-word">Cart</span>
+            <div class="cart-icon-wrapper">
+              <i class="fa-solid fa-bag-shopping"></i>
+              <span id="cart-count">0</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <section class="page-hero">
+      <video
+        class="page-hero-video"
+        autoplay muted loop playsinline
+        poster="https://images.unsplash.com/photo-1445205170230-053b83016050?q=80&w=2000">
+        <source
+          src="https://videos.pexels.com/video-files/8177624/8177624-uhd_2560_1440_24fps.mp4"
+          type="video/mp4">
+      </video>
+      <div class="page-hero-overlay"></div>
+      <div class="page-hero-content">
+        <span class="hero-tag">OUR STORY</span>
+        <h1>Style That Lasts</h1>
+        <p>
+          Timeless makes considered clothing for people who'd rather buy
+          once than buy often.
+        </p>
+      </div>
+    </section>
+
+    <section class="about-story reveal">
+      <div class="about-story-image">
+        <img
+          src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?q=80&w=1400"
+          alt="Fabric and tailoring detail" />
+      </div>
+      <div class="about-story-text">
+        <h2>Built On Fewer, Better Pieces</h2>
+        <p>
+          Timeless started with a simple frustration: most fashion is
+          designed to be forgotten. We wanted to build the opposite —
+          pieces cut from better fabric, finished properly, and made to
+          outlast a season.
+        </p>
+        <p>
+          Every item in our collection is chosen for how it wears, not
+          just how it photographs. We'd rather sell you one jacket you
+          keep for five years than five you replace in one.
+        </p>
+      </div>
+    </section>
+
+    <section class="vanguard-benefits about-values reveal">
+      <div class="section-header">
+        <span class="section-tag">What We Stand For</span>
+        <h2>The Timeless Standard</h2>
+      </div>
+
+      <div class="benefits-grid">
+        <div class="benefit-card">
+          <i class="fa-solid fa-scissors"></i>
+          <h3>Considered Design</h3>
+          <p>Every piece starts with a shape and fabric that earns its place in your wardrobe.</p>
+        </div>
+
+        <div class="benefit-card">
+          <i class="fa-solid fa-leaf"></i>
+          <h3>Responsible Sourcing</h3>
+          <p>We work with mills and makers who treat materials — and people — with care.</p>
+        </div>
+
+        <div class="benefit-card">
+          <i class="fa-solid fa-heart"></i>
+          <h3>Made To Last</h3>
+          <p>Cut, stitched, and finished to survive more washes and more seasons than fast fashion ever will.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-band reveal">
+      <h2>Ready To Build Your Wardrobe?</h2>
+      <a href="/" class="hero-btn">SHOP THE COLLECTION</a>
+    </section>
+
+    <script type="module" src="/js/route-guard.js"></script>
+    <script type="module" src="/js/index.js"></script>
+    <script type="module" src="/js/guard.js"></script>
+    <script type="module" src="/js/cart-count.js"></script>
+    <script type="module" src="/js/user-notifications.js"></script>
+    <script type="module" src="/js/admin-notification.js"></script>
+    <script src="/js/toast.js"></script>
+
+    <script>
+      const revealTargets = document.querySelectorAll(".reveal");
+      if (revealTargets.length) {
+        const revealObserver = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("active");
+              revealObserver.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.15 });
+        revealTargets.forEach(t => revealObserver.observe(t));
+      }
+    </script>
+  </body>
+
+  <footer class="vanguard-footer">
+    <div class="footer-grid">
+      <div>
+        <h3>TIMELESS</h3>
+        <p>Discover premium fashion brands worldwide.</p>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+        <a href="/contact-us">Contact</a>
+      </div>
+      <div>
+        <h4>Support</h4>
+        <a href="/returns-policy">Shipping & Returns</a>
+        <a href="/terms-of-service">Terms of Service</a>
+        <a href="/privacy-policy">Privacy Policy</a>
+      </div>
+      <div>
+        <h4>Follow Us</h4>
+        <div class="socials">
+          <i class="fab fa-instagram"></i>
+          <i class="fab fa-facebook"></i>
+          <i class="fab fa-tiktok"></i>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">© 2026 TIMELESS Marketplace</div>
+  </footer>
+</html>

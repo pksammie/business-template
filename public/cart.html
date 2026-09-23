@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Bag - Timeless</title>
+    <link rel="stylesheet" href="/css/index.css" />
+    <link rel="stylesheet" href="/css/cart.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <script src="/js/analytics.js" defer></script>
+  </head>
+  <body>
+  <script src="/js/theme-init.js"></script>
+
+    <header class="luxury-nav">
+      <div class="nav-left-menu"><a href="/">Catalog</a></div>
+      <div class="main-signature-logo">
+        <a href="/" style="text-decoration:none; color:inherit;">TIME<span>LESS</span></a>
+      </div>
+      <div class="nav-right-actions">
+        <a href="/notifications.html" class="notification-anchor">
+          <div class="notification-icon-wrapper">
+            <i class="fa-regular fa-bell"></i>
+            <span id="notification-badge">0</span>
+          </div>
+        </a>
+        <a href="/cart" class="custom-cart-anchor">
+          <span class="cart-label-word">Cart</span>
+          <div class="cart-icon-wrapper">
+            <i class="fa-solid fa-bag-shopping"></i>
+            <span id="cart-count">0</span>
+          </div>
+        </a>
+      </div>
+    </header>
+
+    <main class="store-mainframe">
+
+      <h1 class="cart-page-title">Your Shopping Cart</h1>
+
+      <!-- Update mode banner -->
+      <p id="update-mode-message" class="update-banner" style="display:none;">
+        <i class="fa-solid fa-pen-to-square"></i>
+        Tap a product to select it for update. Tap the same product again to exit update mode.
+      </p>
+
+      <!-- Select-all bar -->
+      <div class="select-all-bar">
+        <button id="select-all-btn" class="select-all-btn" onclick="toggleSelectAll()">Select All</button>
+        <span id="select-all-count" class="select-all-count"></span>
+      </div>
+
+      <!-- Two-column layout -->
+      <div class="cart-layout">
+
+        <!-- LEFT: item cards -->
+        <div id="cart-items-container" class="cart-cards-grid">
+          <div class="cart-loading-state">
+            <div class="cart-loading-spinner"></div>
+            <p>Loading your bag...</p>
+          </div>
+        </div>
+
+        <!-- RIGHT: sticky summary -->
+        <div class="cart-summary-panel">
+
+          <h3 class="summary-heading">Order Summary</h3>
+
+          <div class="summary-subtotal-row">
+            <span>Subtotal</span>
+            <span id="summary-subtotal">₦0.00</span>
+          </div>
+
+          <div class="summary-divider"></div>
+
+          <div class="cart-control-button-grid">
+            <button class="checkout-primary-btn" onclick="actionProceedCheckout()">
+              <i class="fa-solid fa-lock" style="margin-right:8px;"></i>Proceed to Checkout
+            </button>
+
+            <div class="cart-secondary-actions">
+              <button class="btn-continue" onclick="actionContinueShopping()">Continue Shopping</button>
+              <button class="btn-update" onclick="actionUpdateCartRedirect()">Update Cart</button>
+            </div>
+
+            <button class="btn-clear" onclick="clearCart()">
+              <i class="fa-solid fa-trash"></i> Clear Cart
+            </button>
+          </div>
+
+          <div class="summary-divider"></div>
+
+          <!-- Restore cart -->
+          <div class="restore-cart-section">
+            <p class="restore-cart-title">Recover an old cart?</p>
+            <div class="restore-cart-controls">
+              <button id="restore-cart-btn">
+                <i class="fa-solid fa-clock-rotate-left"></i> Restore
+              </button>
+              <div id="restore-range-mount" class="restore-range-mount"></div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+      <br>
+      <div class="collection-intro-title">
+        <h2>We Think You'll Love This</h2>
+        <div class="thin-accent-line"></div>
+    </div>
+
+      <div
+    class="products-grid"
+    id="products-grid">
+</div>
+
+    </main>
+
+    <script src="/js/modal.js"></script>
+    <script src="/js/toast.js"></script>
+    <script type="module" src="/js/index.js?v=2"></script>
+    <script type="module" src="/js/cart.js"></script>
+    <script type="module" src="/js/route-guard.js"></script>
+    <script type="module" src="/js/guard.js"></script>
+    <script type="module" src="/js/cart-count.js"></script>
+    <script type="module" src="/js/user-notifications.js"></script>
+    <script type="module" src="/js/admin-notification.js"></script>
+
+  </body>
+</html>
